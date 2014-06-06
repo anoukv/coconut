@@ -1,5 +1,5 @@
 from os import listdir
-
+from nltk import word_tokenize
 print "Hello line!"
 
 base = "../data/original.serve/"
@@ -27,6 +27,10 @@ for name in all_files:
 			line = line.replace(garbage, "")
 		while not line == line.replace("  ", ""):
 			line = line.replace("  ", "")
-		out.write(line)
+
+		line = "".join( [ x + " " for x in line] )
+		if len(line) > 0:
+			line = "".join( [ x + " " for x in word_tokenize(line)] ).lower()
+			out.write(line)
 	f.close()
 	out.close()

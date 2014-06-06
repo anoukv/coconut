@@ -1,4 +1,5 @@
 from os import listdir
+from nltk import word_tokenize
 
 print "Hello serve!"
 
@@ -12,8 +13,10 @@ for name in all_files:
 	for line in f.readlines():
 		line = line.split(" ")
 		line.pop(0)
-		line = "".join([ x + " " for x in line])
-		out.write(line)
+		line = "".join( [ x + " " for x in line] )
+		if len(line) > 0:
+			line = "".join( [ x + " " for x in word_tokenize(line)] ).lower()
+			out.write(line)
 	f.close()
 	out.close()
 
