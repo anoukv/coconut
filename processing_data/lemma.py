@@ -17,7 +17,6 @@ if __name__ == "__main__":
 		fout = open(temp, 'w')
 		for line in fin.readlines():
 			newLine = [stemmer.stem(word) for word in line.split(" ")]
-			print newLine
 			fout.write("".join([x + " " for x in newLine]))
 
 
