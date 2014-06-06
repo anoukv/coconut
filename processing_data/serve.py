@@ -15,7 +15,7 @@ for name in all_files:
 		line.pop(0)
 		line = "".join( [ x + " " for x in line] )
 		if len(line) > 0:
-			line = "".join( [ x + " " for x in word_tokenize(line)] ).lower()
+			line = "".join( [ x + " " for x in word_tokenize(line)] ).lower()+"\n"
 			out.write(line)
 	f.close()
 	out.close()
