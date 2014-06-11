@@ -8,4 +8,4 @@ def postag(word):
 	return simplify_wsj_tag(pos_tag([word])[0][1])
 
 def pos_is_revelant(pos):
-	return pos in set(['N', 'VG', 'VD', 'ADJ', 'ADV'])
+	return pos in set(['N', 'NP', 'VG', 'VD', 'ADJ', 'ADV'])

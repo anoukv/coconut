@@ -33,11 +33,10 @@ def load_vectors(filename):
 	words = dict()
 	for (word, vector) in content:
 		wordClass = Word(word)
-		print word, wordClass
+		# print word, wordClass
 		if wordClass.relevant():
+			# print "Keeping: ", word, wordClass.pos()
 			words[word.lower()] = vector
-		else:
-			print "Skipping: ", word, wordClass.pos()
 	return words
 
 def getHistogramOfSimilarities(vectors, word):
@@ -87,4 +86,4 @@ if __name__ == "__main__":
 	filename = sys.argv[1]
 	vectors = load_vectors(filename)
 	print len(vectors), " words found in wordvector "
-	getHistogramOfSimilarities(vectors, 'apple')
+	getHistogramOfSimilarities(vectors, 'line')
