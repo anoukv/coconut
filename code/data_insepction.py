@@ -2,6 +2,7 @@ import sys, random
 from math import sqrt
 from collections import defaultdict
 from matplotlib import pyplot as plt
+from Word import Word
 
 def getMean(someListOfNumbers):
 	return sum(someListOfNumbers) / float(len(someListOfNumbers))
@@ -31,7 +32,12 @@ def load_vectors(filename):
 	content = filter(lambda x : not x[1] == None, content)
 	words = dict()
 	for (word, vector) in content:
-		words[word.lower()] = vector
+		wordClass = Word(word)
+		print word, wordClass
+		if wordClass.relevant():
+			words[word.lower()] = vector
+		else:
+			print "Skipping: ", word, wordClass.pos()
 	return words
 
 def getHistogramOfSimilarities(vectors, word):

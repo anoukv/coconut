@@ -1,31 +1,29 @@
 from utils import Stemmer, postag, pos_is_revelant
 
-__all__ = ['Word']
-
 class Word:
     def __init__(self, word, desc=None, meta=dict()):
     	self.word = word
     	self.desc = desc
     	self.meta = meta
 
-    	self.lemma = None
-        self.pos = None
-        self.relevant = None
+    	self._lemma = None
+      self._pos = None
+      self._relevant = None
 
     def lemma():
-    	if self.lemma == None:
-    		self.lemma = Stemmer.stem(word)
-    	return self.lemma 
+    	if self._lemma == None:
+    		self._lemma = Stemmer.stem(word)
+    	return self._lemma 
 
    	def pos():
-   		if self.pos == None:
-   			self.pos = postag(word)
-   		return self.pos
+   		if self._pos == None:
+   			self._pos = postag(word)
+   		return self._pos
 
    	def relevant():
-   		if self.relevant == None:
-   			self.relevant = pos_is_revelant(self.pos())
-   		return self.relevant
+   		if self._relevant == None:
+   			self._relevant = pos_is_revelant(self.pos())
+   		return self._relevant
 
     def setDescription(self, x):
         self.desc = x
