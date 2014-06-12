@@ -101,22 +101,17 @@ if __name__ == "__main__":
 	# this is an adjustment / enhancement to coconut, we throw away all irrelevant words
 	cache = dict()
 	new_inpt = []
-	notIncluded = set()
 	while len(inpt) > 0:
 		w = inpt.pop(0)
 		if w in cache:
 			if cache[w]:
 				new_inpt.append(w)
-			else:
-				notIncluded.add(w)
 		else:
 			word_object = Word(w)
 			rel = word_object.relevant()
 			cache[w] = rel
 			if rel:
 				new_inpt.append(w)
-			else:
-				notIncluded.add(w)
 	inpt = new_inpt
 	coc = getCocMatrix(inpt, skipsize)
 	for key in coc:

@@ -18,6 +18,7 @@ def word_is_relevant(word):
 
 # reads the SCWS task
 def load_task(filename):
+	print "Loading task"
 	task = dict()
 	f = open(filename, 'r')
 	lines = f.readlines()
@@ -112,7 +113,7 @@ def cosine_similarity(vec1, vec2):
 
 
 # returns normalized word vectors for every word from 'filename'
-def load_vectors(filename, limit=False, filterRelevant=True):
+def load_vectors(filename, limit=False, filterRelevant=False):
 	def normalizeString(vec):
 		vec = [ float(x) for x in vec]
 		total = sqrt( sum([v**2 for v in vec]) )
