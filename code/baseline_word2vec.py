@@ -9,7 +9,7 @@ if __name__ == "__main__":
 	taskFilename = sys.argv[1]
 	vectorsFilename = sys.argv[2]
 
-	task = load_task(taskFilename)
+	task, _ = load_task(taskFilename)
 	vectors = load_vectors(vectorsFilename)
 
 	methodsRating = []

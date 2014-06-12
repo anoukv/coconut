@@ -18,6 +18,7 @@ def word_is_relevant(word):
 
 # reads the SCWS task
 def load_task(filename):
+	words = set()
 	print "Loading task"
 	task = dict()
 	f = open(filename, 'r')
@@ -33,7 +34,9 @@ def load_task(filename):
 		q['context2'] = question[6]
 		q['rating'] = float(question[7])
 		task[int(question[0])] = q
-	return task
+		words.add(question[1].lower())
+		words.add(question[3].lower())
+	return task, words
 
 # returns Spearman's Rank Correlation (takes care of ties)
 def spearman(x, y):
