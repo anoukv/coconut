@@ -1,6 +1,6 @@
+from math import sqrt
 from nltk import pos_tag
 from nltk.tag.simplify import simplify_wsj_tag
-
 from nltk.stem.snowball import SnowballStemmer
 Stemmer = SnowballStemmer("english")
 
@@ -31,21 +31,21 @@ def load_vectors(filename):
 	return words
 
 # reads the SCWS task
-def read_task(filename):
+def load_task(filename):
 	task = dict()
 	f = open(filename, 'r')
 	lines = f.readlines()
 	for question in lines:
 		q = dict()
 		question = question.split('\t')
-		q['word1'] = question[1]
+		q['word1'] = question[1].lower()
 		q['pos1'] = question[2]
-		q['word2'] = question[3]
+		q['word2'] = question[3].lower()
 		q['pos2'] = question[4]
 		q['context1'] = question[5]
 		q['context2'] = question[6]
-		q['rating'] = question[7]
-		task[question[0]] = q
+		q['rating'] = float(question[7])
+		task[int(question[0])] = q
 	return task
 
 # returns Spearman's Rank Correlation
@@ -86,3 +86,7 @@ def spearman(x, y):
 	rho = numerator / float(denominator)
 	
 	return rho
+
+# vec1 and vec2 should already be normalized!!
+def cosine_similarity(vec1, vec2):
+	return sum([vec1[i] * vec2[i] for i in xrange(len(vec1))])
