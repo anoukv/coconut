@@ -40,8 +40,6 @@ def prepareExtraction(word, coc):
 # extracts the two senses of a word
 def extractSenses((word, preparation)):
 	(wordCOC, cococ) = preparation
-	# only if more than one datapoint was found, the word will be called ambiguous
-
 
 	# sort from high relatedness to low relatedness
 	# cut off half, top half will be used, other half will be things that are relevant to all sensess
@@ -94,89 +92,17 @@ def extractSenses((word, preparation)):
 	# save the different sences of the word
 	return (word, senses)
 
-# returns a list of words that have a unique frequency or are in the top 25 of most frequent words
-def pruneVocabulary(voc):
-	print "Running some statistics on the vocabulary to find which words won't be clustered!"
-	wordsToCut = set()	
-	vocTups = voc.items()
-	sortedVocTups = sorted(vocTups, key = lambda x: x[1], reverse = True)
-
-	for i in range(75):
-		wordsToCut.add(sortedVocTups[i][0])
-	print
-
-	return wordsToCut
-
-#
+# ARGUMENTS: word, coc_rel and coc_voc (already opened with shelve)
 # gives us a new dictionary with multiple senses of the words
 # not all words will be in this dictionary, only the words for which 
 # multiple senses were actually found
-def makeNewCOCS(coc, outputfile, voc):	
-
-	# inititate return object
-	print "Writing results to: ", outputfile
-	newCOC = shelve.open(outputfile)
-	
-	wordsToCut = pruneVocabulary(voc)
-	#wordsToCut = []
-	print "Not disambiguating: ", len(wordsToCut), " words"
-	# we will be evaluating the ambiguousness of every single word excpet for ''
-	p = Pool(processes=6)
-
-	counter = 0
-	instructions = []
-	total = len(coc)
-	for word in coc:
-		counter += 1
-
-		# we don't want nothing
-		# we don't want words that occur less than 20 times
-		if word != '' and voc[word] > 20 and  word not in wordsToCut:
-		 	print word, counter,  "/ ", total
-			# here we cluster! 
-			instructions.append((word, prepareExtraction(word,coc)))
-			if len(instructions) == 8:
-				print "Agregated instructions, executing..."
-				results = p.map(extractSenses, instructions)
-				for (w,s) in results:
-					newCOC[w] = s
-				instructions = []
-
-	print "Executing rest of length", len(instructions)
-	results = p.map(extractSenses, instructions)
-	for (w,s) in results:
-		newCOC[w] = s
-	return newCOC
-
-if __name__ == "__main__":
-	print "Welcome to the clustering method designed by Anouk. You'll enjoy your time here."
-
-	if len(sys.argv) < 4:
-	 		print "USAGE: python coconut.py <original coc> <new coc (output)> <new coc half (output)>"
-	 		sys.exit()
-
-	input_file_coc = sys.argv[1]
-	output_file_new_coc = sys.argv[2]
-	output_file_new_coc_half = sys.argv[3]
-
-	# this is the original co-occurence thing, with 'rel', 'coc' and 'voc' as keys
-	print "Reading global co-occurences (relative frequencies, relatedness scores and vocabulary)"
-	co_occurences = shelve.open(input_file_coc + "_rel")
-	voc = shelve.open(input_file_coc + "_voc")
-
-	# This thing actually makes a co occurence thing with multiple senses of the word
-	print "Making new co-occurence dictionary, with multiple senses of all words... This might take a while."
-	new = makeNewCOCS(co_occurences, output_file_new_coc, voc)
-
-	print "Throwing away half of the words... "
-	clustered = sorted(new.items(), key=lambda x: x[1]['clusterDistance'], reverse = True)
-	halfCOC = shelve.open(output_file_new_coc_half)
-	halfCOC.update(dict(clustered[:len(clustered)/2]))
-
-	# we can close the new one and the original one now.
-	new.close()
-	co_occurences.close()
-	voc.close()
-	halfCOC.close()
+def makeNewCOCS(word, rel, voc):
+	if word not in voc:	
+		print "Sorry ", word, " not found in vocabulary..."
+		return 0
+	# here we cluster! 
+	preparation = prepareExtraction(word, rel)
+	(word, senses) = extractSenses((word, preparation))
+	return senses
 
 
