@@ -11,8 +11,7 @@ class Node:
 
 def combinedNode(n1, n2):
 	c1, w1, c2, w2 = n1.center, n1.weight, n2.center, n2.weight
-	t = float(w1+w2)
-	return [ (x*w1 + y*w2)/t for (x,y) in zip(c1,c2) ]
+	return Node([ (x*w1 + y*w2)/t for (x,y) in zip(c1,c2) ], t, n1.identifier + n2.identifier)
 
 def agglomerative_clustering(data, n=500, verbose=True):
 	if verbose:
@@ -20,11 +19,11 @@ def agglomerative_clustering(data, n=500, verbose=True):
 
 	nodes = []
 	for (identifier, center) in data:
-		nodes.append( Node(center, 1, identifier) )
+		nodes.append( Node(center, 1.0, set(identifier)) )
 
 	data = None
 	if verbose:
-		print "\tClustering from", len(nodes), "to", len(n)
+		print "\tClustering from", len(nodes), " nodes to", len(n)
 
 	while len(nodes) > n:
 		bestS = -1
