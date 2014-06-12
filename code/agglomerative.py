@@ -23,7 +23,7 @@ def agglomerative_clustering(data, n=500, verbose=True):
 
 	data = None
 	if verbose:
-		print "\tClustering from", len(nodes), " nodes to", len(n)
+		print "\tClustering from", len(nodes), "nodes to", n
 
 	while len(nodes) > n:
 		bestS = -1
@@ -38,7 +38,6 @@ def agglomerative_clustering(data, n=500, verbose=True):
 		n1 = nodes.pop(i)
 		nodes.append(combinedNode(n1, n2))
 	return nodes
-
 
 
 
