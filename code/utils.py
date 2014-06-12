@@ -76,7 +76,7 @@ def spearman(x, y):
 	denominator = sqrt(denominator1 * denominator2)
 	rho = numerator / float(denominator)
 	
-	return rho
+	return rho * 100
 
 # returns Spearman's Rank Correlation (does not take care of ties)
 def spearman2(x, y):
@@ -104,7 +104,7 @@ def spearman2(x, y):
 	dSquaredList = [(xx[i] - yy[i])**2 for i in range(len(xx))]
 	rho = 1 - (6 * sum(dSquaredList))/float(len(xx) * (len(xx)**2 - 1))
 	
-	return rho
+	return rho * 100
 
 # vec1 and vec2 should already be normalized!!
 def cosine_similarity(vec1, vec2):
