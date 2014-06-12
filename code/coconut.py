@@ -117,8 +117,8 @@ def makeNewCOCS(coc, outputfile, voc):
 	print "Writing results to: ", outputfile
 	newCOC = shelve.open(outputfile)
 	
-	#wordsToCut = pruneVocabulary(voc)
-	wordsToCut = []
+	wordsToCut = pruneVocabulary(voc)
+	#wordsToCut = []
 	print "Not disambiguating: ", len(wordsToCut), " words"
 	# we will be evaluating the ambiguousness of every single word excpet for ''
 	p = Pool(processes=6)

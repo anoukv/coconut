@@ -3,7 +3,8 @@ from collections import defaultdict
 from time import time
 import shelve
 from math import sqrt
-
+from Word import Word
+# minimumOccurence should be adjusted when working with bigger files, this is for a small test only. Set to 5 again.
 def get_document_vocabulary(inpt, minimumOccurence = 0):
 	total = defaultdict(int)
 	for word in inpt:
@@ -30,7 +31,6 @@ def relatedness(word, coc, vocabulary):
 	return new_coc
 
 def getCocMatrix(inpt,skipsize):
-	k = 2
 	queueSize = skipsize * 2 + 1
 	queueMid = skipsize + 1
 
@@ -84,7 +84,7 @@ def read_args():
 	 	return inpt
 
 	if len(sys.argv) < 3:
- 		print "USAGE: python getGlobalCOC.py training.txt output.txt (skipsize = 5)"
+ 		print "USAGE: python build_cocs.py training.txt output.txt (skipsize = 5)"
  		sys.exit()
 
 	train = sys.argv[1]
@@ -98,6 +98,26 @@ def read_args():
 if __name__ == "__main__":
 	start = time()
 	(inpt, output_file, skipsize) = read_args()
+	# this is an adjustment / enhancement to coconut, we throw away all irrelevant words
+	cache = dict()
+	new_inpt = []
+	notIncluded = set()
+	while len(inpt) > 0:
+		w = inpt.pop(0)
+		if w in cache:
+			if cache[w]:
+				new_inpt.append(w)
+			else:
+				notIncluded.add(w)
+		else:
+			word_object = Word(w)
+			rel = word_object.relevant()
+			cache[w] = rel
+			if rel:
+				new_inpt.append(w)
+			else:
+				notIncluded.add(w)
+	inpt = new_inpt
 	coc = getCocMatrix(inpt, skipsize)
 	for key in coc:
 		myShelve = shelve.open(output_file + "_" + key)
