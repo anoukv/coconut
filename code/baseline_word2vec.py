@@ -1,5 +1,5 @@
 import sys
-from utils import load_task, load_vectors, spearman, cosine_similarity
+from utils import *
 
 if __name__ == "__main__":
 	print "Baseline with wordvectors"
@@ -28,6 +28,6 @@ if __name__ == "__main__":
 			methodsRating.append(cosine_similarity(vec1, vec2))
 		else:
 			methodsRating.append(0)
- 	
+ 
  	print spearman(methodsRating, humanRating)
 

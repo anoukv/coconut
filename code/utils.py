@@ -64,8 +64,13 @@ def load_task(filename):
 		task[int(question[0])] = q
 	return task
 
-# returns Spearman's Rank Correlation
+# returns Spearman's Rank Correlation (takes care of ties)
 def spearman(x, y):
+
+	if len(x) != len(y):
+		print "Problem with two lists in spearman (not the same size). Returning 0"
+		return 0
+
 	# add identifiers to to lists
 	idX = [(i, x[i]) for i in xrange(len(x))]
 	idY = [(i, y[i]) for i in xrange(len(y))]
@@ -100,6 +105,34 @@ def spearman(x, y):
 	# result!
 	denominator = sqrt(denominator1 * denominator2)
 	rho = numerator / float(denominator)
+	
+	return rho
+
+# returns Spearman's Rank Correlation (does not take care of ties)
+def spearman2(x, y):
+	
+	if len(x) != len(y):
+		print "Problem with two lists in spearman (not the same size). Returning 0"
+		return 0
+
+	# add identifiers to to lists
+	idX = [(i, x[i]) for i in xrange(len(x))]
+	idY = [(i, y[i]) for i in xrange(len(y))]
+
+	# sort the lists with identifier tuples based on the observed variable
+	idX = sorted(idX, key = lambda x: x[1])
+	idY = sorted(idY, key = lambda x: x[1])
+
+	# throw away the values
+	idX = map(lambda x: x[0], idX)
+	idY = map(lambda x: x[0], idY)
+
+	# get the ranking for the observed variables
+	xx = [idX.index(i) + 1 for i in xrange(len(idX))]
+	yy = [idY.index(i) + 1 for i in xrange(len(idY))]
+
+	dSquaredList = [(xx[i] - yy[i])**2 for i in range(len(xx))]
+	rho = 1 - (6 * sum(dSquaredList))/float(len(xx) * (len(xx)**2 - 1))
 	
 	return rho
 
