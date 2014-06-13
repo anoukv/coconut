@@ -9,13 +9,12 @@ if __name__ == "__main__":
 	taskFilename = sys.argv[1]
 	vectorsFilename = sys.argv[2]
 
-	task = load_task(taskFilename)
+	task, _ = load_task(taskFilename)
 	vectors = load_vectors(vectorsFilename)
 
 	methodsRating = []
 	humanRating = []
 
-	sortedStringKeys = [str(x) for x in sorted([int(key) for key in task])]
 	for key in sorted(task.keys()):
 		question = task[key]
 		humanRating.append(question['rating'])
