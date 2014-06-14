@@ -16,6 +16,14 @@ def pos_is_revelant(pos):
 def word_is_relevant(word):
 	return pos_is_revelant(postag(word))
 
+# normalize a vector
+def normalize(vec):
+	total = sqrt( sum([v**2 for v in vec]) )
+	new_vec = []
+	for v in vec:
+		new_vec.append(v/total)
+	return tuple(new_vec)
+
 # reads the SCWS task
 def load_task(filename):
 	words = set()
