@@ -26,7 +26,6 @@ def combinedNode(n1, n2, nodeIndexer):
 	t = w1 + w2
 	return Node(normalizeVec([ (x*w1 + y*w2)/t for (x,y) in zip(c1,c2) ]), t, n1.identifier.union(n2.identifier), nodeIndexer)
 
-
 # Private copy from utils version so that this file can be run using pypy
 def load_vectors(filename, limit=False, filterRelevant=True):
 	def normalizeString(vec):
@@ -48,8 +47,6 @@ def load_vectors(filename, limit=False, filterRelevant=True):
 		words[word.lower()] = vector
 	return words
 
-
-
 def agglomerative_clustering(data, n=500):
 	"""
 		Clusters the data agglomeratively.
@@ -61,7 +58,7 @@ def agglomerative_clustering(data, n=500):
 	nodeIndexer = 0
 	nodes = []
 	for (identifier, center) in data:
-		nodes.append( Node(center, 1.0, set(identifier), nodeIndexer) )
+		nodes.append( Node(center, 1.0, set([identifier]), nodeIndexer) )
 		nodeIndexer += 1
 
 	print "\tCreating cache..."
@@ -89,9 +86,11 @@ def agglomerative_clustering(data, n=500):
 
 	# Loop to make a certain number of merges
 	merges = len(nodes) - n
-	for n in xrange(merges):
+	for n in xrange(merges, 0, -1):
 		# Communicate to developer:
-		print "\t\tIteration", n
+
+		if n % 200 == 0:
+			print "\t\t", n, " iterations to go"
 
 		# Find a best pair P with mest score S
 		bestS = -2
@@ -107,22 +106,23 @@ def agglomerative_clustering(data, n=500):
 					bestS = sim
 
 		# Merge the best node pair
+		# Notice the pop order is of importance
 		n2 = nodes.pop(bestP[1])
 		n1 = nodes.pop(bestP[0])
 		newNode = combinedNode(n1, n2, nodeIndexer)
 		nodeIndexer += 1
 
 		# Partially perform garbage collection on parts that are easy to delete.
+		# Over time, nothing should stick around.
 		del cache[n1.index]
 		del cache[n2.index]
 		
-		# Cache all the similarities between the new node and existing nodes before appending.
-		name2 = newNode.index
-		cache[name2] = dict() # This will be used in future iterations.
-		for i in xrange(len(nodes)):
+		nodes = [newNode] + nodes
+		cache_dic = dict() # This will be filled now, and then added to the cache.
+		for i in xrange(1, len(nodes)):
 			sim = newNode.similarity(nodes[i])
-			cache[nodes[i].index][name2] = sim
-		nodes.append(newNode)
+			cache_dic[nodes[i].index] = sim
+		cache[newNode.index] = cache_dic # Finally register the new cache dictionary.
 
 	stop = time()
 	print "\t\tLooping took", stop - start, "seconds"
@@ -131,9 +131,12 @@ def agglomerative_clustering(data, n=500):
 
 if __name__ == '__main__':
 	print "Loading vectors"
-	data = load_vectors("../data/wordvectors/vectors50.relevant.wiki", 6000).items()
+	data = load_vectors("../data/wordvectors/vectors320.all", 10000).items()
 	print "Clustering"
-	nodes = agglomerative_clustering(data, len(data)-2)
+	nodes = agglomerative_clustering(data, 500)
+	for i in xrange(50):
+		print
+		print nodes[i].identifier
 
 
 
