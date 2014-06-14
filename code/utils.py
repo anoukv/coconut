@@ -4,6 +4,10 @@ from nltk.tag.simplify import simplify_wsj_tag
 from nltk.stem.snowball import SnowballStemmer
 Stemmer = SnowballStemmer("english")
 
+def normalizeVec(vec):
+	total = sqrt( sum([v**2 for v in vec]) )
+	return tuple( [v/total for v in vec] )
+
 def postag(word):
 	try:
 		return simplify_wsj_tag(pos_tag([word])[0][1])
