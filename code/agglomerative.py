@@ -1,3 +1,5 @@
+from fast_utils import normalizeVec
+
 from math import sqrt
 from time import time
 
@@ -14,10 +16,6 @@ class Node:
 	def similarity(self, otherNode):
 		return sum( [ x * y for (x,y) in zip(self.center, otherNode.center) ] )
 
-def normalizeVec(vec):
-	total = sqrt( sum([v**2 for v in vec]) )
-	return tuple([v/total for v in vec])
-
 def combinedNode(n1, n2, nodeIndexer):
 	"""
 		Combines two existing nodes and creates a new one with a given index
@@ -25,27 +23,6 @@ def combinedNode(n1, n2, nodeIndexer):
 	c1, w1, c2, w2 = n1.center, n1.weight, n2.center, n2.weight
 	t = w1 + w2
 	return Node(normalizeVec([ (x*w1 + y*w2)/t for (x,y) in zip(c1,c2) ]), t, n1.identifier.union(n2.identifier), nodeIndexer)
-
-# Private copy from utils version so that this file can be run using pypy
-def load_vectors(filename, limit=False, filterRelevant=True):
-	def normalizeString(vec):
-		vec = [ float(x) for x in vec]
-		total = sqrt( sum([v**2 for v in vec]) )
-		new_vec = []
-		for v in vec:
-			new_vec.append(v/total)
-		return tuple(new_vec)
-	f = open(filename,'r')
-	f.readline()
-	content = [ filter( lambda x : not x in ["\n",""], l.replace("\n", "").split(" ")) for l in f.readlines() ]
-	content = [ (l[0], normalizeString(l[1:])) for l in content ]
-	content = filter(lambda x : not x[1] == None, content)
-	if not limit == False:
-		content = content[:limit]
-	words = dict()
-	for (word, vector) in content:
-		words[word.lower()] = vector
-	return words
 
 def agglomerative_clustering(data, n=500):
 	"""

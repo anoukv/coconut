@@ -4,10 +4,6 @@ from nltk.tag.simplify import simplify_wsj_tag
 from nltk.stem.snowball import SnowballStemmer
 Stemmer = SnowballStemmer("english")
 
-def normalizeVec(vec):
-	total = sqrt( sum([v**2 for v in vec]) )
-	return tuple( [v/total for v in vec] )
-
 def postag(word):
 	try:
 		return simplify_wsj_tag(pos_tag([word])[0][1])
@@ -45,9 +41,7 @@ def load_task(filename):
 # returns Spearman's Rank Correlation (takes care of ties)
 def spearman(x, y):
 
-	if len(x) != len(y):
-		print "Problem with two lists in spearman (not the same size). Returning 0"
-		return 0
+	assert len(x) == len(y), "Problem with two lists in spearman (not the same size). Returning 0"
 
 	# add identifiers to to lists
 	idX = [(i, x[i]) for i in xrange(len(x))]
@@ -89,9 +83,8 @@ def spearman(x, y):
 # returns Spearman's Rank Correlation (does not take care of ties)
 def spearman2(x, y):
 	
-	if len(x) != len(y):
-		print "Problem with two lists in spearman (not the same size). Returning 0"
-		return 0
+	assert len(x) == len(y), "Problem with two lists in spearman (not the same size). Returning 0"
+
 
 	# add identifiers to to lists
 	idX = [(i, x[i]) for i in xrange(len(x))]
@@ -113,11 +106,6 @@ def spearman2(x, y):
 	rho = 1 - (6 * sum(dSquaredList))/float(len(xx) * (len(xx)**2 - 1))
 	
 	return rho * 100
-
-# vec1 and vec2 should already be normalized!!
-def cosine_similarity(vec1, vec2):
-	return sum([vec1[i] * vec2[i] for i in xrange(len(vec1))])
-
 
 # returns normalized word vectors for every word from 'filename'
 def load_vectors(filename, limit=False, filterRelevant=False):
@@ -150,6 +138,33 @@ def load_vectors(filename, limit=False, filterRelevant=False):
 	for (word, vector) in content:
 		words[word.lower()] = vector
 	return words
+
+def filter_corpus_for_relevance(filein, fileout):
+	print "Converting ", filein, " to ", fileout
+	print "\tReading ", filein
+	inpt = open(filein, 'r')
+	content = filter(lambda x : not x == "", inpt.readlines().replace("\n", "").split(" "))
+	inpt.close()
+
+	print "\tNow filtering and writing relevant words"
+	print "\t", len(content), "words to go..."
+	outpt = open(fileout, 'w')
+	cache = dict()
+	for i in xrange(len(content)):
+		if i % 10000 == 0:
+			print "\t\tIteration", i
+		word = content[i]
+		if word not in cache:
+			word_object = Word(word)
+			if word_object.relevant():
+				cache[word] = word_object.lemma()
+			else:
+				cache[word] = False
+		token = cache[word]
+		if not token == False:
+			outpt.write(token + " ")
+	outpt.close()
+	print "Done!"
 
 if __name__ == '__main__':
 	data = load_vectors("../data/wordvectors/vectors.cw").items()

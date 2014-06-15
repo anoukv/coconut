@@ -4,6 +4,7 @@ from time import time
 import shelve
 from math import sqrt
 from Word import Word
+
 # minimumOccurence should be adjusted when working with bigger files, this is for a small test only. Set to 5 again.
 def get_document_vocabulary(inpt, minimumOccurence = 0):
 	total = defaultdict(int)
@@ -30,7 +31,7 @@ def relatedness(word, coc, vocabulary):
 			new_coc[key] = 1
 	return new_coc
 
-def getCocMatrix(inpt,skipsize):
+def getCocMatrix(inpt, skipsize):
 	queueSize = skipsize * 2 + 1
 	queueMid = skipsize + 1
 
@@ -84,7 +85,7 @@ def read_args():
 	 	return inpt
 
 	if len(sys.argv) < 3:
- 		print "USAGE: python build_cocs.py training.txt output.txt (skipsize = 5)"
+ 		print "USAGE: python build_cocs.py training.txt outputname (skipsize = 5)"
  		sys.exit()
 
 	train = sys.argv[1]
@@ -94,6 +95,7 @@ def read_args():
  		skipsize = int(sys.argv[3])
 
  	return (read_file(train), output_file, skipsize)
+
 
 if __name__ == "__main__":
 	start = time()
