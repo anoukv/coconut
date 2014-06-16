@@ -1,9 +1,11 @@
+from fast_utils import normalize_coc
+
 import sys
 from collections import defaultdict
 from time import time
 import shelve
 from math import sqrt
-from Word import Word
+
 
 # minimumOccurence should be adjusted when working with bigger files, this is for a small test only. Set to 5 again.
 def get_document_vocabulary(inpt, minimumOccurence = 0):
@@ -15,13 +17,6 @@ def get_document_vocabulary(inpt, minimumOccurence = 0):
 	voc["_UNKNOWN_"] = s - sum(voc.values())
 	return voc
 
-def normalize_coc(coc):
-	total = sqrt( sum([v**2 for v in coc.values()]) )
-	new_coc = dict()
-	for key in coc.keys():
-		new_coc[key] = coc[key] / total
-	return new_coc
-
 def relatedness(word, coc, vocabulary):
 	new_coc = dict()
 	for key in coc.keys():
@@ -29,7 +24,7 @@ def relatedness(word, coc, vocabulary):
 			new_coc[key] = coc[key] / float((vocabulary[word] + vocabulary[key] - coc[key]))
 		except:
 			new_coc[key] = 1
-	return new_coc
+	return normalize_coc(new_coc)
 
 def getCocMatrix(inpt, skipsize):
 	queueSize = skipsize * 2 + 1
@@ -72,7 +67,6 @@ def getCocMatrix(inpt, skipsize):
 	for word in wordToVec.keys():
 		normalized_wordToVec[word] = normalize_coc(wordToVec[word])
 		relations[word] = relatedness(word, wordToVec[word], vocabulary)
-		relations[word] = normalize_coc(relations[word])
 
 	return dict( {'voc': vocabulary, 'coc' : normalized_wordToVec, 'rel' : relations} )
 
@@ -100,21 +94,7 @@ def read_args():
 if __name__ == "__main__":
 	start = time()
 	(inpt, output_file, skipsize) = read_args()
-	# this is an adjustment / enhancement to coconut, we throw away all irrelevant words
-	cache = dict()
-	new_inpt = []
-	while len(inpt) > 0:
-		w = inpt.pop(0)
-		if w in cache:
-			if cache[w]:
-				new_inpt.append(w)
-		else:
-			word_object = Word(w)
-			rel = word_object.relevant()
-			cache[w] = rel
-			if rel:
-				new_inpt.append(w)
-	inpt = new_inpt
+
 	coc = getCocMatrix(inpt, skipsize)
 	for key in coc:
 		myShelve = shelve.open(output_file + "_" + key)

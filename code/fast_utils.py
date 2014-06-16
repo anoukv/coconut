@@ -2,6 +2,12 @@
 	These utils have no cPython dependencies and can be used in pypy
 """
 
+from math import sqrt
+
+def normalize_coc(coc):
+	total = sqrt( sum([v**2 for v in coc.values()]) )
+	return dict( [ (key, coc[key]/total) for key in coc ] )
+
 def normalizeVec(vec):
 	total = sqrt( sum([v**2 for v in vec]) )
 	return tuple( [v/total for v in vec] )
@@ -10,7 +16,8 @@ def normalizeVec(vec):
 def cosine_similarity(vec1, vec2):
 	return sum([vec1[i] * vec2[i] for i in xrange(len(vec1))])
 
-def load_vectors(filename, limit=False, filterRelevant=True):
+# Has no filter for relevant words, make one using e.g. the utils equivalent.
+def load_vectors(filename, limit=False):
 	def normalizeString(vec):
 		vec = [ float(x) for x in vec]
 		total = sqrt( sum([v**2 for v in vec]) )

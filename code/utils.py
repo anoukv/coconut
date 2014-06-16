@@ -1,8 +1,9 @@
-from math import sqrt
 from nltk import pos_tag
 from nltk.tag.simplify import simplify_wsj_tag
 from nltk.stem.snowball import SnowballStemmer
 Stemmer = SnowballStemmer("english")
+
+from math import sqrt
 
 def postag(word):
 	try:
@@ -146,42 +147,6 @@ def load_vectors(filename, limit=False, filterRelevant=False):
 	for (word, vector) in content:
 		words[word.lower()] = vector
 	return words
-
-def filter_corpus_for_relevance(filein, fileout):
-	print "Converting ", filein, " to ", fileout
-	print "\tReading ", filein
-	inpt = open(filein, 'r')
-	content = filter(lambda x : not x == "", inpt.readlines().replace("\n", "").split(" "))
-	inpt.close()
-
-	print "\tNow filtering and writing relevant words"
-	print "\t", len(content), "words to go..."
-	outpt = open(fileout, 'w')
-	cache = dict()
-	for i in xrange(len(content)):
-		if i % 10000 == 0:
-			print "\t\tIteration", i
-		word = content[i]
-		if word not in cache:
-			word_object = Word(word)
-			if word_object.relevant():
-				cache[word] = word_object.lemma()
-			else:
-				cache[word] = False
-		token = cache[word]
-		if not token == False:
-			outpt.write(token + " ")
-	outpt.close()
-	print "Done!"
-
-if __name__ == '__main__':
-	data = load_vectors("../data/wordvectors/vectors.cw").items()
-	f = open("../data/wordvectors/vectors.relevant.cw", 'w')
-	f.write("0 50")
-	for line in data:
-		f.write(line[0])
-		f.write("".join([ " " + x for x in line[1]])+"\n")
-	f.close()
 
 
 
