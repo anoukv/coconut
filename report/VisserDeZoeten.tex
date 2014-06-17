@@ -1,0 +1,95 @@
+%
+% File acl2014.tex
+%
+% Contact: koller@ling.uni-potsdam.de, yusuke@nii.ac.jp
+%%
+%% Based on the style files for ACL-2013, which were, in turn,
+%% Based on the style files for ACL-2012, which were, in turn,
+%% based on the style files for ACL-2011, which were, in turn, 
+%% based on the style files for ACL-2010, which were, in turn, 
+%% based on the style files for ACL-IJCNLP-2009, which were, in turn,
+%% based on the style files for EACL-2009 and IJCNLP-2008...
+
+%% Based on the style files for EACL 2006 by 
+%%e.agirre@ehu.es or Sergi.Balari@uab.es
+%% and that of ACL 08 by Joakim Nivre and Noah Smith
+
+\documentclass[11pt]{article}
+\usepackage{acl2014}
+\usepackage{times}
+\usepackage{url}
+\usepackage{latexsym}
+
+%\setlength\titlebox{5cm}
+
+% You can expand the titlebox if you need extra space
+% to show all the authors. Please do not make the titlebox
+% smaller than 5cm (the original size); we will check this
+% in the camera-ready version and ask you to change it back.
+
+
+\title{Coconut palms and hand palms: improving similarity ranking by word sense disambiguation}
+
+\author{Anouk Visser \\
+  {\tt email} \\\And
+  R\'emi de Zoeten \\
+  {\tt email} \\}
+
+\date{}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+The abstract will be here.
+\end{abstract}
+
+\section{Introduction}
+
+\section{COCONUT}
+COPIED FROM REPORT ULL (SHOULD BE ADJUSTED)
+The COCONUT method for disambiguating words is based on two assumptions: 
+\begin{enumerate}
+\item the meaning of a word is highly dependent on the words accompanying it
+\item the co-occurring words that define one meaning of a word are more likely to co-occur with each other than two words that define two different meanings of the word
+\end{enumerate}
+In assumption $(1)$ we talk about `words that accompany a word'. In COCONUT, words that accompany a word are co-occurring words. COCONUT will split the co-occurrence vector for \textit{apple} into two co-occurrence vectors, one containing \textit{technology}, \textit{company} and \textit{iPhone}, the other containing \textit{fruit}, \textit{baking} and \textit{pie}. 
+
+An example to further explain assumption (2) can be found in figure \ref{non-existent}. Here one meaning of the word \textit{apple} can be characterized by the words \textit{technology}, \textit{company} and \textit{iPhone}, while the other can be characterized by the words \textit{fruit}, \textit{baking} and \textit{pie}. We hypothesize that two words describing one meaning of \textit{apple}, for example, \textit{iPhone} and \textit{technology} are more likely to occur together than two words describing two different meanings, for instance, \textit{iPhone} and \textit{baking}.
+
+Let $C$ be the set of words that co-occur with $A$, the word we want to disambiguate. COCONUT first constructs and converts the global co-occurrence vectors of the words in $C$ to relatedness vectors. It will then cluster these relatedness vectors in order to determine the two possibly different meanings of $A$. 
+
+\subsection{Co-Occurrence Vectors}
+A global co-occurrence vector contains the frequencies indicating how many times two words co-occur. We obtain the global co-occurrence vector for every word in the corpus in a similar way to how we obtaining the local co-occurrence vector as described in section \ref{non-existent}. The only difference being that instead of maintaining all local co-occurrence vectors for a given word, we accumulate all local co-occurrence vectors in one global co-occurrence vector. This significantly reduces memory requirements which makes the COCONUT algorithm much more usable. 
+
+After obtaining the global co-occurrence vectors for every word in the corpus, we convert the absolute frequencies in the global co-occurrence vector to a relatedness score. We use the same function for relatedness as \cite{relatedness}:
+$$r(x, y) = \frac{f_xy}{f_x+f_y - f_{xy}}$$
+where $f_{xy}$ denotes the frequency of $x$ and $y$ occurring together and $f_x$ and $f_y$ denote the frequency of $x$, respectively $y$. 
+
+Words that are not closely related to $A$ do not contribute to either one of the meanings. Therefore, we will discard the words that have a relatedness score with $A$ that falls in the bottom $50\%$ of all relatedness-scores from $C$. The terms that are discarded are considered relevant to all meanings of $A$, we will call this set $R$.
+
+\subsection{Clustering and splitting}
+Let the set of co-occurrence vectors from the words in $C$, be called $V$. After applying k-means clustering on the vectors in $V$ we expect to find two cluster centers that represent the two meanings for $A$. Note that we are only interested in describing the two meanings of $A$ using the words in $C$. Therefore, for every vector in $V$ we will discard all words that are not in $C$. The adjusted vectors can now be used to perform k-means clustering. 
+
+The two new co-occurrence vectors for $A$ are initialized with the words in $R$. As the cluster centers define the different meanings of $A$, we can look at the words in each cluster to fill the new co-occurrence vectors for $A$. For example if the words `technology', `iPhone' and `company' are assigned to one cluster, they will be inserted into one of the new co-occurrence vectors for the word `apple' while the words `fruit', `pie', `baking' that were assigned to the other cluster will be inserted into the other co-occurrence vector. 
+
+COCONUT will split every word in the corpus in order to find two different meanings (we excluded the 75 most frequent words), but not all words are ambiguous. We expect that words that have two distinct meanings will have a greater cluster distance (i.e. a greater distance between the two meanings) than words that do not. We discard all disambiguations for the words that have a cluster distance that falls in the bottom $50\%$ of all cluster distances.
+
+\section{PALM}
+
+\section{REMI}
+
+\section{Experiments}
+
+\section{Qualitative evaluation}
+Here follows a description of the empirical evaluation we have performed.
+
+\section{Quantitative evaluation}
+Here follows a description of the quantitative evaluation we have performed.
+
+\section{Related Work}
+\section{Conclusion}
+
+\bibliographystyle{acl}
+\bibliography{cocobib}
+
+\end{document}
