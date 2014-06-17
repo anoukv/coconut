@@ -10,16 +10,20 @@ def getSVM(word, corpus, rel, expansionParam=5, skipsize=5):
 	# get contexts
 	contexts = getContext(corpus, word, skipsize)
 	for context in contexts:
-		# print context
+		
 		# expand every context
 		expanded = expandAndCleanContext(context, word, rel, expansionParam)
-		# print 'apple'  in expanded
+		
 		# get label for expanded context
 		label = getLabel(word, expanded, rel)
 		data[label].add(tuple(expanded))
-		# print "Label: ", label, "Expansion: ", expanded
-		# print 
-		# print
+		print "Label: ", label
+		print context
+		print expanded		
+		# for w in expanded:
+			# print w
+		print 
+		print
 	return data
 
 def getLabel(word, expandedContext, rel):
@@ -80,6 +84,7 @@ def getContext(inpt, wordOfInterest, skipsize):
 		if queueIsReady(queue):
 			mid = queue[queueMid]
 			if mid == wordOfInterest:
+				print queue
 				contexts.append(copy(queue))	
 	return contexts
 
@@ -94,6 +99,6 @@ if __name__ == "__main__":
 	relFile = sys.argv[2] + "_rel"
 	rel = shelve.open(relFile)
 	#print getContext(read_file(textfile), 'apple', 5)
-	getSVM('apple', read_file(textfile), rel)
+	getSVM('appl', read_file(textfile), rel, expansionParam=2)
 
 
