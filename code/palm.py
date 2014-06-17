@@ -9,12 +9,11 @@ def getSVM(word, corpus, rel, expansionParam=5, skipsize=5):
 	
 	# get contexts
 	contexts = getContext(corpus, word, skipsize)
-	print contexts
 	for context in contexts:
 		# print context
 		# expand every context
 		expanded = expandAndCleanContext(context, word, rel, expansionParam)
-
+		# print 'apple'  in expanded
 		# get label for expanded context
 		label = getLabel(word, expanded, rel)
 		data[label].add(tuple(expanded))
@@ -47,7 +46,7 @@ def getLabel(word, expandedContext, rel):
 def expandAndCleanContext(context, word, rel, expansionParam):
 	# remove word from context
 	newContext = filter(lambda x: x != word, context)
-	
+	# print word in newContext
 	# get the vocabulary stored in rel
 	relVoc = rel.keys()
 	
@@ -57,8 +56,8 @@ def expandAndCleanContext(context, word, rel, expansionParam):
 		if w in relVoc:
 			# sort the related words and keep 0-expansionParam, then throw away the scroes and take out 'word' 
 			# add this to new context
-			wRel = filter(lambda x: x != word, map(lambda x: x[0], sorted(rel[w].items(), key = lambda x: x[1], reverse = True))[0:expansionParam])
-			newContext= newContext + wRel + [w]
+			wRel = map(lambda x: x[0], sorted(rel[w].items(), key = lambda x: x[1], reverse = True))[0:expansionParam]
+			newContext =  filter(lambda x: x != word, wRel + [w] + newContext)
 	return newContext
 
 # get all contexts with windowsize skipsize*2 in which word occurs (as the mid word, maybe expand this?)
@@ -94,7 +93,7 @@ if __name__ == "__main__":
 	textfile = sys.argv[1]
 	relFile = sys.argv[2] + "_rel"
 	rel = shelve.open(relFile)
-	print getContext(read_file(textfile), 'apple', 5)
-	# getSVM('apple', read_file(textfile), rel)
+	#print getContext(read_file(textfile), 'apple', 5)
+	getSVM('apple', read_file(textfile), rel)
 
 
