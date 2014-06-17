@@ -1,5 +1,5 @@
 from Word import Word
-
+import sys
 def filter_corpus_for_relevance(filein, fileout):
 	print "Converting ", filein, " to ", fileout
 	print "\tReading ", filein
@@ -28,5 +28,11 @@ def filter_corpus_for_relevance(filein, fileout):
 	print "Done!"
 
 if __name__ == '__main__':
-	filter_corpus_for_relevance("../../corpora/corpus.enwiki8", "../../corpora/corpus.enwiki8.relevant")
+	if len(sys.argv) < 3:
+		print "USAGE: python builders.py <PATH TO CORPUS> <PATH TO NEW CORPUS>"
+		sys.exit()
+
+	original = sys.argv[1]
+	new = sys.argv[2]
+	filter_corpus_for_relevance(original, new)
 
