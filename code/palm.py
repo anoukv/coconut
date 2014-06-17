@@ -1,32 +1,57 @@
 import sys, shelve
 
-def chooseMostRelated(word, wordsToChooseFrom, rel):
-	highest = None
-	bestword = None
-	wordRelatednessVec = rel[word]
-	wordsToChooseFrom = filter(lambda x: x in wordRelatednessVec, wordsToChooseFrom)
-	# wordsToChooseFrom = wordsToChooseFrom.remove(word)
-	for candidate in wordsToChooseFrom:
-		relatedness= wordRelatednessVec[candidate]
-		if relatedness > highest and candidate != word:
-			highest = relatedness
-			bestword = candidate
-	return bestword
+def getSVM(word, expansionParam=5):
+	svm = 0
+	return svm
 
-	return
-def read_file(filename):
-	f = open(filename, 'r')
- 	inpt = f.readline().replace("\n", "").split(" ")
- 	f.close()
- 	return inpt
+def getLabel(word, expandedContext, rel):
+	
+	# init
+	label = None
+	highesetRel = None
+	
+	# get word relatedness dictionary
+	wordRel = rel[word]
 
-def showExpandedSentences(inpt, rel, skipsize):
-	relevanceVoc = rel.keys()
-	print relevanceVoc
+	# we will only consider candidates that are in the word relatedness dictionary
+	expandedContext = filter(lambda x: x in wordRel, expandedContext)
+
+	# iterate over all candidates to find the highest
+	for candidate in expandedContext:
+		relScore = wordRel[expandedContext]
+		if relScore > highesetRel:
+			highesetRel = relScore
+			label = candidate
+	return label
+
+# expands and cleans the context (cleaning is basically taking out the word, it could be that the word appears twice withim window)
+def expandAndCleanContext(context, word, rel, expansionParam):
+	# remove word from context
+	newContext = filter(lambda x: x != word, context)
+	
+	# get the vocabulary stored in rel
+	relVoc = rel.keys()
+	
+	# for every word in the context
+	for w in context:
+		# if the word is in rel
+		if w in relVoc:
+			# sort the related words and keep 0-expansionParam, then throw away the scroes and take out 'word' 
+			# add this to new context
+			wRel = filter(lambda x: x != word, map(lambda x: x[0], sorted(rel[w].items(), key = lambda x: x[1], reverse = True))[0:expansionParam])
+			newContext= newContext + wRel + [w]
+	return newContext
+
+# get all contexts with windowsize skipsize*2 in which word occurs (as the mid word, maybe expand this?)
+def getContext(inpt, word, skipsize=5):
+	
+	contexts = []	
+	
 	queueSize = skipsize * 2 + 1
 	queueMid = skipsize + 1
-
+	
 	queueIsReady = lambda x : len(x) == queueSize
+	
 	def push(element, queue):
 		queue.append(element)
 		if len(queue) > queueSize:
@@ -37,14 +62,10 @@ def showExpandedSentences(inpt, rel, skipsize):
 		push(word, queue)
 		if queueIsReady(queue):
 			mid = queue[queueMid]
-			if mid == "apple":
-				for word in queue:
-					if word in relevanceVoc:
-						print word
-						print sorted(rel[word].items(), key = lambda x: x[1], reverse=True)[0:3]
-				print len(queue), queue
-				print
-	return 0
+			if mid == word:
+				contexts.append(queue)
+	
+	return contexts
 
 if __name__ == "__main__":
 	
@@ -56,10 +77,9 @@ if __name__ == "__main__":
 	textfile = sys.argv[1]
 	relFile = sys.argv[2] + "_rel"
 	rel = shelve.open(relFile)
-	print chooseMostRelated('apple',['mac', 'itools,', 'met', 'varying', 'degrees', 'success', 'apple', 'pomaceous', 'fruit', 'apple', 'tree,'], rel)
+
 	# inpt = read_file(textfile)
 	# showExpandedSentences(inpt, rel, 5)
-
 	# go over text
 	# extract sentence with window
 	# expand sentence with related words (make number of expansions a parameter)

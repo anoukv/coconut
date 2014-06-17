@@ -4,6 +4,13 @@
 
 from math import sqrt
 
+# for reading a textfile (corpus)
+def read_file(filename):
+	f = open(filename, 'r')
+ 	inpt = f.readline().replace("\n", "").split(" ")
+ 	f.close()
+ 	return inpt
+
 def normalize_coc(coc):
 	total = sqrt( sum([v**2 for v in coc.values()]) )
 	return dict( [ (key, coc[key]/total) for key in coc ] )
