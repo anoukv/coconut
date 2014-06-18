@@ -4,6 +4,36 @@ from math import sqrt
 from time import time
 import os, sys
 
+class MaxMaintainer:
+	def __init__(self, limit):
+		self.limit = limit
+		self.top = [(None, -999)]
+		self.full = False
+
+	def add(self, pair, sim):
+		top = self.top
+		if self.full:
+			if self.min < sim:
+				for i in xrange(len(top)):
+					if top[i][1] < sim:
+						top.insert(i, (pair, sim))
+						top.pop()
+						self.min = top[-1][1]
+						break
+				self.top = top
+		else:
+			for i in xrange(len(top)):
+				if top[i][1] < sim:
+					top.insert(i, (pair, sim))
+					break
+			full = len(top) == self.limit
+			if full:
+				self.min = top[-1][1]
+				self.full = True
+			self.top = top
+
+		
+
 class Node:
 	"""
 		Node class that contains a node center, weight, identifier and indexer
@@ -111,10 +141,12 @@ def agglomerative_clustering(data, final_size=500):
 		Data is stored in a list of nodes, which will be merged.
 		Uses a cache to quickly recover node distances.
 	"""
+	start = time()
 	(nodes, cache, nodeIndexer) = bootstrap_clustering(data)
-	print "\tClustering from", len(nodes), "nodes to", n
+	print "\tClustering from", len(nodes), "nodes to", final_size
 	nodes = slow_agglomerative_procedure(nodes, final_size, cache, nodeIndexer)
-
+	stop = time()
+	print "\tProcess took", stop - start, "seconds"
 	return nodes
 
 def fag_clustering(data, fraction=0.01, final_size=500):
@@ -124,25 +156,32 @@ def fag_clustering(data, fraction=0.01, final_size=500):
 	def add_to_limitset(sett, entry):
 		sett.append(entry)
 		sett = sorted(sett, key=lambda x : x[1])
-		sett.pop()
+		return sett[:-1]
 
+	start = time()
 	(nodes, cache, nodeIndexer) = bootstrap_clustering(data)
 
 	while not len(nodes) == final_size:
 		thisChunkSize = int((len(nodes) - final_size) * fraction)
-		if thisChunkSize == 1:
+		if thisChunkSize < 3 :
 			print "\tNow finishing by", len(nodes) - final_size, "more single clusterings"
-			return slow_agglomerative_procedure(nodes, final_size, cache, nodeIndexer) 
+			nodes = slow_agglomerative_procedure(nodes, final_size, cache, nodeIndexer)
+			stop = time()
+			print "\tProcess took", stop - start, "seconds"
+			return nodes
 		else:
-			print "\t\tWorking", thisChunkSize
-			limitset = [ (None, 999) for _ in xrange(thisChunkSize) ]
+			if thisChunkSize > 10:
+				print "\t\tWorking", thisChunkSize
+			maxlist = MaxMaintainer(thisChunkSize)
 
 			# Use a double for loop to get all node index pairs and get their value from the cache.
 			for i in xrange(len(nodes)-1):
 				cache_dic = cache[nodes[i].index]
 				for j in xrange(i+1,len(nodes)): # Restrict second loop to avaid symetries.
 					sim = cache_dic[nodes[j].index]
-					add_to_limitset(limitset, ((i,j), sim))
+					maxlist.add((i,j), sim)
+
+			limitset = maxlist.top
 
 			indexesSet = set()
 			pairs = []
@@ -155,11 +194,14 @@ def fag_clustering(data, fraction=0.01, final_size=500):
 					pairs.append((i,j))
 
 			nodePairs = [ (nodes[i], nodes[j]) for (i,j) in pairs ]
+			if thisChunkSize > 10:
+				print "\t\t\t", len(nodePairs), "nodes merged."
 
 			# 
 			for i in [ x[0] for x in pairs ] + [ x[1] for x in pairs ]:
 				nodes[i] = None
 			nodes = filter(lambda x : not x == None, nodes)
+			
 
 			for index in indexesSet:
 				del cache[index]
@@ -173,30 +215,36 @@ def fag_clustering(data, fraction=0.01, final_size=500):
 					sim = newNode.similarity(nodes[i])
 					cache_dic[nodes[i].index] = sim
 				cache[newNode.index] = cache_dic # Finally register the new cache dictionary.
-
+	stop = time()
+	print "\tProcess took", stop - start, "seconds"
 	return nodes
 
 def read_args():
-	assert len(sys.argv) == 6
+	assert len(sys.argv) == 7
 	vecs = sys.argv[1]
 	coc_location = sys.argv[2]
 	descriptors_name = sys.argv[3]
 	limit = int(sys.argv[4])
 	clusternumber = int(sys.argv[5])
-	return (vecs, coc_location, descriptors_name, limit, clusternumber)
+	fast = sys.argv[6] == "True"
+	return (vecs, coc_location, descriptors_name, limit, clusternumber, fast)
 
 if __name__ == '__main__':
-	# pypy agglomerative.py ../data/wordvectors/enwiki8.relevant.vectors ../../cocs/enwiki8_coc ../../cluster_descriptors/enwiki8.20000x500.clust-desc 20000 500
-	(vecs, coc_location, descriptors_name, limit, clusternumber) = read_args()
+	# pypy agglomerative.py ../data/wordvectors/enwiki8.relevant.vectors ../../cocs/enwiki8_coc ../../cluster_descriptors/enwiki8.2000x500.clust-desc 2000 500
+	(vecs, coc_location, descriptors_name, limit, clusternumber, fast) = read_args()
 	print "Loading vectors"
 	data = load_vectors(vecs, limit).items()
 	print "Clustering"
-	# nodes = agglomerative_clustering(data, clusternumber)
-	nodes = fag_clustering(data, 0.1, clusternumber)
+
+	if fast:
+		nodes = fag_clustering(data, 0.03, clusternumber)
+	else:
+		nodes = agglomerative_clustering(data, clusternumber)
 	print "Saving clusters"
 	save_clusters_to_file(nodes, "clusters.tmp")
 	print "Converting clusters to coc representations"
 	os.system("python clusters_to_cocs.py clusters.tmp " + coc_location + " " + descriptors_name)
+	# os.remove("clusters.tmp")
 
 
 

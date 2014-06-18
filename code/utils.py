@@ -28,7 +28,6 @@ def normalize(vec):
 # reads the SCWS task
 def load_task(filename):
 	words = set()
-	print "Loading task"
 	task = dict()
 	f = open(filename, 'r')
 	lines = f.readlines()
@@ -59,6 +58,8 @@ def spearman(x, y):
 	# sort the lists with identifier tuples based on the observed variable
 	idX = sorted(idX, key = lambda x: x[1])
 	idY = sorted(idY, key = lambda x: x[1])
+	# print [ x[0] for x in idX ]
+	# print [ x[0] for x in idY ]
 
 	# throw away the values
 	idX = map(lambda x: x[0], idX)

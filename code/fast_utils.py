@@ -1,8 +1,14 @@
 """
 	These utils have no cPython dependencies and can be used in pypy
 """
-
+from collections import defaultdict
 from math import sqrt
+
+def get_coc(context):
+	dic = defaultdict(int)
+	for word in context:
+		dic[word] += 1
+	return normalize_coc(dic)
 
 def normalize_coc(coc):
 	total = sqrt( sum([v**2 for v in coc.values()]) )
