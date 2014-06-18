@@ -27,7 +27,7 @@ def getHistogram(words, clusterCenters, vectors, indexCache):
 				# compute the similarity with every cluster center
 				sims = [cosine_similarity(vector, x) for x in clusterCenters]
 
-				# the word will assigned to the cluster that has the highest similarity
+				# the word will be assigned to the cluster that has the highest similarity
 				# find its index
 				index = sims.index(max(sims))
 
@@ -129,14 +129,11 @@ def expandAndCleanContext(context, word, rel, expansionParam):
 	# remove word from context
 	newContext = filter(lambda x: x != word, context)
 	
-	# get the vocabulary stored in rel
-	relVoc = rel.keys()
-	
 	# for every word in the context
 	for w in newContext:
 		
 		# if the word is in rel
-		if w in relVoc:
+		if w in rel:
 			
 			# sort the related words and keep 0-expansionParam, then throw away the scroes and take out 'word' 
 			# add this to new context
@@ -216,5 +213,7 @@ if __name__ == "__main__":
 	agglomerativeClusterCenters = [getAverageWordRep(x, vecs) for x in read_sets(clusterFile)]
 
 	# call getSVM
-	getSVM('bank', read_file(textfile), rel, vecs, agglomerativeClusterCenters, expansionParam=2, skipsize=5)
+	getSVM('bat', read_file(textfile), rel, vecs, agglomerativeClusterCenters, expansionParam=5, skipsize=5)
 
+	# close rel
+	rel.close()
