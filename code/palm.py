@@ -1,7 +1,8 @@
 import sys, shelve
 from collections import defaultdict
-from fast_utils import read_file
+from fast_utils import read_file, load_vectors
 from copy import copy
+from agglomerative import fag_clustering
 
 def getSVM(word, corpus, rel, expansionParam=5, skipsize=5):
 	svm = 0
@@ -25,7 +26,6 @@ def getSVM(word, corpus, rel, expansionParam=5, skipsize=5):
 		print 
 		print
 	return data
-
 
 def buildSubRel(rel, relWord):
 	relVoc = relWord.keys()
@@ -97,12 +97,15 @@ if __name__ == "__main__":
 	
 	print "Welcome to PALM!"
 	
-	if len(sys.argv) < 3:
-		print "USAGE: python palm.py <TEXT FILE> <PATH TO COC>"
+	if len(sys.argv) < 4:
+		print "USAGE: python palm.py <TEXT FILE> <PATH TO COC> <PATH TO VECTORS>"
 		sys.exit()
 	textfile = sys.argv[1]
 	relFile = sys.argv[2] + "_rel"
+	vecFile = sys.argv[3]
 	rel = shelve.open(relFile)
-	getSVM('appl', read_file(textfile), rel, expansionParam=2)
+	vecs = load_vectors(vecFile, limit=1000)
+	fag_clustering(vecs.items())
+	# getSVM('bat', read_file(textfile), rel, expansionParam=2)
 
 
