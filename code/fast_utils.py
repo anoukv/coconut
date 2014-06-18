@@ -4,20 +4,18 @@
 from collections import defaultdict
 from math import sqrt
 
-<<<<<<< HEAD
 def get_coc(context):
 	dic = defaultdict(int)
 	for word in context:
 		dic[word] += 1
 	return normalize_coc(dic)
-=======
+
 # for reading a textfile (corpus)
 def read_file(filename):
 	f = open(filename, 'r')
  	inpt = f.readline().replace("\n", "").split(" ")
  	f.close()
  	return inpt
->>>>>>> dafb684de2042477ab346550e84ea33532734556
 
 def normalize_coc(coc):
 	total = sqrt( sum([v**2 for v in coc.values()]) )
