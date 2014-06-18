@@ -32,8 +32,6 @@ class MaxMaintainer:
 				self.full = True
 			self.top = top
 
-		
-
 class Node:
 	"""
 		Node class that contains a node center, weight, identifier and indexer
