@@ -1,31 +1,41 @@
 import sys, shelve
 from collections import defaultdict
-from fast_utils import read_file, load_vectors
+from fast_utils import read_file, load_vectors, getAverageWordRep, cosine_similarity
 from copy import copy
 from agglomerative import fag_clustering
 from clusters_to_cocs import read_sets
 
-def getSVM(word, corpus, rel, expansionParam=5, skipsize=5):
+def getSVM(word, corpus, rel, vectors, clusterCenters, expansionParam=5, skipsize=5):
 	svm = 0
 	data = defaultdict(set)
 	
 	# get contexts
+	print "Collecting contexts"
 	contexts = getContext(corpus, word, skipsize)
 
+	print "Building subRel"
 	wordRel = rel[word]
 	subRel = buildSubRel(rel, wordRel)
+	vocabulary = vectors.keys()
 	for context in contexts:
 		
 		# expand every context
+		print "Expanding and labeling"
 		expanded = expandAndCleanContext(context, word, subRel, expansionParam)
-		
+		histogramOfAgglomerativeAssignments = [0 for i in range(len(clusterCenters))]
 		# get label for expanded context
 		label = getLabel(wordRel, expanded)
 		data[label].add(tuple(expanded))
 		print "Label: ", label
 		print context
-		print 
-		print
+		for w in expanded:
+			if w in vocabulary:
+				wvec = vectors[w]
+				sims = [cosine_similarity(wvec, x) for x in clusterCenters]
+				index = sims.index(max(sims))
+				histogramOfAgglomerativeAssignments[index] += 1
+		totat = float(sum(histogramOfAgglomerativeAssignments))
+		print map(lambda x: x / totat, histogramOfAgglomerativeAssignments)
 	return data
 
 def buildSubRel(rel, relWord):
@@ -107,9 +117,12 @@ if __name__ == "__main__":
 	vecFile = sys.argv[4]
 	
 	rel = shelve.open(relFile)
-	# vecs = load_vectors(vecFile, limit=10000)
+	print "Loading vectors"
+	vecs = load_vectors(vecFile)
 	# fag_clustering(vecs.items(), final_size = 50)
-	print read_sets()
-	# getSVM('bat', read_file(textfile), rel, expansionParam=2)
+	# print read_sets()
+	print "Reading agglomerative cluster centers"
+	agglomerativeClusterCenters = [getAverageWordRep(x, vecs) for x in read_sets(clusterFile)]
+	getSVM('bat', read_file(textfile), rel, vecs, agglomerativeClusterCenters, expansionParam=2, skipsize=5)
 
 

@@ -54,4 +54,4 @@ def getAverageWordRep(words, vectors):
 	average = 0
 	vecs = [vectors[word] for word in words if word in vectors]
 	average = [sum(x) / float(len(x)) for x in zip(*vecs)]
-	return normalize(average)
+	return normalizeVec(average)
