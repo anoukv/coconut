@@ -9,32 +9,36 @@ def getSVM(word, corpus, rel, expansionParam=5, skipsize=5):
 	
 	# get contexts
 	contexts = getContext(corpus, word, skipsize)
+
+	wordRel = rel[word]
+	subRel = buildSubRel(rel, wordRel)
 	for context in contexts:
 		
 		# expand every context
-		expanded = expandAndCleanContext(context, word, rel, expansionParam)
+		expanded = expandAndCleanContext(context, word, subRel, expansionParam)
 		
 		# get label for expanded context
-		label = getLabel(word, expanded, rel)
+		label = getLabel(wordRel, expanded)
 		data[label].add(tuple(expanded))
 		print "Label: ", label
 		print context
-		print expanded		
-		# for w in expanded:
-			# print w
 		print 
 		print
 	return data
 
-def getLabel(word, expandedContext, rel):
-	
+
+def buildSubRel(rel, relWord):
+	relVoc = relWord.keys()
+	subRel = dict()
+	for word in relVoc:
+		subRel[word] = copy(rel[word])
+	return subRel
+
+def getLabel(wordRel, expandedContext):
 	# init
 	label = None
 	highesetRel = None
 	
-	# get word relatedness dictionary
-	wordRel = rel[word]
-
 	# we will only consider candidates that are in the word relatedness dictionary
 	expandedContext = filter(lambda x: x in wordRel, expandedContext)
 
@@ -53,15 +57,16 @@ def expandAndCleanContext(context, word, rel, expansionParam):
 	# print word in newContext
 	# get the vocabulary stored in rel
 	relVoc = rel.keys()
-	
+	# print context, newContext
 	# for every word in the context
-	for w in context:
+	for w in newContext:
 		# if the word is in rel
 		if w in relVoc:
 			# sort the related words and keep 0-expansionParam, then throw away the scroes and take out 'word' 
 			# add this to new context
-			wRel = map(lambda x: x[0], sorted(rel[w].items(), key = lambda x: x[1], reverse = True))[0:expansionParam]
-			newContext =  filter(lambda x: x != word, wRel + [w] + newContext)
+			wRel = filter(lambda x: x != w, map(lambda x: x[0], sorted(rel[w].items(), key = lambda x: x[1], reverse = True)))[0:expansionParam]
+			#print w, wRel
+			newContext =  filter(lambda x: x != word, wRel + newContext)
 	return newContext
 
 # get all contexts with windowsize skipsize*2 in which word occurs (as the mid word, maybe expand this?)
@@ -84,7 +89,7 @@ def getContext(inpt, wordOfInterest, skipsize):
 		if queueIsReady(queue):
 			mid = queue[queueMid]
 			if mid == wordOfInterest:
-				print queue
+				#print queue
 				contexts.append(copy(queue))	
 	return contexts
 
@@ -98,7 +103,6 @@ if __name__ == "__main__":
 	textfile = sys.argv[1]
 	relFile = sys.argv[2] + "_rel"
 	rel = shelve.open(relFile)
-	#print getContext(read_file(textfile), 'apple', 5)
 	getSVM('appl', read_file(textfile), rel, expansionParam=2)
 
 
