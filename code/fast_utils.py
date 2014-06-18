@@ -4,6 +4,14 @@
 from collections import defaultdict
 from math import sqrt
 
+def read_sets(filename="clusters.tmp"):
+	clusters = []
+	f = open(filename, 'r')
+	for line in f.readlines():
+		clusters.append(eval(line))
+	f.close()
+	return clusters
+	
 def get_coc(context):
 	dic = defaultdict(int)
 	for word in context:
