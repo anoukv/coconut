@@ -7,7 +7,7 @@ from clusters_to_cocs import read_sets
 
 def getSVM(word, corpus, rel, vectors, clusterCenters, expansionParam=5, skipsize=5):
 	svm = 0
-	data = defaultdict(set)
+	data = defaultdict(list)
 	
 	# get contexts
 	print "Collecting contexts"
@@ -17,25 +17,34 @@ def getSVM(word, corpus, rel, vectors, clusterCenters, expansionParam=5, skipsiz
 	wordRel = rel[word]
 	subRel = buildSubRel(rel, wordRel)
 	vocabulary = vectors.keys()
+	indexCache = dict()
+	counter = 0
+	ending = len(contexts)
 	for context in contexts:
-		
 		# expand every context
-		print "Expanding and labeling"
+		print counter, " / ", ending
+		counter+=1
 		expanded = expandAndCleanContext(context, word, subRel, expansionParam)
 		histogramOfAgglomerativeAssignments = [0 for i in range(len(clusterCenters))]
 		# get label for expanded context
 		label = getLabel(wordRel, expanded)
-		data[label].add(tuple(expanded))
-		print "Label: ", label
-		print context
+		# print "Label: ", label
+		# print context
 		for w in expanded:
 			if w in vocabulary:
-				wvec = vectors[w]
-				sims = [cosine_similarity(wvec, x) for x in clusterCenters]
-				index = sims.index(max(sims))
-				histogramOfAgglomerativeAssignments[index] += 1
+				if w in indexCache:
+					histogramOfAgglomerativeAssignments[indexCache[w]] += 1
+				else:
+					wvec = vectors[w]
+					sims = [cosine_similarity(wvec, x) for x in clusterCenters]
+					index = sims.index(max(sims))
+					histogramOfAgglomerativeAssignments[index] += 1
+					indexCache[w] = index
+		# print histogramOfAgglomerativeAssignments
 		totat = float(sum(histogramOfAgglomerativeAssignments))
-		print map(lambda x: x / totat, histogramOfAgglomerativeAssignments)
+		histogramOfAgglomerativeAssignments = map(lambda x: x / totat, histogramOfAgglomerativeAssignments)
+		data[label].append(histogramOfAgglomerativeAssignments)
+	print data.keys()
 	return data
 
 def buildSubRel(rel, relWord):

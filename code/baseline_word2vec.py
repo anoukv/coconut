@@ -1,5 +1,6 @@
 import sys
 from utils import *
+from fast_utils import cosine_similarity
 
 if __name__ == "__main__":
 	print "Baseline with wordvectors"
