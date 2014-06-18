@@ -1,12 +1,7 @@
 import sys, shelve
 from utils import *
 from coconut_light import *
-
-def getAverageWordRep(words, vectors):
-	average = 0
-	vecs = [vectors[word] for word in words if word in vectors]
-	average = [sum(x) / float(len(x)) for x in zip(*vecs)]
-	return average
+from fast_utils import getAverageWordRep
 
 def getCorrectSense(context, sense1, sense2):
 	setContext = set(context)

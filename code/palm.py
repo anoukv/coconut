@@ -3,6 +3,7 @@ from collections import defaultdict
 from fast_utils import read_file, load_vectors
 from copy import copy
 from agglomerative import fag_clustering
+from clusters_to_cocs import read_sets
 
 def getSVM(word, corpus, rel, expansionParam=5, skipsize=5):
 	svm = 0
@@ -97,15 +98,18 @@ if __name__ == "__main__":
 	
 	print "Welcome to PALM!"
 	
-	if len(sys.argv) < 4:
-		print "USAGE: python palm.py <TEXT FILE> <PATH TO COC> <PATH TO VECTORS>"
+	if len(sys.argv) < 5:
+		print "USAGE: python palm.py <TEXT FILE> <PATH TO COC> <PATH TO CLUSTERS> <PATH TO VECTORS>"
 		sys.exit()
 	textfile = sys.argv[1]
 	relFile = sys.argv[2] + "_rel"
-	vecFile = sys.argv[3]
+	clusterFile = sys.argv[3]
+	vecFile = sys.argv[4]
+	
 	rel = shelve.open(relFile)
-	vecs = load_vectors(vecFile, limit=1000)
-	fag_clustering(vecs.items())
+	# vecs = load_vectors(vecFile, limit=10000)
+	# fag_clustering(vecs.items(), final_size = 50)
+	print read_sets()
 	# getSVM('bat', read_file(textfile), rel, expansionParam=2)
 
 
