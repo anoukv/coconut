@@ -39,6 +39,18 @@ def getLabel(wordRel, expandedContext):
 			label = candidate
 	return label
 
+def getLabel2(wordVector, expandedContext, vectors):
+	bestSim = None
+	bestWord = None
+
+	for candidate in expandedContext:
+		if candidate in vectors:
+			sim = cosine_similarity(vectors[candidate], wordVector)
+			if sim > bestSim:
+				bestSim = sim
+				bestWord = candidate
+	return bestWord
+
 if __name__ == "__main__":
 	print "Baseline with wordvectors"
 	if len(sys.argv) < 4:
@@ -74,8 +86,10 @@ if __name__ == "__main__":
 		
 		if word1 in vectors and word2 in vectors and word1 == word2:
 			if word1 in vocabulary:
+				print "Expanding context"
 				newContext = expandAndCleanContext(context1, word1, rel, expansionParam)
-				newWord = getLabel(rel[word1], newContext)
+				#newWord = getLabel(rel[word1], newContext)
+				newWord = getLabel2(vectors[word1], newContext, vectors)
 				print "replacing ", word1, " with ", newWord
 
 				# check if this word is actually available as a vector
@@ -85,7 +99,8 @@ if __name__ == "__main__":
 
 			if word2 in vocabulary:
 				newContext = expandAndCleanContext(context2, word2, rel, expansionParam)
-				newWord = getLabel(rel[word2], newContext)
+				#newWord = getLabel(rel[word2], newContext)
+				newWord = getLabel2(vectors[word2], newContext, vectors)
 				print "replacing ", word2, " with ", newWord
 
 				# check if this word is actually available as a vector

@@ -3,48 +3,7 @@ from collections import defaultdict
 from copy import copy
 
 # our own files
-from fast_utils import read_file, load_vectors, getAverageWordRep, cosine_similarity, read_sets
-
-
-def getHistogram(words, clusterCenters, vectors, indexCache):
-
-	# initiate empty histogram
-	histogram = [0 for i in range(len(clusterCenters))]
-	
-	# for every word
-	for word in words:
-
-		# check if word has a vector
-		if word in vectors:
-			# if it was already seen, we can ask for the right index from cache
-			if word in indexCache:
-				histogram[indexCache[word]] += 1
-			# if not; 
-			else:
-				# get the word's vector
-				vector = vectors[word]
-				
-				# compute the similarity with every cluster center
-				sims = [cosine_similarity(vector, x) for x in clusterCenters]
-
-				# the word will be assigned to the cluster that has the highest similarity
-				# find its index
-				index = sims.index(max(sims))
-
-				# increase the histogram with 1 at the right index
-				histogram[index] += 1
-
-				# cache the result
-				indexCache[word] = index
-
-	# get the total count from the histogram
-	total = float(sum(histogram))
-	
-	# normalize the histogram (every value between [0, 1])
-	histogram = map(lambda x: x / total, histogram)
-
-	return  histogram
-
+from fast_utils import read_file, load_vectors, getAverageWordRep, cosine_similarity, read_sets, getAverageVector
 
 def getSVM(word, corpus, rel, vectors, clusterCenters, expansionParam=5, skipsize=5):
 	svm = 0
@@ -54,12 +13,23 @@ def getSVM(word, corpus, rel, vectors, clusterCenters, expansionParam=5, skipsiz
 	print "Collecting contexts"
 	contexts = getContext(corpus, word, skipsize)
 
-	print "Building subRel"
-	relevantWords = rel[word]
-	subRel = buildSubRel(rel, relevantWords.keys())
+	# get relevant words for the word
+	print "Loading relevant words..."
+	relevantWords = copy(rel[word])
+	justTheWords = set(relevantWords.keys())
+	
+	# get the joint vocabulary
+	print "Determining joing vocabulary"
+	jointVocabulary = set(vectors.keys()).intersection(justTheWords)
 
+	print "Building sub relatedness matrix"
+	subRel = copy(buildSubRel(rel, justTheWords.intersection(jointVocabulary)))
+
+	print "Getting word vector"
+	wordvector = vectors[word]
 	# init indexCache that contains word => index of agg cluster
 	indexCache = dict()
+	expansionCache = dict()
 	
 	# progress counter and total number of contexts
 	counter = 0
@@ -72,22 +42,67 @@ def getSVM(word, corpus, rel, vectors, clusterCenters, expansionParam=5, skipsiz
 		counter+=1
 
 		# expand and clean the context
-		expanded = expandAndCleanContext(context, word, subRel, expansionParam)
+		expanded = expandAndCleanContext(context, word, subRel, expansionParam, jointVocabulary, expansionCache)
 		
 		# get label for expanded context
-		label = getLabel(relevantWords, expanded)
+		
+		label3, score3 = getLabel3(relevantWords, wordvector, expanded, vectors, jointVocabulary)
+		print score3, label3
 
 		# get the histogram
 		histogram = getHistogram(expanded, clusterCenters, vectors, indexCache)
 		
 		# add histogram with label to the data dictionary 
-		data[label].append(histogram)
+		data[label3].append(histogram)
 	
 	# print all labels (just for fun, remove later)
 	print data.keys()
 
+	# my own analysis
+	for key in data:
+		hists = data[key]
+		print key, len(hists), getAverageVector(hists)
 	# return the data
 	return data
+
+
+
+
+def getHistogram(words, clusterCenters, vectors, indexCache):
+
+	# initiate empty histogram
+	histogram = [0 for i in range(len(clusterCenters))]
+	
+	# for every word
+	for word in words:
+		# if it was already seen, we can ask for the right index from cache
+		if word in indexCache:
+			histogram[indexCache[word]] += 1
+		# if not; 
+		else:
+			# get the word's vector
+			vector = vectors[word]
+			
+			# compute the similarity with every cluster center
+			sims = [cosine_similarity(vector, x) for x in clusterCenters]
+
+			# the word will be assigned to the cluster that has the highest similarity
+			# find its index
+			index = sims.index(max(sims))
+
+			# increase the histogram with 1 at the right index
+			histogram[index] += 1
+
+			# cache the result
+			indexCache[word] = index
+
+	# get the total count from the histogram
+	total = float(sum(histogram))
+	
+	# normalize the histogram (every value between [0, 1])
+	histogram = map(lambda x: x / total, histogram)
+
+	return  histogram
 
 
 # builds a subversion of the relatedness matrix rel, that contains the words in relWord
@@ -106,7 +121,7 @@ def buildSubRel(rel, relevantWords):
 
 # chooses a 'label' (may be interpreted as a substitute word) for the word that has 
 # relatedness vector wordRel from the words in expanded context
-def getLabel(wordRel, expandedContext):
+def getLabel1(wordRel, expandedContext):
 	# init
 	label = None
 	highesetRel = None
@@ -120,25 +135,48 @@ def getLabel(wordRel, expandedContext):
 		if relScore > highesetRel:
 			highesetRel = relScore
 			label = candidate
-	return label
+	return label, highesetRel
 
+def getLabel2(wordVector, expandedContext, vectors):
+	bestSim = None
+	bestWord = None
+	expandedContext = filter(lambda x: x in vectors, expandedContext)
+	for candidate in expandedContext:
+		sim = cosine_similarity(vectors[candidate], wordVector)
+		if sim > bestSim:
+			bestSim = sim
+			bestWord = candidate
+	return bestWord, bestSim
+
+def getLabel3(wordRel, wordVector, expandedContext, vectors, jointVocabulary):
+	
+	bestWord = None
+	bestScore = None
+	
+	expandedContext = filter(lambda x: x in jointVocabulary, expandedContext)
+	
+	for candidate in expandedContext:
+		relScore = wordRel[candidate]
+		sim = cosine_similarity(vectors[candidate], wordVector)
+		score = (relScore + sim) / float(2)
+		if score > bestScore:
+			bestScore = score
+			bestWord = candidate
+	
+	return bestWord, bestScore
 
 # expands and cleans the context (cleaning is basically taking out the word, it could be that the word appears twice withim window)
-def expandAndCleanContext(context, word, rel, expansionParam):
+def expandAndCleanContext(context, word, rel, expansionParam, jointVocabulary, expansionCache):
 	
-	# remove word from context
-	newContext = filter(lambda x: x != word, context)
+	# remove word from context and check if all words are in jointVocabulary
+	newContext = filter(lambda x: x != word and x in jointVocabulary, context)
 	
 	# for every word in the context
-	for w in newContext:
-		
-		# if the word is in rel
-		if w in rel:
-			
-			# sort the related words and keep 0-expansionParam, then throw away the scroes and take out 'word' 
-			# add this to new context
-			wRel = filter(lambda x: x != w, map(lambda x: x[0], sorted(rel[w].items(), key = lambda x: x[1], reverse = True)))[0:expansionParam]
-			newContext =  filter(lambda x: x != word, wRel + newContext)
+	for w in newContext:					
+		# sort the related words, take out the scores, filter to take out w, word and words that are not in the joint vocabulary
+		# add to newContext
+		wRel = filter(lambda x: x != w and x != word and x in jointVocabulary, map(lambda x: x[0], sorted(rel[w].items(), key = lambda x: x[1], reverse = True)))[0:expansionParam]
+		newContext =  wRel + newContext
 	
 	return newContext
 
@@ -213,7 +251,7 @@ if __name__ == "__main__":
 	agglomerativeClusterCenters = [getAverageWordRep(x, vecs) for x in read_sets(clusterFile)]
 
 	# call getSVM
-	getSVM('bat', read_file(textfile), rel, vecs, agglomerativeClusterCenters, expansionParam=5, skipsize=5)
+	getSVM('bat', read_file(textfile), rel, vecs, agglomerativeClusterCenters, expansionParam=2, skipsize=5)
 
 	# close rel
 	rel.close()
