@@ -151,10 +151,6 @@ def fag_clustering(data, fraction=0.01, final_size=500):
 	"""
 		Fast AGglomerative clustering.
 	"""
-	def add_to_limitset(sett, entry):
-		sett.append(entry)
-		sett = sorted(sett, key=lambda x : x[1])
-		return sett[:-1]
 
 	start = time()
 	(nodes, cache, nodeIndexer) = bootstrap_clustering(data)

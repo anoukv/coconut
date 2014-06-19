@@ -13,20 +13,15 @@ def dic_similarity(large, large_keys, small):
 	return total
 
 def relatedness(context1, context2, cocs, key_sets):
-	context1 = filter(lambda x : not x == "" and x.relevant(), [ Word(w) for w in context1.lower().split(" ") ])
-	context1 = [ w.lemma() for w in context1 ]
-	context2 = filter(lambda x : x.relevant(), [ Word(w) for w in context2.lower().split(" ") ])
-	context2 = [ w.lemma() for w in context2 ]
+	# context1 = filter(lambda x : not x == "" and x.relevant(), [ Word(w) for w in context1.lower().split(" ") ])
+	# context1 = [ w.lemma() for w in context1 ]
+	# context2 = filter(lambda x : x.relevant(), [ Word(w) for w in context2.lower().split(" ") ])
+	# context2 = [ w.lemma() for w in context2 ]
 
-	context1 = get_coc(context1)
-	context2 = get_coc(context2)
 
-	# return dic_similarity(context1, set(context1.keys()), context2)
+	context1 = get_coc(context1.split(" "))
+	context2 = get_coc(context2.split(" "))
 
-	# print "Coc1", context1
-	# print
-	# print "Coc2", context2
-	# print
 	total = 0.0
 	for i in xrange(len(key_sets)):
 		s1 = dic_similarity(cocs[i], key_sets[i], context1)

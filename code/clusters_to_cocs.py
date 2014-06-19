@@ -40,6 +40,7 @@ if __name__ == '__main__':
  	cocs = shelve.open(cocs_filename)
 
  	assign_cocs_to_nodes(clusters, cocs, descriptors_filename)
+ 	cocs.close()
  	stop = time()
  	print "Done in", int(stop-start + 0.5), "seconds"
  	
