@@ -1,5 +1,7 @@
 import sys, shelve
+from Word import Word
 from utils import *
+from fast_utils import *
 from coconut_light import *
 from fast_utils import getAverageWordRep
 
@@ -28,8 +30,8 @@ if __name__ == "__main__":
 	cocFilename = sys.argv[2]
 	vectorsFilename = sys.argv[3]
 
-	rel = shelve.open(cocFilename + '_rel')
-	voc = shelve.open(cocFilename + '_voc')
+	rel = shelve.open(cocFilename + 'rel')
+	voc = shelve.open(cocFilename + 'voc')
 
 	task, _ = load_task(taskFilename)
 
@@ -39,17 +41,18 @@ if __name__ == "__main__":
 	humanRating = []
 	cache = dict()
 
-	vocabulary = voc.keys()
-	for key in sorted(task.keys()):
-		
-		question = task[key]
+	vocabulary = set(voc.keys())
+	questions = task.values()
 
-		
-		word1 = question['word1']
-		word2 = question['word2']
+	for i in xrange(len(questions)):
+		question = questions[i]
+
+		word1 = Word(question['word1']).lemma().encode('ascii','ignore')
+		word2 = Word(question['word2']).lemma().encode('ascii','ignore')
 		
 		# only proceed if both words are known
 		if word1 in vocabulary and word2 in vocabulary:
+			print i
 			if word1 not in cache:
 				word1Dic = makeNewCOCS(word1, rel, voc)
 				cache[word1] = word1Dic
@@ -62,9 +65,9 @@ if __name__ == "__main__":
 			else:
 				word2Dic = cache[word2]
 
-			context1 = question['context1'].lower().split(' ')
-			context2 = question['context2'].lower().split(' ')
-			
+			context1 = [Word(x).lemma().encode('ascii','ignore') for x in question['context1'].lower().split(' ')]
+			context2 = [Word(x).lemma().encode('ascii','ignore') for x in question['context2'].lower().split(' ')]
+		
 			senseWord1 = getCorrectSense(context1, word1Dic[0], word1Dic[1])
 			senseWord2 = getCorrectSense(context2, word2Dic[0], word2Dic[1])
 			
@@ -74,6 +77,6 @@ if __name__ == "__main__":
 			humanRating.append(question['rating'])
 			methodsRating.append(cosine_similarity(wordvec1, wordvec2))
 			
-		print key
- 	print spearman(methodsRating, humanRating)
+ 		if len(methodsRating) > 2:
+ 			print spearman(methodsRating, humanRating)
 
