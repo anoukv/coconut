@@ -25,6 +25,9 @@ def getSVM(word, corpus, rel, vectors, clusterCenters, expansionParam=5, skipsiz
 	print "Building sub relatedness matrix"
 	subRel = copy(buildSubRel(rel, justTheWords.intersection(jointVocabulary)))
 
+	# close the rel, we won't be using it anymore anyway
+	rel.close()
+
 	print "Getting word vector"
 	wordvector = vectors[word]
 	# init indexCache that contains word => index of agg cluster
@@ -61,7 +64,7 @@ def getSVM(word, corpus, rel, vectors, clusterCenters, expansionParam=5, skipsiz
 	# my own analysis
 	for key in data:
 		hists = data[key]
-		print key, len(hists), getAverageVector(hists)
+		print key, len(hists)#, getAverageVector(hists)
 	# return the data
 	return data
 
@@ -175,8 +178,12 @@ def expandAndCleanContext(context, word, rel, expansionParam, jointVocabulary, e
 	for w in newContext:					
 		# sort the related words, take out the scores, filter to take out w, word and words that are not in the joint vocabulary
 		# add to newContext
-		wRel = filter(lambda x: x != w and x != word and x in jointVocabulary, map(lambda x: x[0], sorted(rel[w].items(), key = lambda x: x[1], reverse = True)))[0:expansionParam]
-		newContext =  wRel + newContext
+		if w in expansionCache:
+			newContext = expansionCache[w] + newContext
+		else:
+			wRel = filter(lambda x: x != w and x != word and x in jointVocabulary, map(lambda x: x[0], sorted(rel[w].items(), key = lambda x: x[1], reverse = True)))[0:expansionParam]
+			expansionCache[w] = wRel
+			newContext =  wRel + newContext
 	
 	return newContext
 
@@ -251,7 +258,4 @@ if __name__ == "__main__":
 	agglomerativeClusterCenters = [getAverageWordRep(x, vecs) for x in read_sets(clusterFile)]
 
 	# call getSVM
-	getSVM('bat', read_file(textfile), rel, vecs, agglomerativeClusterCenters, expansionParam=2, skipsize=5)
-
-	# close rel
-	rel.close()
+	getSVM('bat', read_file(textfile), rel, vecs, agglomerativeClusterCenters, expansionParam=5, skipsize=5)
