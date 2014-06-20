@@ -67,3 +67,48 @@ def getAverageWordRep(words, vectors):
 def getAverageVector(vectors):
 	average = [sum(x) / float(len(x)) for x in zip(*vectors)]
 	return average
+
+# returns Spearman's Rank Correlation (takes care of ties)
+def spearman(x, y):
+
+	assert len(x) == len(y), "Problem with two lists in spearman (not the same size). Returning 0"
+
+	# add identifiers to to lists
+	idX = [(i, x[i]) for i in xrange(len(x))]
+	idY = [(i, y[i]) for i in xrange(len(y))]
+
+	# sort the lists with identifier tuples based on the observed variable
+	idX = sorted(idX, key = lambda x: x[1])
+	idY = sorted(idY, key = lambda x: x[1])
+	# print [ x[0] for x in idX ]
+	# print [ x[0] for x in idY ]
+
+	# throw away the values
+	idX = map(lambda x: x[0], idX)
+	idY = map(lambda x: x[0], idY)
+
+	# get the ranking for the observed variables
+	xx = [idX.index(i) + 1 for i in xrange(len(idX))]
+	yy = [idY.index(i) + 1 for i in xrange(len(idY))]
+
+	# compute the mean for the rankings (meanX == meanY)
+	meanX = sum(xx) / float(len(xx))
+	meanY = sum(yy) / float(len(yy))
+
+	# iterate over all observed variable rankings and perform 
+	# computations
+	numerator = 0
+	denominator1 = 0
+	denominator2 = 0
+	
+	for i in xrange(len(xx)):
+		numerator += (xx[i] - meanX) * (yy[i] - meanY)
+		denominator1 += (xx[i] - meanX)**2
+		denominator2 += (yy[i] - meanY)**2
+	
+	# result!
+	denominator = sqrt(denominator1 * denominator2)
+	rho = numerator / float(denominator)
+	
+	return rho * 100
+	

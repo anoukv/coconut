@@ -33,8 +33,6 @@ class Word:
     def setDescription(self, x):
         self.desc = x
 
-
-
 def postag(word):
 	try:
 		return simplify_wsj_tag(pos_tag([word])[0][1])
@@ -80,109 +78,6 @@ def load_task(filename, allWords=False):
 	words = [Word(x).lemma() for x in words]
 
 	return task, words
-
-# returns Spearman's Rank Correlation (takes care of ties)
-def spearman(x, y):
-
-	assert len(x) == len(y), "Problem with two lists in spearman (not the same size). Returning 0"
-
-	# add identifiers to to lists
-	idX = [(i, x[i]) for i in xrange(len(x))]
-	idY = [(i, y[i]) for i in xrange(len(y))]
-
-	# sort the lists with identifier tuples based on the observed variable
-	idX = sorted(idX, key = lambda x: x[1])
-	idY = sorted(idY, key = lambda x: x[1])
-	# print [ x[0] for x in idX ]
-	# print [ x[0] for x in idY ]
-
-	# throw away the values
-	idX = map(lambda x: x[0], idX)
-	idY = map(lambda x: x[0], idY)
-
-	# get the ranking for the observed variables
-	xx = [idX.index(i) + 1 for i in xrange(len(idX))]
-	yy = [idY.index(i) + 1 for i in xrange(len(idY))]
-
-	# compute the mean for the rankings (meanX == meanY)
-	meanX = sum(xx) / float(len(xx))
-	meanY = sum(yy) / float(len(yy))
-
-	# iterate over all observed variable rankings and perform 
-	# computations
-	numerator = 0
-	denominator1 = 0
-	denominator2 = 0
-	
-	for i in xrange(len(xx)):
-		numerator += (xx[i] - meanX) * (yy[i] - meanY)
-		denominator1 += (xx[i] - meanX)**2
-		denominator2 += (yy[i] - meanY)**2
-	
-	# result!
-	denominator = sqrt(denominator1 * denominator2)
-	rho = numerator / float(denominator)
-	
-	return rho * 100
-
-# returns Spearman's Rank Correlation (does not take care of ties)
-def spearman2(x, y):
-	
-	assert len(x) == len(y), "Problem with two lists in spearman (not the same size). Returning 0"
-
-
-	# add identifiers to to lists
-	idX = [(i, x[i]) for i in xrange(len(x))]
-	idY = [(i, y[i]) for i in xrange(len(y))]
-
-	# sort the lists with identifier tuples based on the observed variable
-	idX = sorted(idX, key = lambda x: x[1])
-	idY = sorted(idY, key = lambda x: x[1])
-
-	# throw away the values
-	idX = map(lambda x: x[0], idX)
-	idY = map(lambda x: x[0], idY)
-
-	# get the ranking for the observed variables
-	xx = [idX.index(i) + 1 for i in xrange(len(idX))]
-	yy = [idY.index(i) + 1 for i in xrange(len(idY))]
-
-	dSquaredList = [(xx[i] - yy[i])**2 for i in range(len(xx))]
-	rho = 1 - (6 * sum(dSquaredList))/float(len(xx) * (len(xx)**2 - 1))
-	
-	return rho * 100
-
-# returns normalized word vectors for every word from 'filename'
-def load_vectors(filename, limit=False, filterRelevant=False):
-	def normalizeString(vec):
-		vec = [ float(x) for x in vec]
-		total = sqrt( sum([v**2 for v in vec]) )
-		new_vec = []
-		for v in vec:
-			new_vec.append(v/total)
-		return tuple(new_vec)
-	f = open(filename,'r')
-	f.readline()
-	content = [ filter( lambda x : not x in ["\n",""], l.replace("\n", "").split(" ")) for l in f.readlines() ]
-	content = [ (l[0], normalizeString(l[1:])) for l in content ]
-	content = filter(lambda x : not x[1] == None, content)
-	if filterRelevant and not limit == False:
-		newC = []
-		while limit > 0:
-			item = content.pop(0)
-			if word_is_relevant(item[0]):
-				newC.append(item)
-				limit -= 1
-		content = newC
-	else:
-		if filterRelevant:
-			content = filter(lambda x : word_is_relevant(x[0]), content)
-		if not limit == False:
-			content = content[:limit]
-	words = dict()
-	for (word, vector) in content:
-		words[word.lower()] = vector
-	return words
 
 
 
