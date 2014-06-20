@@ -349,7 +349,7 @@ if __name__ == "__main__":
 	# get the words that occur in the task and need to be compared
 	_, wordsToSplit = load_task(pathToTask)
 	total = len(wordsToSplit)
-	wordsToSplit = ['yale', 'appl', 'object', 'letter', 'lift', 'bank']
+	wordsToSplit = ['bat', 'cours']#, 'appl', 'object', 'letter', 'lift', 'bank']
 	# for every word we want to split
 	for i, word in enumerate(wordsToSplit):
 		# progess
