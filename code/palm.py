@@ -30,9 +30,6 @@ def getSVM(word, corpus, rel, vectors, clusterCenters, expansionParam=5, skipsiz
 	print "Building sub relatedness matrix"
 	subRel = copy(buildSubRel(rel, justTheWords.intersection(jointVocabulary)))
 
-	# close the rel, we won't be using it anymore anyway
-	rel.close()
-
 	print "Getting word vector"
 	wordvector = vectors[word]
 	# init indexCache that contains word => index of agg cluster
@@ -358,3 +355,4 @@ if __name__ == "__main__":
 			expCache = shelve.open(pathToExpansionCache + word + "_expansionParam_"  + str(expansion))
 
 
+	rel.close()

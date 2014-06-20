@@ -28,7 +28,7 @@ class Word:
     def lemma(self):
     	if self._lemma == None:
     		self._lemma = Stemmer.stem(self.word)
-    	return self._lemma 
+    	return self._lemma.encode('ascii','ignore') 
 
     def setDescription(self, x):
         self.desc = x
@@ -77,7 +77,7 @@ def load_task(filename, allWords=False):
 		if allWords:
 			for w in (q['context1']+" "+q['context2']).lower().split(' '):
 				words.add(w)
-	words = [Word(x).lemma().encode('ascii','ignore') for x in words]
+	words = [Word(x).lemma() for x in words]
 
 	return task, words
 
