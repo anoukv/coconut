@@ -320,7 +320,7 @@ if __name__ == "__main__":
 		print "USAGE: python palm.py <TEXT FILE> <PATH TO REL> <PATH TO CLUSTERS> <PATH TO VECTORS> <PATH TO SVM FILE> <PATH TO EXPANSIONCACHES> <PATH TO TASK>"
 		sys.exit()
 
-	# read all files
+	# read all arguments
 	textfile = sys.argv[1]
 	relFile = sys.argv[2]
 	clusterFile = sys.argv[3]
@@ -339,21 +339,29 @@ if __name__ == "__main__":
 	# read clusters and get their cluster centers by taking the average...
 	print "Reading agglomerative cluster centers"
 	agglomerativeClusterCenters = [getAverageWordRep(x, vecs) for x in read_sets(clusterFile)]
-	# IT MIGHT HAPPEN THAT SOME CLUSTER CENTERS ARE ()? HOW IS THIS POSSIBLE?
-	# call getSVM
+	
+	# set some parameters
 	expansion = 5
 	window = 5
 	
+	# get the words that occur in the task and need to be compared
 	_, wordsToSplit = load_task(pathToTask)
 	total = len(wordsToSplit)
 	wordsToSplit = ['appl', 'bat', 'bank', 'cours']
+	# for every word we want to split
 	for i, word in enumerate(wordsToSplit):
+		# progess
 		print "Working on word ", word, i, " / ", total
 		mySVM, availableSVM, expansionCache = getSVM(word, read_file(textfile), rel, vecs, agglomerativeClusterCenters, expansionParam=expansion, skipsize=window)
+		# if we found an svm
 		if availableSVM:
+			# dump the svm
 			pickle.dump(mySVM, open(pathToSVMFile + word + '_SVM_' + clusterFile.split('/')[-1] + "_expansionParam" + str(expansion) + "_window" + str(window), 'w'))
+			# open expansioncache shelve object
 			expCache = shelve.open(pathToExpansionCache + word + "_expansionParam_"  + str(expansion))
+			# write expansion cache to the file
 			expCache.update(expansionCache)
+			# close the file
 			expCache.close
 
 
