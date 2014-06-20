@@ -348,7 +348,6 @@ if __name__ == "__main__":
 	total = len(wordsToSplit)
 	for i, word in enumerate(wordsToSplit):
 		print "Working on word ", word, i, " / ", total
-		word = 'bat'
 		mySVM, availableSVM, expansionCache = getSVM(word, read_file(textfile), rel, vecs, agglomerativeClusterCenters, expansionParam=expansion, skipsize=window)
 		if availableSVM:
 			pickle.dump(mySVM, open(pathToSVMFile + word + '_SVM_' + clusterFile.split('/')[-1] + "_expansionParam" + str(expansion) + "_window" + str(window), 'w'))
