@@ -5,27 +5,39 @@ from time import time
 import os, sys
 
 class MaxMaintainer:
+	"""
+		Fast way to maintain a top n of a list of items.
+		Initiate with a limit and add elements. Only keeps the best _limit_  number of elements.
+		Runs in O(n) as opposed to sort()[:limit] and uses _limit_ memory
+	"""
 	def __init__(self, limit):
 		self.limit = limit
 		self.top = [(None, -999)]
 		self.full = False
 
 	def add(self, pair, sim):
+		"""
+			Add a pair with similarity sim.
+		"""
 		top = self.top
 		if self.full:
+			# Maybe add to list
 			if self.min < sim:
-				for i in xrange(len(top)):
-					if top[i][1] < sim:
+				# Needs to be added because is better than the current worse.
+				for i in xrange(len(top)): # Find place to add 
+					if top[i][1] < sim:	# Perform insertion, deletion and find new min
 						top.insert(i, (pair, sim))
 						top.pop()
 						self.min = top[-1][1]
 						break
 				self.top = top
 		else:
+			# List is not yet full so just find a place to put it:
 			for i in xrange(len(top)):
 				if top[i][1] < sim:
 					top.insert(i, (pair, sim))
 					break
+			# Just perform some basic administration
 			full = len(top) == self.limit
 			if full:
 				self.min = top[-1][1]
@@ -34,7 +46,7 @@ class MaxMaintainer:
 
 class Node:
 	"""
-		Node class that contains a node center, weight, identifier and indexer
+		Node class that contains a node center, weight, identifier (words) and indexer
 	"""
 	def __init__(self, center, weight, identifier, nodeIndexer):
 		self.center = center
@@ -54,6 +66,9 @@ def combinedNode(n1, n2, nodeIndexer):
 	return Node(normalizeVec([ (x*w1 + y*w2)/t for (x,y) in zip(c1,c2) ]), t, n1.identifier.union(n2.identifier), nodeIndexer)
 
 def save_clusters_to_file(nodes, filename):
+	"""
+		Just saves the nodes to a file as many sets.
+	"""
 	f = open(filename, 'w')
 	for node in nodes:
 		f.write(str(node.identifier))
@@ -61,6 +76,10 @@ def save_clusters_to_file(nodes, filename):
 	f.close()
 
 def slow_agglomerative_procedure(nodes, final_size, cache, nodeIndexer):
+	"""
+		Performs the 'regular' one-by-one agglomerative process.
+		Uses a cach for quick comparison between nodes
+	"""
 	start = time()
 	# Loop to make a certain number of merges
 	merges = len(nodes) - final_size
@@ -103,6 +122,12 @@ def slow_agglomerative_procedure(nodes, final_size, cache, nodeIndexer):
 	return nodes
 
 def bootstrap_clustering(data):
+	"""
+		This bootstraps the different agglomerative clustering methods.
+		Meaning that given some data it creates nodes and a cache for the nodes
+		cache takes the form of a double dictionary: cache [ nodeID1 ] [ nodeID2 ] -> similarity(nodeID1, nodeID2)
+		Double dic means better locality for looping, and can easily throw away large chunks when nodes merge.
+	"""
 	print "\tCreating nodes..."
 
 	nodeIndexer = 0
@@ -150,6 +175,10 @@ def agglomerative_clustering(data, final_size=500):
 def fag_clustering(data, fraction=0.01, final_size=500):
 	"""
 		Fast AGglomerative clustering.
+		Clusters in batches of up to a given fraction of the number of joins that still need to be performed.
+		Finishes the last iterations with regular clusterings.
+		Uses the MaxMaintainer class to maintain a set of best matches.
+		The nodeIndexer is used to give a unique nodeID to each node and find them fast in the cache, without depending on their location in the list of nodes.
 	"""
 
 	start = time()
@@ -157,15 +186,18 @@ def fag_clustering(data, fraction=0.01, final_size=500):
 
 	while not len(nodes) == final_size:
 		thisChunkSize = int((len(nodes) - final_size) * fraction)
-		if thisChunkSize < 3 :
+		if thisChunkSize < 3 : # Chick if we shouldn't finish with regular clustering
 			print "\tNow finishing by", len(nodes) - final_size, "more single clusterings"
 			nodes = slow_agglomerative_procedure(nodes, final_size, cache, nodeIndexer)
 			stop = time()
 			print "\tProcess took", stop - start, "seconds"
 			return nodes
 		else:
+			# Will be finding a batch of merges
 			if thisChunkSize > 10:
 				print "\t\tWorking", thisChunkSize
+
+			# maxlist to find thisChunkSize best node pairs
 			maxlist = MaxMaintainer(thisChunkSize)
 
 			# Use a double for loop to get all node index pairs and get their value from the cache.
@@ -177,6 +209,8 @@ def fag_clustering(data, fraction=0.01, final_size=500):
 
 			limitset = maxlist.top
 
+			# Sometimes nodes will be very similar to multiple other nodes.
+			# The following lines filter for this event and keeps the most urgen merges
 			indexesSet = set()
 			pairs = []
 			for (i, j) in [ x[0] for x in limitset ]:
@@ -191,15 +225,16 @@ def fag_clustering(data, fraction=0.01, final_size=500):
 			if thisChunkSize > 10:
 				print "\t\t\t", len(nodePairs), "nodes merged."
 
-			# 
+			# Now we remove the nodes from the nodes collection (but keep nodePairs)
 			for i in [ x[0] for x in pairs ] + [ x[1] for x in pairs ]:
 				nodes[i] = None
 			nodes = filter(lambda x : not x == None, nodes)
 			
-
+			# Perform some garbage collection on the cache:
 			for index in indexesSet:
 				del cache[index]
 
+			# Now actually start merging nodes and updating the cache.
 			for (n1, n2) in nodePairs:
 				newNode = combinedNode(n1, n2, nodeIndexer)
 				nodeIndexer += 1
@@ -234,10 +269,10 @@ if __name__ == '__main__':
 		nodes = fag_clustering(data, 0.03, clusternumber)
 	else:
 		nodes = agglomerative_clustering(data, clusternumber)
-	print "Saving clusters"
-	save_clusters_to_file(nodes, "clusters.tmp")
-	print "Converting clusters to coc representations"
-	os.system("python clusters_to_cocs.py clusters.tmp " + coc_location + " " + descriptors_name)
+	# print "Saving clusters"
+	# save_clusters_to_file(nodes, "clusters.tmp")
+	# print "Converting clusters to coc representations"
+	# os.system("python clusters_to_cocs.py clusters.tmp " + coc_location + " " + descriptors_name)
 	# os.remove("clusters.tmp")
 
 
