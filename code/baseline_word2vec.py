@@ -18,10 +18,10 @@ if __name__ == "__main__":
 
 	questions = task.values()
 
+	coverage = 0
 	for i in xrange(len(questions)):
 		question = questions[i]
 
-		humanRating.append(question['rating'])
 		word1 = question['word1']
 		word2 = question['word2']
 
@@ -29,7 +29,9 @@ if __name__ == "__main__":
 			vec1 = vectors[word1]
 			vec2 = vectors[word2]
 			methodsRating.append(cosine_similarity(vec1, vec2))
-		else:
-			methodsRating.append(0)
+			humanRating.append(question['rating'])
+			coverage += 1
+
  
  	print spearman(methodsRating, humanRating)
+ 	print "Coverage: ", coverage / float(len(questions)) * 100, "%"

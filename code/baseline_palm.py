@@ -6,7 +6,7 @@ from sklearn import svm
 import shelve
 from palm import expandAndCleanContext, getHistogram
 
-def decideOnLabel(word, context, vectors, clusterCenters, expansionParam, rel, partVoc, jointVocCache, pathToExpansionCache, expansionCacheInfo, pathToSVMFile, svmFileInfo):
+def decideOnLabel(word, context, vectors, clusterCenters, expansionParam, rel, partVoc, jointVocCache, pathToExpansionCache, expansionCacheInfo, pathToSVMFile, svmFileInfo, disambiguatedWords):
 	
 	# get the jointVocabulary
 	if word not in jointVocCache:
@@ -26,6 +26,8 @@ def decideOnLabel(word, context, vectors, clusterCenters, expansionParam, rel, p
 	# get the indexCache (the right one)
 	indexCache = dict()
 
+	expandedContext = filter(lambda x: x  not in disambiguatedWords, expandedContext)
+	
 	# get the histogram
 	histogram = getHistogram(expandedContext, clusterCenters, vectors, indexCache)
 
@@ -97,7 +99,7 @@ if __name__ == "__main__":
 		if word1 in disambiguatedWords:
 			# print i, "DISAMBIGUATE word 1!", word1
 			# print question['context1']
-			label = decideOnLabel(word1, context1, vectors, clusterCenters, expansion, rel, partVoc, jointVocCache, pathToExpansionCache, expansionCacheInfo, pathToSVMFile, svmFileInfo)
+			label = decideOnLabel(word1, context1, vectors, clusterCenters, expansion, rel, partVoc, jointVocCache, pathToExpansionCache, expansionCacheInfo, pathToSVMFile, svmFileInfo, disambiguatedWords)
 			w1 = True
 			vec1 = vectors[word1 + "_" + label]
 		
@@ -111,7 +113,7 @@ if __name__ == "__main__":
 		if word2 in disambiguatedWords:
 			# print i, "DISAMBIGUATE word 2!", word2
 			# print question['context2']
-			label = decideOnLabel(word2, context2, vectors, clusterCenters, expansion, rel, partVoc, jointVocCache, pathToExpansionCache, expansionCacheInfo, pathToSVMFile, svmFileInfo)
+			label = decideOnLabel(word2, context2, vectors, clusterCenters, expansion, rel, partVoc, jointVocCache, pathToExpansionCache, expansionCacheInfo, pathToSVMFile, svmFileInfo, disambiguatedWords)
 			w1 = True
 			vec2 = vectors[word2 + "_" + label]
 		
