@@ -267,8 +267,10 @@ if __name__ == '__main__':
 
 
 	print "Saving clusters"
-	clusterName = "../data/agg_wordclusters/cluster_"
-	clusterName += str(limit) + "x" + str(clusternumber) + "x" + str(minimum)
+	clusterName = "../data/agg_wordclusters/"
+	clusterName += vecs.split("/")[-1]
+	clusterName += "_" + str(limit) + "x" + str(clusternumber) + "x" + str(minimum)
+	clusterName += ".clusters"
 	save_clusters_to_file(nodes, clusterName)
 	print "Done!"
 
