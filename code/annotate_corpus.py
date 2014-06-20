@@ -47,6 +47,7 @@ def getContext(inpt, wordsOfInterest, skipsize, vectors, pathToExpansionCache, e
 
 	partVoc = set(vectors.keys())
 
+	labels = defaultdict(int)
 	jointVocCache = dict()
 	# for every word in the corpus
 	for i, word in enumerate(inpt):
@@ -94,14 +95,22 @@ def getContext(inpt, wordsOfInterest, skipsize, vectors, pathToExpansionCache, e
 				label = svmForMid.predict(histogram)[0]
 
 				# print the info
-				print i, " / ", total, mid, label, context
+
 
 				# add label to word
-				word = word + "_" + label
+				mid = mid + "_" + label
+				if i % 100 == 0:
+					print i, "/", total, mid, label, context
+
+				labels[mid]+=1
 		
-		# append to word to annotation
-		annotated.append(word + " ")
-	
+				# append to word to annotation
+				# NOTE we are missing five words at the beginning and the end
+				annotated.append(mid + " ")
+			annotated.append(mid + " ")
+	for key in labels:
+		print key, labels[key]
+	# print labels
 	return annotated
 
 
