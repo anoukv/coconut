@@ -172,7 +172,7 @@ def agglomerative_clustering(data, final_size=500):
 	print "\tProcess took", stop - start, "seconds"
 	return nodes
 
-def fag_clustering(data, fraction=0.01, final_size=500):
+def fag_clustering(data, fraction=0.01, final_size=500, minSize=10):
 	"""
 		Fast AGglomerative clustering.
 		Clusters in batches of up to a given fraction of the number of joins that still need to be performed.
@@ -184,17 +184,14 @@ def fag_clustering(data, fraction=0.01, final_size=500):
 	start = time()
 	(nodes, cache, nodeIndexer) = bootstrap_clustering(data)
 
-	while not len(nodes) == final_size:
+	while len(nodes) > final_size:
 		thisChunkSize = int((len(nodes) - final_size) * fraction)
 		if thisChunkSize < 3 : # Chick if we shouldn't finish with regular clustering
 			print "\tNow finishing by", len(nodes) - final_size, "more single clusterings"
 			nodes = slow_agglomerative_procedure(nodes, final_size, cache, nodeIndexer)
-			stop = time()
-			print "\tProcess took", stop - start, "seconds"
-			return nodes
 		else:
 			# Will be finding a batch of merges
-			if thisChunkSize > 10:
+			if thisChunkSize > 15:
 				print "\t\tWorking", thisChunkSize
 
 			# maxlist to find thisChunkSize best node pairs
@@ -222,7 +219,7 @@ def fag_clustering(data, fraction=0.01, final_size=500):
 					pairs.append((i,j))
 
 			nodePairs = [ (nodes[i], nodes[j]) for (i,j) in pairs ]
-			if thisChunkSize > 10:
+			if thisChunkSize > 15:
 				print "\t\t\t", len(nodePairs), "nodes merged."
 
 			# Now we remove the nodes from the nodes collection (but keep nodePairs)
@@ -244,36 +241,37 @@ def fag_clustering(data, fraction=0.01, final_size=500):
 					sim = newNode.similarity(nodes[i])
 					cache_dic[nodes[i].index] = sim
 				cache[newNode.index] = cache_dic # Finally register the new cache dictionary.
+
+	nodes = filter(lambda x : len(x.identifier) >= minSize, nodes)
+	print "\tFound", len(nodes), "clusters."
 	stop = time()
-	print "\tProcess took", stop - start, "seconds"
+	print "\tClustering took", stop - start, "seconds"
 	return nodes
 
 def read_args():
-	assert len(sys.argv) == 7
+	assert len(sys.argv) == 5
 	vecs = sys.argv[1]
-	coc_location = sys.argv[2]
-	descriptors_name = sys.argv[3]
-	limit = int(sys.argv[4])
-	clusternumber = int(sys.argv[5])
-	fast = sys.argv[6] == "True"
-	return (vecs, coc_location, descriptors_name, limit, clusternumber, fast)
+	limit = int(sys.argv[2])
+	clusternumber = int(sys.argv[3])
+	minimum = int(sys.argv[4])
+	return (vecs, limit, clusternumber, minimum)
 
 if __name__ == '__main__':
-	# pypy agglomerative.py ../data/wordvectors/enwiki8.relevant.vectors ../../cocs/enwiki8_coc ../../cluster_descriptors/enwiki8.2000x500.clust-desc 2000 500
-	(vecs, coc_location, descriptors_name, limit, clusternumber, fast) = read_args()
+	# pypy agglomerative.py ../data/wordvectors/enwiki8.relevant.vectors 2000 500 10
+	(vecs, limit, clusternumber, minimum) = read_args()
 	print "Loading vectors"
 	data = load_vectors(vecs, limit).items()
 	print "Clustering"
 
-	if fast:
-		nodes = fag_clustering(data, 0.03, clusternumber)
-	else:
-		nodes = agglomerative_clustering(data, clusternumber)
-	# print "Saving clusters"
-	# save_clusters_to_file(nodes, "clusters.tmp")
-	# print "Converting clusters to coc representations"
-	# os.system("python clusters_to_cocs.py clusters.tmp " + coc_location + " " + descriptors_name)
-	# os.remove("clusters.tmp")
+	nodes = fag_clustering(data, 0.03, clusternumber, minimum)
+
+
+	print "Saving clusters"
+	clusterName = "../data/agg_wordclusters/cluster_"
+	clusterName += str(limit) + "x" + str(clusternumber) + "x" + str(minimum)
+	save_clusters_to_file(nodes, clusterName)
+	print "Done!"
+
 
 
 
