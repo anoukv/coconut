@@ -15,7 +15,7 @@ def getSVM(word, corpus, rel, vectors, clusterCenters, expansionParam=5, skipsiz
 	print "Collecting contexts"
 	contexts = getContext(corpus, word, skipsize)
 	numberOfContexts = len(contexts)
-	print  "Found ", numberOfContexts, " contexts "
+	print  "\tFound ", numberOfContexts, " contexts "
 
 
 	# get relevant words for the word
@@ -59,6 +59,8 @@ def getSVM(word, corpus, rel, vectors, clusterCenters, expansionParam=5, skipsiz
 		
 		# add histogram with label to the data dictionary 
 		data[label].append(histogram)
+
+		# print label, word, context
 	
 	# magic parameter!
 	for key in data.keys():
@@ -95,9 +97,9 @@ def getSVM(word, corpus, rel, vectors, clusterCenters, expansionParam=5, skipsiz
 			distribution[pred]+=1
 			if lab == pred:
 				accuracy += 1
-		print "Predicted distribution by SVM: "
+		print "\nPredicted distribution by SVM: "
 		for key in distribution:
-			print key, distribution[key]
+			print "\t", key, distribution[key]
 		print "Accuracy on itself: ", accuracy / float(len(train))
 
 	return mySVM, availableSVM, expansionCache
@@ -347,7 +349,7 @@ if __name__ == "__main__":
 	# get the words that occur in the task and need to be compared
 	_, wordsToSplit = load_task(pathToTask)
 	total = len(wordsToSplit)
-	wordsToSplit = ['appl', 'bat', 'bank', 'cours']
+	wordsToSplit = ['yale', 'appl', 'object', 'letter', 'lift', 'bank']
 	# for every word we want to split
 	for i, word in enumerate(wordsToSplit):
 		# progess
