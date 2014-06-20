@@ -1,5 +1,4 @@
 import sys
-from Word import Word
 from utils import *
 from fast_utils import cosine_similarity, normalizeVec, normalize_coc
 
@@ -29,9 +28,10 @@ def context_similarity(c1, c2, clusters):
 if __name__ == "__main__":
 	print "Baseline with wordvectors"
 	if len(sys.argv) < 3:
-		print "USAGE: python baselline_word2vec.py <PATH TO TASK> <PATH TO WORDVECTORS>"
+		print "USAGE: python me.py <PATH TO TASK> <PATH TO CLUSTERS>"
 		sys.exit()
 
+	print "Loading"
 	taskFilename = sys.argv[1]
 	clustersFilename = sys.argv[2]
 
@@ -43,19 +43,24 @@ if __name__ == "__main__":
 
 	questions = task.values()
 
+	print "Answering"
 	for i in xrange(len(questions)):
 		question = questions[i]
 
-		word1 = Word(question['word1']).lemma().encode('ascii','ignore')
-		word2 = Word(question['word2']).lemma().encode('ascii','ignore')
-		context1 = [Word(x).lemma().encode('ascii','ignore') for x in question['context1'].lower().split(' ')]
-		context2 = [Word(x).lemma().encode('ascii','ignore') for x in question['context2'].lower().split(' ')]
+		word1 = Word(question['word1']).lemma()
+		word2 = Word(question['word2']).lemma()
+		context1 = [Word(x).lemma() for x in question['context1'].lower().split(' ')] + [word1, word1, word1]
+		context2 = [Word(x).lemma() for x in question['context2'].lower().split(' ')] + [word2, word2, word2]
 		
 		context1 = normalize_coc(dict( [ (e, 1) for e in context1] ))
 		context2 = normalize_coc(dict( [ (e, 1) for e in context2] ))
 
 		methodsRating.append(context_similarity(context1, context2, clusters))
 		humanRating.append(question['rating'])
+
+		if i % 300 == 0 and len(humanRating) > 2:
+			print "\t", spearman(methodsRating, humanRating)
  
+ 	print "Final spearman:"
  	print spearman(methodsRating, humanRating)
 
