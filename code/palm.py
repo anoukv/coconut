@@ -1,17 +1,22 @@
 import sys, shelve
 from collections import defaultdict
 from copy import copy
+from sklearn import svm
+import pickle
 
 # our own files
 from fast_utils import read_file, load_vectors, getAverageWordRep, cosine_similarity, read_sets, getAverageVector
+from utils import load_task
 
 def getSVM(word, corpus, rel, vectors, clusterCenters, expansionParam=5, skipsize=5):
-	svm = 0
 	data = defaultdict(list)
 	
 	# get contexts
 	print "Collecting contexts"
 	contexts = getContext(corpus, word, skipsize)
+	numberOfContexts = len(contexts)
+	print  "Found ", numberOfContexts, " contexts "
+
 
 	# get relevant words for the word
 	print "Loading relevant words..."
@@ -36,12 +41,12 @@ def getSVM(word, corpus, rel, vectors, clusterCenters, expansionParam=5, skipsiz
 	
 	# progress counter and total number of contexts
 	counter = 0
-	ending = len(contexts)
 	
 	# for every context
 	for context in contexts:
 		# for printing progress
-		print counter, " / ", ending
+		if counter % 100 == 0:
+			print counter, " / ", numberOfContexts
 		counter+=1
 
 		# expand and clean the context
@@ -49,27 +54,97 @@ def getSVM(word, corpus, rel, vectors, clusterCenters, expansionParam=5, skipsiz
 		
 		# get label for expanded context
 		
-		label3, score3 = getLabel3(relevantWords, wordvector, expanded, vectors, jointVocabulary)
-		print score3, label3
+		label, score = getLabel3(relevantWords, wordvector, expanded, vectors, jointVocabulary)
+		# print score, label
 
 		# get the histogram
 		histogram = getHistogram(expanded, clusterCenters, vectors, indexCache)
 		
 		# add histogram with label to the data dictionary 
-		data[label3].append(histogram)
+		data[label].append(histogram)
 	
-	# print all labels (just for fun, remove later)
-	print data.keys()
+	# magic parameter!
+	for key in data.keys():
+		if len(data[key]) < 5:
+			del data[key]
+	
+	dataCompression(data, vectors)
+	
+	print "Extracting training data..."
+	train = []
+	labels = []
 
-	# my own analysis
 	for key in data:
 		hists = data[key]
-		print key, len(hists)#, getAverageVector(hists)
-	# return the data
+		for hist in hists:
+			train.append(hist)
+			labels.append(key)
+	
+	mySVM = svm.LinearSVC()	
+	availableSVM = False
+	if len(data) > 1:
+		availableSVM = True
+		# create svm 
+
+		print "Training svm..."
+		mySVM.fit(train, labels)
+
+
+		accuracy = 0
+		distribution = defaultdict(int)
+		for i, training in enumerate(train):
+			lab = labels[i]
+			pred = mySVM.predict(training)[0]
+			distribution[pred]+=1
+			if lab == pred:
+				accuracy += 1
+		print "Predicted distribution by SVM: "
+		for key in distribution:
+			print key, distribution[key]
+		print "Accuracy on itself: ", accuracy / float(len(train))
+
+	return mySVM, availableSVM, expansionCache
+
+
+def dataCompression(data, vectors):
+
+	def getSortedKeys(data):
+		counts = [(key, len(data[key])) for key in data]
+		counts = sorted(counts, key = lambda x : x[1], reverse = True)
+		return map(lambda x: x[0], counts)
+
+	while True:
+
+		bestSim = None
+		bestCandidate = None
+		bestSubstitute = None
+
+		keys = getSortedKeys(data)
+
+		upper = keys[:len(keys)/2]
+		lower = keys[len(keys)/2:]
+
+		for candidate in lower:
+			for substitute in upper:
+
+				sim = cosine_similarity(vectors[candidate], vectors[substitute])
+
+				if sim > bestSim:
+					bestSim = sim 
+					bestCandidate = candidate
+					bestSubstitute = substitute
+
+		if bestSim < 0.5:
+			break
+		else:
+			print "Merging ", bestCandidate, " into ", bestSubstitute, " with sim: ", bestSim
+			data[bestSubstitute]+= data[bestCandidate]
+			del data[bestCandidate]
+	print "Keeping labels: (label, context count)"
+	keys = getSortedKeys(data)
+	for k in keys:
+		print k, len(data[k])
 	return data
-
-
-
 
 def getHistogram(words, clusterCenters, vectors, indexCache):
 
@@ -114,9 +189,11 @@ def buildSubRel(rel, relevantWords):
 	# init dict
 	subRel = dict()
 	
+	total = len(relevantWords)
 	# for every relevant word
-	for word in relevantWords:
-		
+	for i, word in enumerate(relevantWords):
+		if i % 100 == 0:
+			print i, " / ", total
 		# add its vector to subRel
 		subRel[word] = copy(rel[word])
 	return subRel
@@ -140,6 +217,8 @@ def getLabel1(wordRel, expandedContext):
 			label = candidate
 	return label, highesetRel
 
+
+
 def getLabel2(wordVector, expandedContext, vectors):
 	bestSim = None
 	bestWord = None
@@ -150,6 +229,8 @@ def getLabel2(wordVector, expandedContext, vectors):
 			bestSim = sim
 			bestWord = candidate
 	return bestWord, bestSim
+
+
 
 def getLabel3(wordRel, wordVector, expandedContext, vectors, jointVocabulary):
 	
@@ -167,6 +248,8 @@ def getLabel3(wordRel, wordVector, expandedContext, vectors, jointVocabulary):
 			bestWord = candidate
 	
 	return bestWord, bestScore
+
+
 
 # expands and cleans the context (cleaning is basically taking out the word, it could be that the word appears twice withim window)
 def expandAndCleanContext(context, word, rel, expansionParam, jointVocabulary, expansionCache):
@@ -236,15 +319,18 @@ if __name__ == "__main__":
 	
 	print "Welcome to PALM!"
 	
-	if len(sys.argv) < 5:
-		print "USAGE: python palm.py <TEXT FILE> <PATH TO COC> <PATH TO CLUSTERS> <PATH TO VECTORS>"
+	if len(sys.argv) < 8:
+		print "USAGE: python palm.py <TEXT FILE> <PATH TO REL> <PATH TO CLUSTERS> <PATH TO VECTORS> <PATH TO SVM FILE> <PATH TO EXPANSIONCACHES> <PATH TO TASK>"
 		sys.exit()
 
 	# read all files
 	textfile = sys.argv[1]
-	relFile = sys.argv[2] + "_rel"
+	relFile = sys.argv[2]
 	clusterFile = sys.argv[3]
 	vecFile = sys.argv[4]
+	pathToSVMFile = sys.argv[5]
+	pathToExpansionCache = sys.argv[6]
+	pathToTask = sys.argv[7]
 	
 	# open the rel
 	rel = shelve.open(relFile)
@@ -256,6 +342,19 @@ if __name__ == "__main__":
 	# read clusters and get their cluster centers by taking the average...
 	print "Reading agglomerative cluster centers"
 	agglomerativeClusterCenters = [getAverageWordRep(x, vecs) for x in read_sets(clusterFile)]
-
+	# IT MIGHT HAPPEN THAT SOME CLUSTER CENTERS ARE ()? HOW IS THIS POSSIBLE?
 	# call getSVM
-	getSVM('bat', read_file(textfile), rel, vecs, agglomerativeClusterCenters, expansionParam=5, skipsize=5)
+	expansion = 5
+	window = 5
+	
+	_, wordsToSplit = load_task(pathToTask)
+	total = len(wordsToSplit)
+	for i, word in enumerate(wordsToSplit):
+		print "Working on word ", word, i, " / ", total
+		word = 'bat'
+		mySVM, availableSVM, expansionCache = getSVM(word, read_file(textfile), rel, vecs, agglomerativeClusterCenters, expansionParam=expansion, skipsize=window)
+		if availableSVM:
+			pickle.dump(mySVM, open(pathToSVMFile + word + '_SVM_' + clusterFile.split('/')[-1] + "_expansionParam" + str(expansion) + "_window" + str(window), 'w'))
+			expCache = shelve.open(pathToExpansionCache + word + "_expansionParam_"  + str(expansion))
+
+

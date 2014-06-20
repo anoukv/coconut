@@ -2,8 +2,38 @@ from nltk import pos_tag
 from nltk.tag.simplify import simplify_wsj_tag
 from nltk.stem.snowball import SnowballStemmer
 Stemmer = SnowballStemmer("english")
-
 from math import sqrt
+
+
+class Word:
+    def __init__(self, word, desc=None, meta=dict()):
+    	self.word = word
+    	self.desc = desc
+    	self.meta = meta
+
+    	self._lemma = None
+        self._pos = None
+        self._relevant = None
+
+    def relevant(self):
+      if self._relevant == None:
+          self._relevant = pos_is_revelant(self.pos())
+      return self._relevant
+
+    def pos(self):
+        if self._pos == None:
+            self._pos = postag(self.word)
+        return self._pos
+
+    def lemma(self):
+    	if self._lemma == None:
+    		self._lemma = Stemmer.stem(self.word)
+    	return self._lemma 
+
+    def setDescription(self, x):
+        self.desc = x
+
+
 
 def postag(word):
 	try:
@@ -26,7 +56,7 @@ def normalize(vec):
 	return tuple(new_vec)
 
 # reads the SCWS task
-def load_task(filename):
+def load_task(filename, allWords=False):
 	words = set()
 	task = dict()
 	f = open(filename, 'r')
@@ -44,6 +74,11 @@ def load_task(filename):
 		task[int(question[0])] = q
 		words.add(question[1].lower())
 		words.add(question[3].lower())
+		if allWords:
+			for w in (q['context1']+" "+q['context2']).lower().split(' '):
+				words.add(w)
+	words = [Word(x).lemma().encode('ascii','ignore') for x in words]
+
 	return task, words
 
 # returns Spearman's Rank Correlation (takes care of ties)
