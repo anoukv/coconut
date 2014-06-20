@@ -346,12 +346,15 @@ if __name__ == "__main__":
 	
 	_, wordsToSplit = load_task(pathToTask)
 	total = len(wordsToSplit)
+	wordsToSplit = ['appl', 'bat', 'bank', 'cours']
 	for i, word in enumerate(wordsToSplit):
 		print "Working on word ", word, i, " / ", total
 		mySVM, availableSVM, expansionCache = getSVM(word, read_file(textfile), rel, vecs, agglomerativeClusterCenters, expansionParam=expansion, skipsize=window)
 		if availableSVM:
 			pickle.dump(mySVM, open(pathToSVMFile + word + '_SVM_' + clusterFile.split('/')[-1] + "_expansionParam" + str(expansion) + "_window" + str(window), 'w'))
 			expCache = shelve.open(pathToExpansionCache + word + "_expansionParam_"  + str(expansion))
+			expCache.update(expansionCache)
+			expCache.close
 
 
 	rel.close()
