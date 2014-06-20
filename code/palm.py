@@ -3,7 +3,7 @@ from collections import defaultdict
 from copy import copy
 from sklearn import svm
 import pickle
-
+from time import time 
 # our own files
 from fast_utils import read_file, load_vectors, getAverageWordRep, cosine_similarity, read_sets, getAverageVector
 from utils import load_task
@@ -27,9 +27,6 @@ def getSVM(word, corpus, rel, vectors, clusterCenters, expansionParam=5, skipsiz
 	print "Determining joing vocabulary"
 	jointVocabulary = set(vectors.keys()).intersection(justTheWords)
 
-	print "Building sub relatedness matrix"
-	subRel = copy(buildSubRel(rel, justTheWords.intersection(jointVocabulary)))
-
 	print "Getting word vector"
 	wordvector = vectors[word]
 	# init indexCache that contains word => index of agg cluster
@@ -42,12 +39,12 @@ def getSVM(word, corpus, rel, vectors, clusterCenters, expansionParam=5, skipsiz
 	# for every context
 	for context in contexts:
 		# for printing progress
-		if counter % 100 == 0:
+		if counter % 10 == 0:
 			print counter, " / ", numberOfContexts
 		counter+=1
 
 		# expand and clean the context
-		expanded = expandAndCleanContext(context, word, subRel, expansionParam, jointVocabulary, expansionCache)
+		expanded = expandAndCleanContext(context, word, rel, expansionParam, jointVocabulary, expansionCache)
 		
 		# get label for expanded context
 		
@@ -57,6 +54,7 @@ def getSVM(word, corpus, rel, vectors, clusterCenters, expansionParam=5, skipsiz
 		# get the histogram
 		histogram = getHistogram(expanded, clusterCenters, vectors, indexCache)
 		
+		#print label
 		# add histogram with label to the data dictionary 
 		data[label].append(histogram)
 
@@ -153,7 +151,8 @@ def getHistogram(words, clusterCenters, vectors, indexCache):
 	# for every word
 	for word in words:
 		# if it was already seen, we can ask for the right index from cache
-		if word in indexCache:
+		if False: #word in indexCache:
+			print "AAAAAA"
 			histogram[indexCache[word]] += 1
 		# if not; 
 		else:
@@ -169,6 +168,8 @@ def getHistogram(words, clusterCenters, vectors, indexCache):
 
 			# increase the histogram with 1 at the right index
 			histogram[index] += 1
+			for i in xrange(len(sims)):
+				histogram[i] += sims[i]
 
 			# cache the result
 			indexCache[word] = index
@@ -178,6 +179,7 @@ def getHistogram(words, clusterCenters, vectors, indexCache):
 	
 	# normalize the histogram (every value between [0, 1])
 	histogram = map(lambda x: x / total, histogram)
+	#print histogram
 
 	return  histogram
 
@@ -321,7 +323,8 @@ if __name__ == "__main__":
 	if len(sys.argv) < 8:
 		print "USAGE: python palm.py <TEXT FILE> <PATH TO REL> <PATH TO CLUSTERS> <PATH TO VECTORS> <PATH TO SVM FILE> <PATH TO EXPANSIONCACHES> <PATH TO TASK>"
 		sys.exit()
-
+	start = time()
+	# main_anouk_is_a_charm()
 	# read all arguments
 	textfile = sys.argv[1]
 	relFile = sys.argv[2]
@@ -349,7 +352,7 @@ if __name__ == "__main__":
 	# get the words that occur in the task and need to be compared
 	_, wordsToSplit = load_task(pathToTask)
 	total = len(wordsToSplit)
-	wordsToSplit = ['bat', 'cours']#, 'appl', 'object', 'letter', 'lift', 'bank']
+	wordsToSplit = ['bat', 'cours', 'bank']#, 'appl', 'object', 'letter', 'lift', 'bank']
 	# for every word we want to split
 	for i, word in enumerate(wordsToSplit):
 		# progess
@@ -368,3 +371,6 @@ if __name__ == "__main__":
 
 
 	rel.close()
+	stop = time()
+ 	print "I spent", int(stop-start+0.5), "seconds."
+
