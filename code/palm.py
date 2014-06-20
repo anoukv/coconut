@@ -9,6 +9,9 @@ from fast_utils import read_file, load_vectors, getAverageWordRep, cosine_simila
 from utils import load_task
 
 def getSVM(word, corpus, rel, vectors, clusterCenters, expansionParam=5, skipsize=5):
+
+	if word not in vectors:
+		return 0, False, 0
 	data = defaultdict(list)
 	
 	# get contexts
@@ -24,7 +27,7 @@ def getSVM(word, corpus, rel, vectors, clusterCenters, expansionParam=5, skipsiz
 	justTheWords = set(relevantWords.keys())
 	
 	# get the joint vocabulary
-	print "Determining joing vocabulary"
+	print "Determining joint vocabulary"
 	jointVocabulary = set(vectors.keys()).intersection(justTheWords)
 
 	print "Getting word vector"
@@ -151,9 +154,8 @@ def getHistogram(words, clusterCenters, vectors, indexCache):
 	# for every word
 	for word in words:
 		# if it was already seen, we can ask for the right index from cache
-		if False: #word in indexCache:
-			print "AAAAAA"
-			histogram[indexCache[word]] += 1
+		if word in indexCache:
+			sims = indexCache[word]
 		# if not; 
 		else:
 			# get the word's vector
@@ -162,18 +164,12 @@ def getHistogram(words, clusterCenters, vectors, indexCache):
 			# compute the similarity with every cluster center
 			sims = [cosine_similarity(vector, x) for x in clusterCenters]
 
-			# the word will be assigned to the cluster that has the highest similarity
-			# find its index
-			index = sims.index(max(sims))
-
-			# increase the histogram with 1 at the right index
-			histogram[index] += 1
-			for i in xrange(len(sims)):
-				histogram[i] += sims[i]
-
 			# cache the result
-			indexCache[word] = index
+			indexCache[word] = sims
 
+		# increase the histogram with 1 at the right index
+		for i in xrange(len(sims)):
+			histogram[i] += sims[i]
 	# get the total count from the histogram
 	total = float(sum(histogram))
 	
@@ -351,9 +347,11 @@ if __name__ == "__main__":
 	
 	# get the words that occur in the task and need to be compared
 	_, wordsToSplit = load_task(pathToTask)
-	total = len(wordsToSplit)
 	# wordsToSplit = ['bat', 'cours', 'bank']#, 'appl', 'object', 'letter', 'lift', 'bank']
 	# for every word we want to split
+	# wordsToSplit = ['bat']
+	wordsToSplit = wordsToSplit[8:]
+	total = len(wordsToSplit)
 	for i, word in enumerate(wordsToSplit):
 		# progess
 		print "Working on word ", word, i, " / ", total
