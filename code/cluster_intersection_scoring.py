@@ -1,6 +1,6 @@
 import sys
-from utils import *
-from fast_utils import cosine_similarity, normalizeVec, normalize_coc
+from utils import Word, load_task
+from fast_utils import cosine_similarity, normalizeVec, normalize_coc, spearman
 
 def read_sets(filename="clusters.tmp"):
 	clusters = []
