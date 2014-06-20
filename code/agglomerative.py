@@ -186,7 +186,7 @@ def fag_clustering(data, fraction=0.01, final_size=500, minSize=10):
 
 	while len(nodes) > final_size:
 		thisChunkSize = int((len(nodes) - final_size) * fraction)
-		if thisChunkSize < 3 : # Chick if we shouldn't finish with regular clustering
+		if thisChunkSize < 5 : # Chick if we shouldn't finish with regular clustering
 			print "\tNow finishing by", len(nodes) - final_size, "more single clusterings"
 			nodes = slow_agglomerative_procedure(nodes, final_size, cache, nodeIndexer)
 		else:
