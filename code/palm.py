@@ -1,4 +1,4 @@
-import sys, shelve
+import sys, shelve, os
 from collections import defaultdict
 from copy import copy
 from sklearn import svm
@@ -8,7 +8,10 @@ from time import time
 from fast_utils import read_file, load_vectors, getAverageWordRep, cosine_similarity, read_sets, getAverageVector
 from utils import load_task
 
-def getSVM(word, corpus, rel, vectors, clusterCenters, expansionParam=5, skipsize=5):
+def getSVM(word, corpus, rel, vectors, clusterCenters, indexCache, expansionParam=5, skipsize=5):
+
+	if word not in vectors:
+		return 0, False, 0
 	data = defaultdict(list)
 	
 	# get contexts
@@ -24,13 +27,13 @@ def getSVM(word, corpus, rel, vectors, clusterCenters, expansionParam=5, skipsiz
 	justTheWords = set(relevantWords.keys())
 	
 	# get the joint vocabulary
-	print "Determining joing vocabulary"
+	print "Determining joint vocabulary"
 	jointVocabulary = set(vectors.keys()).intersection(justTheWords)
 
 	print "Getting word vector"
 	wordvector = vectors[word]
 	# init indexCache that contains word => index of agg cluster
-	indexCache = dict()
+	# indexCache = dict()
 	expansionCache = dict()
 	
 	# progress counter and total number of contexts
@@ -122,18 +125,19 @@ def dataCompression(data, vectors):
 		lower = keys[len(keys)/2:]
 
 		for candidate in lower:
-			for substitute in upper:
+			if candidate in vectors:
+				for substitute in upper:
+					if substitute in vectors:
+						sim = cosine_similarity(vectors[candidate], vectors[substitute])
 
-				sim = cosine_similarity(vectors[candidate], vectors[substitute])
-
-				if sim > bestSim:
-					bestSim = sim 
-					bestCandidate = candidate
-					bestSubstitute = substitute
+						if sim > bestSim:
+							bestSim = sim 
+							bestCandidate = candidate
+							bestSubstitute = substitute
 
 		if bestSim < 0.5:
 			break
-		else:
+		elif bestCandidate != None and bestSubstitute != None:
 			print "Merging ", bestCandidate, " into ", bestSubstitute, " with sim: ", bestSim
 			data[bestSubstitute]+= data[bestCandidate]
 			del data[bestCandidate]
@@ -151,9 +155,8 @@ def getHistogram(words, clusterCenters, vectors, indexCache):
 	# for every word
 	for word in words:
 		# if it was already seen, we can ask for the right index from cache
-		if False: #word in indexCache:
-			print "AAAAAA"
-			histogram[indexCache[word]] += 1
+		if word in indexCache:
+			sims = indexCache[word]
 		# if not; 
 		else:
 			# get the word's vector
@@ -162,23 +165,18 @@ def getHistogram(words, clusterCenters, vectors, indexCache):
 			# compute the similarity with every cluster center
 			sims = [cosine_similarity(vector, x) for x in clusterCenters]
 
-			# the word will be assigned to the cluster that has the highest similarity
-			# find its index
-			index = sims.index(max(sims))
-
-			# increase the histogram with 1 at the right index
-			histogram[index] += 1
-			for i in xrange(len(sims)):
-				histogram[i] += sims[i]
-
 			# cache the result
-			indexCache[word] = index
+			indexCache[word] = sims
 
+		# increase the histogram with 1 at the right index
+		for i in xrange(len(sims)):
+			histogram[i] += sims[i]
 	# get the total count from the histogram
 	total = float(sum(histogram))
 	
 	# normalize the histogram (every value between [0, 1])
-	histogram = map(lambda x: x / total, histogram)
+	if total > 0:
+		histogram = map(lambda x: x / total, histogram)
 	#print histogram
 
 	return  histogram
@@ -334,6 +332,8 @@ if __name__ == "__main__":
 	pathToExpansionCache = sys.argv[6]
 	pathToTask = sys.argv[7]
 	
+	alreadyDisambiguatedWords = set([x.split("_")[0] for x in os.listdir(pathToSVMFile)])
+
 	# open the rel
 	rel = shelve.open(relFile)
 	
@@ -351,13 +351,16 @@ if __name__ == "__main__":
 	
 	# get the words that occur in the task and need to be compared
 	_, wordsToSplit = load_task(pathToTask)
+	
+	indexCache = dict()
+
+	wordsToSplit = filter(lambda x: x not in alreadyDisambiguatedWords, wordsToSplit)
 	total = len(wordsToSplit)
-	# wordsToSplit = ['bat', 'cours', 'bank']#, 'appl', 'object', 'letter', 'lift', 'bank']
-	# for every word we want to split
+
 	for i, word in enumerate(wordsToSplit):
 		# progess
 		print "Working on word ", word, i, " / ", total
-		mySVM, availableSVM, expansionCache = getSVM(word, read_file(textfile), rel, vecs, agglomerativeClusterCenters, expansionParam=expansion, skipsize=window)
+		mySVM, availableSVM, expansionCache = getSVM(word, read_file(textfile), rel, vecs, agglomerativeClusterCenters, indexCache, expansionParam=expansion, skipsize=window)
 		# if we found an svm
 		if availableSVM:
 			# dump the svm
