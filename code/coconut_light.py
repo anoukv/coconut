@@ -1,11 +1,6 @@
-from math import sqrt
 from kmeans import kmeans_process
-from collections import defaultdict
-import sys
 from copy import copy
-from random import choice
-import shelve
-from multiprocessing import *
+from collections import defaultdict
 
 # deletes all the keys from dic that are not in keysToKeep
 def deleteSomeKeys(keysToKeep, dic):
@@ -15,13 +10,6 @@ def deleteSomeKeys(keysToKeep, dic):
 		new_dic[key] = dic[key]
 	return new_dic
 
-# reads the corpus file
-def read_file(filename):
-	f = open(filename, 'r')
- 	inpt = f.readline().replace("\n", "").split(" ")
- 	f.close()
- 	return inpt
-
 # prepares the data for a word, that is necessary to create the two senses
 def prepareExtraction(word, coc):
 
@@ -30,10 +18,10 @@ def prepareExtraction(word, coc):
 	coOccuringWords = set(wordCOC.keys())
 
 	cococ = dict()
-	for bla in wordCOC:
+	for bla in coOccuringWords:
 		vector = copy(coc[bla])
 		vector = deleteSomeKeys(coOccuringWords, vector)
-		cococ[bla] =  vector
+		cococ[bla] = vector
 
 	return (wordCOC, cococ)
 
@@ -96,10 +84,7 @@ def extractSenses((word, preparation)):
 # gives us a new dictionary with multiple senses of the words
 # not all words will be in this dictionary, only the words for which 
 # multiple senses were actually found
-def makeNewCOCS(word, rel, voc):
-	if word not in voc:	
-		print "Sorry ", word, " not found in vocabulary..."
-		return 0
+def makeNewCOCS(word, rel):
 	# here we cluster! 
 	preparation = prepareExtraction(word, rel)
 	(word, senses) = extractSenses((word, preparation))

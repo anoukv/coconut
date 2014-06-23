@@ -1,8 +1,8 @@
 import sys, shelve
-from Word import Word
+from time import time
 from utils import *
 from fast_utils import *
-from coconut_light import *
+from coconut_light import makeNewCOCS
 from fast_utils import getAverageWordRep
 
 def getCorrectSense(context, sense1, sense2):
@@ -26,12 +26,17 @@ if __name__ == "__main__":
 		print "USAGE: python baselline_word2vec.py <PATH TO TASK> <PATH TO COC> <PATH TO VECTORS>"
 		sys.exit()
 	
+	start = time()
+	print "Loading..."
+
 	taskFilename = sys.argv[1]
 	cocFilename = sys.argv[2]
 	vectorsFilename = sys.argv[3]
 
 	rel = shelve.open(cocFilename + 'rel')
 	voc = shelve.open(cocFilename + 'voc')
+	vocabulary = set(voc.keys())
+	voc.close()
 
 	task, _ = load_task(taskFilename)
 
@@ -40,33 +45,30 @@ if __name__ == "__main__":
 	methodsRating = []
 	humanRating = []
 	cache = dict()
-
-	vocabulary = set(voc.keys())
+	
 	questions = task.values()
 
+	print "\tLoaded in", int(time() - start + 0.5), "seconds."
+	print "Clustering..."
 	for i in xrange(len(questions)):
 		question = questions[i]
 
-		word1 = Word(question['word1']).lemma().encode('ascii','ignore')
-		word2 = Word(question['word2']).lemma().encode('ascii','ignore')
+		word1 = Word(question['word1']).lemma()
+		word2 = Word(question['word2']).lemma()
 		
 		# only proceed if both words are known
 		if word1 in vocabulary and word2 in vocabulary:
-			print i
-			if word1 not in cache:
-				word1Dic = makeNewCOCS(word1, rel, voc)
-				cache[word1] = word1Dic
-			else: 
-				word1Dic = cache[word1]
-			
-			if word2 not in cache:
-				word2Dic = makeNewCOCS(word2, rel, voc)
-				cache[word1] = word2Dic
-			else:
-				word2Dic = cache[word2]
+			print "\tIteration:", i
 
-			context1 = [Word(x).lemma().encode('ascii','ignore') for x in question['context1'].lower().split(' ')]
-			context2 = [Word(x).lemma().encode('ascii','ignore') for x in question['context2'].lower().split(' ')]
+			if word1 not in cache:
+				cache[word1] = makeNewCOCS(word1, rel)
+			if word2 not in cache:
+				cache[word2] = makeNewCOCS(word2, rel)
+
+			word1Dic = cache[word1]
+			word2Dic = cache[word2]
+			context1 = [ Word(x).lemma() for x in question['context1'].lower().split(' ') ]
+			context2 = [ Word(x).lemma() for x in question['context2'].lower().split(' ') ]
 		
 			senseWord1 = getCorrectSense(context1, word1Dic[0], word1Dic[1])
 			senseWord2 = getCorrectSense(context2, word2Dic[0], word2Dic[1])
@@ -77,6 +79,13 @@ if __name__ == "__main__":
 			humanRating.append(question['rating'])
 			methodsRating.append(cosine_similarity(wordvec1, wordvec2))
 			
- 		if len(methodsRating) > 2:
- 			print spearman(methodsRating, humanRating)
+	 		if len(methodsRating) > 2:
+	 			print "\t\tScore:", spearman(methodsRating, humanRating)
+
+	stop = time()
+	print "Done in", int(stop - start + 0.5), "seconds."
+	print "Final spearman:", spearman(methodsRating, humanRating)
+
+
+
 
