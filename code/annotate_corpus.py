@@ -1,11 +1,11 @@
 import sys, os
 import shelve
 from palm import expandAndCleanContext, getHistogram
-from collections import defaultdict
-from fast_utils import read_file, load_vectors, getAverageWordRep, cosine_similarity, read_sets
+from fast_utils import read_file, load_vectors, getAverageWordRep, read_sets
 import pickle
 from sklearn import svm
 from copy import copy
+from time import time
 
 # inpt - the actual corpus
 # words of interest - list of words we want to relabel
@@ -19,101 +19,83 @@ from copy import copy
 # svmFileInfo - identifiers for svm files
 def getContext(inpt, wordsOfInterest, skipsize, vectors, pathToExpansionCache, expansionParam, rel, clusterCenters, expansionCacheInfo, svmFileInfo, pathToSVMFile, f):
 
-	# initiate the contexts
-	annotated = []	
-	
 	# size of the queue is 2 times the skipsize + 1 for the mid (so there are skipsize words on the left and on the right)
 	queueSize = skipsize * 2 + 1
 
 	# mid index is skipsize
 	queueMid = skipsize
 	
-	# returns True if the lenght of x equals the queuesize, meaning x is filled
-	queueIsReady = lambda x : len(x) == queueSize	
-	
 	# pushes elemet to the queue
 	# if necessary pops first element
 	def push(element, queue):
 		queue.append(element)
-		if len(queue) > queueSize:
-			queue.pop(0)
+		queue.pop(0)
 	
 	# init empty queue
-	queue = []
+	queue = [ inpt.pop(0) for _ in xrange(queueSize) ]
 
-	indexCaches = defaultdict(dict)
+	indexCaches = dict()
+	jointVocCache = dict()
+	svmCache = dict()
 
 	total = len(inpt)
 
 	partVoc = set(vectors.keys())
 
-	# labels = defaultdict(int)
-	jointVocCache = dict()
+	start = time()
 	# for every word in the corpus
-	for i, word in enumerate(inpt):
+	for i in xrange(total):
+		word = inpt.pop(0)
+
 		# push the word onto the queue
 		push(word, queue)
 
-		# if the queue is ready
-		if queueIsReady(queue):
+		# get the middle word
+		mid = queue[queueMid]
+		# print mid
+		# if the middle word equals the word of interest
+		if mid in wordsOfInterest:
 
-			# get the middle word
-			mid = queue[queueMid]
-			# print mid
-			# if the middle word equals the word of interest
-			if mid in wordsOfInterest:
+			# get the context
+			context = copy(queue)
 
-				# get the context
-				context = copy(queue)
+			# get jointVocabulary
+			if mid not in jointVocCache:
+				jointVocCache[mid] = partVoc.intersection(set(rel[mid].keys()))
+			jointVocabulary = jointVocCache[mid]
+			
+			# open expansionsCache
+			expansionCache = shelve.open(pathToExpansionCache + mid + expansionCacheInfo)
+			
+			# get expanded context
+			expandedContext = expandAndCleanContext(context, mid, rel, expansionParam, jointVocabulary, expansionCache)
+			
+			# close expansionCache
+			expansionCache.close()
 
-				# get jointVocabulary
-				if mid not in jointVocCache:
-					jointVocabulary = partVoc.intersection(set(rel[mid].keys()))
-					jointVocCache[mid] = jointVocabulary
-				else:
-					jointVocabulary = jointVocCache[mid]
-				
-				# open expansionsCache
-				expansionCache = shelve.open(pathToExpansionCache + mid + expansionCacheInfo)
-				
-				# get expanded context
-				expandedContext = expandAndCleanContext(context, mid, rel, expansionParam, jointVocabulary, expansionCache)
-				
-				# close expansionCache
-				expansionCache.close()
-				
-				# get the indexCache (the right one)
-				indexCache = indexCaches[mid]
+			# get the histogram
+			histogram = getHistogram(expandedContext, clusterCenters, vectors, indexCaches)
 
-				# get the histogram
-				histogram = getHistogram(expandedContext, clusterCenters, vectors, indexCache)
+			# load the svm for mid
+			svmName = pathToSVMFile +  mid + svmFileInfo
+			if not svmName in svmCache:
+				svmCache[svmName] = pickle.load(open(svmName, 'r'))
 
-				# load the svm for mid
-				svmForMid = pickle.load(open(pathToSVMFile +  mid + svmFileInfo, 'r'))
+			# predict the label
+			label = svmCache[svmName].predict(histogram)[0]
 
-				# predict the label
-				label = svmForMid.predict(histogram)[0]
-
-				# print the info
-
-
-				# add label to word
-				if mid != None and label != None:
-					mid = mid + "_" + label		
-					# labels[mid]+=1
+			# add label to word
+			if mid != None and label != None:
+				mid = mid + "_" + label		
 		
-				if i % 100 == 0:
-					print i, "/", total, mid, label, context
+		f.write(mid + " ")
 
-				# append to word to annotation
-				# NOTE we are missing five words at the beginning and the end
-			# annotated.append(mid + " ")
-			f.write(mid + " ")
-	
-	# for key in labels:
-		# print key, labels[key]
-	
-	# print labels
+		if (i % 50000 == 0 or i == 10000) and i != 0:
+			t = ( time() - start ) 
+			eta = t / i * ( total - i )
+			print "Iteration:", i
+			print "\tEstimated time remaining:", eta
+
 	return annotated
 
 
@@ -152,10 +134,14 @@ if __name__ == "__main__":
 	expansionCacheInfo = "_expansionParam_"  + str(expansion)
 
 	wordsOfInterest = [x.split("_")[0] for x in os.listdir(pathToSVMFile)]
-	print wordsOfInterest
-	f = open(pathToOutput, 'w')
+	#print wordsOfInterest
+	f = open(pathToOutput, 'r')
+	StartIndex = len(f.readline().split(" "))
+	print "Start index: ", StartIndex
+	f.close()
+	f = open(pathToOutput, 'a')
+	inpt = read_file(textfile)[StartIndex:]
 
-	getContext(read_file(textfile), wordsOfInterest, window, vecs, pathToExpansionCache, expansion, rel, clusterCenters, expansionCacheInfo, svmFileInfo, pathToSVMFile, f)
-	# f.write("".join(annotated))
+	getContext(inpt, wordsOfInterest, window, vecs, pathToExpansionCache, expansion, rel, clusterCenters, expansionCacheInfo, svmFileInfo, pathToSVMFile, f)
 	f.close()
 
