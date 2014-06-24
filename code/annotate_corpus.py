@@ -91,7 +91,7 @@ def getContext(inpt, wordsOfInterest, skipsize, vectors, pathToExpansionCache, e
 		
 		f.write(mid + " ")
 
-		if i % 50000 == 0:
+		if i % 50000 == 0 or i == 10000:
 			t = ( time() - start ) 
 			eta = t / i * ( total - i )
 			print "Iteration:", i
