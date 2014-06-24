@@ -42,6 +42,10 @@ Word sense discrimination divides the occurrences of a word in a numb of classes
 Final new thing
 Latent meanings \cite{latent}
 
+\section{Datasets}
+We used the blabla task.\\
+For model training data we used the enwiki8 dataset \cite{enwiki} corpus. For our purposes we filtered the corpus for 
+
 \section{COCONUT}
 %COPIED FROM REPORT ULL (SHOULD BE ADJUSTED)
 The COCONUT method for disambiguating words is based on two assumptions: 
@@ -71,6 +75,12 @@ COCONUT will split every word in the corpus in order to find two different meani
 \caption{The five steps of the PALM algorithm. P: preprocessing, PALM requires agglomeratively-clusterd latent meanings and relatedness vectors for all words in the corpus. 1. Extract every context word $W$ appears in. 2. Expand the context. 3. Choose a label from the expanded context and create a `histogram' over the agglomeratively-clusterd latent meanings for every expanded corpus. 4. Train an SVM on these histograms using the labels.}
 \label{palmimg}
 \end{figure*}
+
+\section{Agglomerative Clustering}
+One way to cluster data is agglomerative clustering. Agglomerative clustering is an iterative bottom up approach to clustering. At the start each data point forms its own cluster and in each iteration the two data points that are closest to each other are merged until there is only a given number of clusters or the smallest inter-cluster distance is larger than a predefined value. Agglomerative clustering can be used to cluster words based on their word vector representation. 
+
+
+
 
 \section{PALM}
 In order to disambiguate between multiple meanings of a word, it can be useful to look at the context. PALM is a method for word sense discrimination that trains an SVM for every word that given a context predicts a label that describes the meaning of the word. These labels can be used to relabel a corpus before training a recurrent neural network to obtain multiple vector representations for one word. In this section we describe the PALM method in detail, figure \ref{palmimg} provides an overview of the algorithm. 
