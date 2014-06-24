@@ -18,21 +18,22 @@ from time import time
 # expansionCacheInfo - identifiiers for expansionCache files
 # svmFileInfo - identifiers for svm files
 def getContext(inpt, wordsOfInterest, skipsize, vectors, pathToExpansionCache, expansionParam, rel, clusterCenters, expansionCacheInfo, svmFileInfo, pathToSVMFile, f):
-
-	# size of the queue is 2 times the skipsize + 1 for the mid (so there are skipsize words on the left and on the right)
-	queueSize = skipsize * 2 + 1
-
-	# mid index is skipsize
-	queueMid = skipsize
-	
 	# pushes elemet to the queue
 	# if necessary pops first element
 	def push(element, queue):
 		queue.append(element)
 		queue.pop(0)
-	
+	# size of the queue is 2 times the skipsize + 1 for the mid (so there are skipsize words on the left and on the right)
+	queueSize = skipsize * 2 + 1
+
+	# mid index is skipsize
+	queueMid = skipsize
+
 	# init empty queue
 	queue = [ inpt.pop(0) for _ in xrange(queueSize) ]
+
+	expansionCache = dict()
+	expansionQueue = []
 
 	indexCaches = dict()
 	jointVocCache = dict()
@@ -64,14 +65,22 @@ def getContext(inpt, wordsOfInterest, skipsize, vectors, pathToExpansionCache, e
 				jointVocCache[mid] = partVoc.intersection(set(rel[mid].keys()))
 			jointVocabulary = jointVocCache[mid]
 			
-			# open expansionsCache
-			expansionCache = shelve.open(pathToExpansionCache + mid + expansionCacheInfo)
+			
+			expansionName = pathToExpansionCache + mid + expansionCacheInfo
+			if not expansionName in expansionCache:
+				e = shelve.open(expansionName)
+				expansionCache[expansionName] = dict(e)
+				e.close()
+
+				expansionQueue.append[expansionName]
+				if expansionQueue > 25:
+					del expansionCache[expansionQueue.pop(0)]
+					
+			expansion = expansionCache[expansionName]
 			
 			# get expanded context
-			expandedContext = expandAndCleanContext(context, mid, rel, expansionParam, jointVocabulary, expansionCache)
+			expandedContext = expandAndCleanContext(context, mid, rel, expansionParam, jointVocabulary, expansion)
 			
-			# close expansionCache
-			expansionCache.close()
 
 			# get the histogram
 			histogram = getHistogram(expandedContext, clusterCenters, vectors, indexCaches)
