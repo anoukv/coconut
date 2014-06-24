@@ -72,8 +72,8 @@ def getContext(inpt, wordsOfInterest, skipsize, vectors, pathToExpansionCache, e
 				expansionCache[expansionName] = dict(e)
 				e.close()
 
-				expansionQueue.append[expansionName]
-				if expansionQueue > 25:
+				expansionQueue.append(expansionName)
+				if len(expansionQueue) > 25:
 					del expansionCache[expansionQueue.pop(0)]
 					
 			expansion = expansionCache[expansionName]
