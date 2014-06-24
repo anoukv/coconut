@@ -1,12 +1,11 @@
 import sys, os
 import shelve
 from palm import expandAndCleanContext, getHistogram
-from collections import defaultdict
-from fast_utils import read_file, load_vectors, getAverageWordRep, cosine_similarity, read_sets
+from fast_utils import read_file, load_vectors, getAverageWordRep, read_sets
 import pickle
 from sklearn import svm
 from copy import copy
-from time import time()
+from time import time
 
 # inpt - the actual corpus
 # words of interest - list of words we want to relabel
@@ -91,7 +90,7 @@ def getContext(inpt, wordsOfInterest, skipsize, vectors, pathToExpansionCache, e
 		
 		f.write(mid + " ")
 
-		if i % 50000 == 0 or i == 10000:
+		if (i % 50000 == 0 or i == 10000) and i != 0:
 			t = ( time() - start ) 
 			eta = t / i * ( total - i )
 			print "Iteration:", i
@@ -104,7 +103,7 @@ if __name__ == "__main__":
 	print "Welcome to PALM annotation tool!"
 	
 	if len(sys.argv) < 8:
-		print "USAGE: python annotate_corpus.py <TEXT FILE> <PATH TO REL> <PATH TO CLUSTERS> <PATH TO VECTORS> <PATH TO SVM FILE> <PATH TO EXPANSIONCACHES>"
+		print "USAGE: python annotate_corpus.py <TEXT FILE> <PATH TO REL> <PATH TO CLUSTERS> <PATH TO VECTORS> <PATH TO SVM FILE> <PATH TO EXPANSIONCACHES> <PATH TO OUTPUT>"
 		sys.exit()
 
 	# read all files
@@ -135,9 +134,10 @@ if __name__ == "__main__":
 	expansionCacheInfo = "_expansionParam_"  + str(expansion)
 
 	wordsOfInterest = [x.split("_")[0] for x in os.listdir(pathToSVMFile)]
-	print wordsOfInterest
+	#print wordsOfInterest
 	f = open(pathToOutput, 'r')
 	StartIndex = len(f.readline().split(" "))
+	print "Start index: ", StartIndex
 	f.close()
 	f = open(pathToOutput, 'a')
 	inpt = read_file(textfile)[StartIndex:]

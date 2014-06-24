@@ -22,25 +22,11 @@ The abstract will be here.
 \section{Introduction}
 
 \section{Related Work}
-Automatic Word Sense Discrimation by schutze?
-Word sense disambiguation is the task of assigning labels to occurrences of ambiguous words. 
-Word sense discrimination divides the occurrences of a word in a numb of classes by determining for any towo occurrences whether they belong to the same sense or not. 
-\subsection{Word Sense Disambiguation}
-\begin{enumerate}
-\item Something about the relatedness paper that is really old \cite{relatedness}
-\item Something from the survey that gives state of the art about supervised, unsupervised, semi-supervised and knowledge based and how unsupervised is really useful \cite{survey}
-\item About analysis \cite{analysis}
-\end{enumerate}
-\subsection{Word Sense Disambiguation and word vector representations}
-\begin{enumerate}
-\item Something on word vector representations \cite{word2vec}
-\item Problem: nice description in the global paper \cite{global}
-\item First and second order clustering, different clustering methods \cite{clustering}
-\item Solution: multi-prototype does context and not context \cite{multi}
-\item Global paper that can do both, plus new evaluation \cite{global}
-\end{enumerate}
-Final new thing
-Latent meanings \cite{latent}
+The task of word sense disambiguation is to assign the correct sense to an ambiguous word, whereas word sense discrimination is the task of finding the different senses a word might have \cite{old}. The importance of using co-occurrences for determining the correct sense of a word is already emphasized in \cite{relatedness} in which the authors propose a method for word sense disambiguation using co-occurrences. More specifically, the authors propose a simple score expressing the relatedness between two words:
+\begin{equation}\label{r(x,y)}r(x, y) = \frac{f_xy}{f_x+f_y - f_{xy}}\end{equation}
+where $f_{xy}$ denotes the frequency of $x$ and $y$ occurring together and $f_x$ and $f_y$ denote the frequency of $x$, respectively $y$. 
+In the past years a lot of different methods for word sense disambiguation have been proposed that were either supervised, knowledge-based or unsupervised \cite{survey}. Unsupervised mainly focus on word sense discrimination, the majority of unsupervised word sense discrimination method uses some sort of clustering of for example context vectors or individual words that have a similar meaning. An example of an unsupervised method that uses clustering on both first order context vectors and second order context vectors can be found in \cite{clustering}. Another example of unsupervised word sense discrimination is given in \cite{latent} where the authors use the intuition that the meaning of a word can be represented as a distribution over a set of latent senses.
+Recently \cite{word2vec} have released tools for efficiently computing word vectors that capture syntactic and semantic information. The distance between these vectors can be used for identifying linguistic regularities \cite{regularities} and a number of other applications such as word sense discrimination. However, word vector representations suffer from the problem that words may have a number of different meanings that cannot be captured in a single representation. \cite{multi} propose a solution to this problem, they represent a word's meaning by a set of sense specific vectors which are discovered by clustering the contexts in which a word appears. For every context cluster, the authors compute an average vector that can be used to determine the similarity between two words (either in context or isolated). The size of the set of sense specific vectors is set in advance and is the same for every word. \cite{global} build upon this work by introducing a new neural network architecture that learns word vectors that also incorporate the global context of a word and can lean multiple vectors for a single word. In addition to this, they present a new dataset of pairs of words in contexts annotated with similarity judgements by human annotators. 
 
 \section{Training data}
 For model training data we used the enwiki8 dataset \cite{enwiki} corpus. For our purposes we filtered the corpus for 
@@ -56,9 +42,7 @@ The COCONUT method for disambiguating words is based on two assumptions:
 Let $C$ be the set of words that co-occur with $A$, the word we want to disambiguate. COCONUT first constructs and converts the global co-occurrence vectors of the words in $C$ to relatedness vectors. It will then cluster these relatedness vectors in order to determine the two possibly different meanings of $A$. 
 
 \subsection{Co-Occurrence Vectors}
-A global co-occurrence vector contains the frequencies indicating how many times two words co-occur, we convert the absolute frequencies in the global co-occurrence vector to a relatedness score. We use the same function for relatedness as \cite{relatedness}:
-$$r(x, y) = \frac{f_xy}{f_x+f_y - f_{xy}}$$
-where $f_{xy}$ denotes the frequency of $x$ and $y$ occurring together and $f_x$ and $f_y$ denote the frequency of $x$, respectively $y$. 
+A global co-occurrence vector contains the frequencies indicating how many times two words co-occur, we convert the absolute frequencies in the global co-occurrence vector to a relatedness score. We use the same function for relatedness as \cite{relatedness}.
 
 Words that are not closely related to $A$ do not contribute to either one of the meanings. Therefore, we will discard the words that have a relatedness score with $A$ that falls in the bottom $50\%$ of all relatedness-scores from $C$. The terms that are discarded are considered relevant to all meanings of $A$, we will call this set $R$.
 
@@ -77,9 +61,6 @@ COCONUT will split every word in the corpus in order to find two different meani
 
 \section{Agglomerative Clustering}
 One way to cluster data is agglomerative clustering. Agglomerative clustering is an iterative bottom up approach to clustering. At the start each data point forms its own cluster and in each iteration the two data points that are closest to each other are merged until there is only a given number of clusters or the smallest inter-cluster distance is larger than a predefined value. Agglomerative clustering can be used to cluster words based on their word vector representation. 
-
-
-
 
 \section{PALM}
 In order to disambiguate between multiple meanings of a word, it can be useful to look at the context. PALM is a method for word sense discrimination that trains an SVM for every word that given a context predicts a label that describes the meaning of the word. These labels can be used to relabel a corpus before training a recurrent neural network to obtain multiple vector representations for one word. In this section we describe the PALM method in detail, figure \ref{palmimg} provides an overview of the algorithm. 
@@ -100,10 +81,7 @@ The reordered labelled data can then be used to train an SVM. The SVM can then d
 %\section{REMI}
 
 \section{Experiments}
-%Possible things to evaluate 
-%\begin{enumerate}
-%\item Is it more beneficial to do PALM with a larger skip size or a larger expansion param?
-%\end{enumerate}
+In this section we describe 
 \section{Qualitative evaluation}
 
 \section{Quantitative evaluation}
