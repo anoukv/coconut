@@ -17,7 +17,7 @@ from copy import copy
 # clusterCenters - list of cluster centers
 # expansionCacheInfo - identifiiers for expansionCache files
 # svmFileInfo - identifiers for svm files
-def getContext(inpt, wordsOfInterest, skipsize, vectors, pathToExpansionCache, expansionParam, rel, clusterCenters, expansionCacheInfo, svmFileInfo, pathToSVMFile):
+def getContext(inpt, wordsOfInterest, skipsize, vectors, pathToExpansionCache, expansionParam, rel, clusterCenters, expansionCacheInfo, svmFileInfo, pathToSVMFile, f):
 
 	# initiate the contexts
 	annotated = []	
@@ -47,7 +47,7 @@ def getContext(inpt, wordsOfInterest, skipsize, vectors, pathToExpansionCache, e
 
 	partVoc = set(vectors.keys())
 
-	labels = defaultdict(int)
+	# labels = defaultdict(int)
 	jointVocCache = dict()
 	# for every word in the corpus
 	for i, word in enumerate(inpt):
@@ -98,18 +98,21 @@ def getContext(inpt, wordsOfInterest, skipsize, vectors, pathToExpansionCache, e
 
 
 				# add label to word
-				mid = mid + "_" + label
+				if mid != None and label != None:
+					mid = mid + "_" + label		
+					# labels[mid]+=1
+		
 				if i % 100 == 0:
 					print i, "/", total, mid, label, context
 
-				labels[mid]+=1
-		
 				# append to word to annotation
 				# NOTE we are missing five words at the beginning and the end
-				annotated.append(mid + " ")
-			annotated.append(mid + " ")
-	for key in labels:
-		print key, labels[key]
+			# annotated.append(mid + " ")
+			f.write(mid + " ")
+	
+	# for key in labels:
+		# print key, labels[key]
+	
 	# print labels
 	return annotated
 
@@ -150,9 +153,9 @@ if __name__ == "__main__":
 
 	wordsOfInterest = [x.split("_")[0] for x in os.listdir(pathToSVMFile)]
 	print wordsOfInterest
-	annotated = getContext(read_file(textfile), wordsOfInterest, window, vecs, pathToExpansionCache, expansion, rel, clusterCenters, expansionCacheInfo, svmFileInfo, pathToSVMFile)
-
 	f = open(pathToOutput, 'w')
-	f.write("".join(annotated))
+
+	getContext(read_file(textfile), wordsOfInterest, window, vecs, pathToExpansionCache, expansion, rel, clusterCenters, expansionCacheInfo, svmFileInfo, pathToSVMFile, f)
+	# f.write("".join(annotated))
 	f.close()
 
