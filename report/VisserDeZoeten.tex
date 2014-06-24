@@ -63,9 +63,6 @@ COCONUT will split every word in the corpus in order to find two different meani
 \section{Agglomerative Clustering}
 One way to cluster data is agglomerative clustering. Agglomerative clustering is an iterative bottom up approach to clustering. At the start each data point forms its own cluster and in each iteration the two data points that are closest to each other are merged until there is only a given number of clusters or the smallest inter-cluster distance is larger than a predefined value. Agglomerative clustering can be used to cluster words based on their word vector representation. 
 
-
-
-
 \section{PALM}
 In order to disambiguate between multiple meanings of a word, it can be useful to look at the context. PALM is a method for word sense discrimination that trains an SVM for every word that given a context predicts a label that describes the meaning of the word. These labels can be used to relabel a corpus before training a recurrent neural network to obtain multiple vector representations for one word. In this section we describe the PALM method in detail, figure \ref{palmimg} provides an overview of the algorithm. 
 
@@ -85,10 +82,7 @@ The reordered labelled data can then be used to train an SVM. The SVM can then d
 %\section{REMI}
 
 \section{Experiments}
-%Possible things to evaluate 
-%\begin{enumerate}
-%\item Is it more beneficial to do PALM with a larger skip size or a larger expansion param?
-%\end{enumerate}
+In this section we describe 
 \section{Qualitative evaluation}
 
 \section{Quantitative evaluation}
