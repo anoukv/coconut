@@ -71,7 +71,10 @@ $$label = \arg\max_w \frac{r(W, w) + \textit{sim}(W, w)}{2}$$
 where $\textit{sim}(W, w)$ denotes the cosine similarity between $W$ and $w$. 
 
 \subsection{Probability distribution over agglomeratively-clustered latent meanings}
-For every word in the expanded context we find the similarity to every agglomeratively-clustered latent meaning, creating an $N$ dimensional vector (where $N$ is the number of agglomeratively-clustered latent meanings that were found). These vectors are accumulated and normalized, so that we have one vector for every context. Although the values denote the accumulated similarity of the words from the expanded context to the meanings, we can interpret the vector as a probability distribution over meanings, given the context (when the context and a meaning are very similar, it is very likely that the context imposes this meaning). 
+% Change this part a bit so that it is not like we have a large number of vectors to start with. Actual implementation can be different from description.
+For every word in the expanded context we find the similarity to every agglomeratively-clustered latent meaning, creating an $N$ dimensional vector (where $N$ is the number of agglomeratively-clustered latent meanings that were found). These vectors are accumulated and normalized, so that we have one vector for every context. 
+\begin{equation}\label{pa}m_i = \frac{1}{N_c}\sum\limits_{w\in C}sim(w, m_i)\end{equation}
+Although the values denote the accumulated similarity of the words from the expanded context to the meanings, we can interpret the vector as a probability distribution over meanings, given the context (when the context and a meaning are very similar, it is very likely that the context imposes this meaning). 
 
 \subsection{Label reduction}
 The last step before training the SVM consists of reducing the number of labels. Although including the second-order context by expanding the context radically decreases the number of new labels, there will still be many labels including a number of labels that describe the same sense of $W$. We have implemented a method for label reduction that favors labels that were observed most frequently. We iteratively split the labels into two halves: the upper half (containing labels that were seen most frequently) and the lower half (containing labels that were seen least frequently) and merge a label (and all of its vectors) from the lower half ($w_l$) into a label form the upper half ($w_u$). $w_l$ and $w_u$ are chosen by: 
@@ -81,10 +84,11 @@ The reordered labelled data can then be used to train an SVM. The SVM can then d
 %\section{REMI}
 
 \section{Experiments}
-In this section we describe 
-\section{Qualitative evaluation}
 
 \section{Quantitative evaluation}
+We evaluate the performance of our WSD methods on the dataset constructed by \cite{global}. The dataset consist of 2003 word pairs and their context. The goal of the task is to assign a similarity measure to all word pairs. 241 word pairs consist of the same word, there are a total of 1712 unique words. Ten human judges assigned similarity scores to all word pairs. We compute the Spearman correlation between the method's similarity ratings and the average of the human annotators. We compare our methods to a baseline that uses only a single word vector for every word and computes the similarity as the cosine similarity between the two words without taking the context into account. 
+
+To compute the score for PALM we applied the word sense discrimination on the X corpus. PALM was able to identify different senses for 1222 of the 1712 unique words of the word pairs, resulting in 1222 SVMs. We then relabeled the 1222 words in the X corpus by appending the label predicted by the SVM for the word after extracting its probability distribution over meanings. Finally, we used \textit{word2vec} by \cite{word2vec} to obtain 80-dimensional word vectors for all words in the relabeled corpus. To compute the similarity of the word pair, we expand the contexts of both words use this to compute the probability distribution over the meaning. The trained SVM then provides the label of the word vector that represents the words best in their given contexts. 
 
 \section{Discussion and future work}
 \section{Conclusion}
