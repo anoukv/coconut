@@ -28,8 +28,7 @@ where $f_{xy}$ denotes the frequency of $x$ and $y$ occurring together and $f_x$
 In the past years a lot of different methods for word sense disambiguation have been proposed that were either supervised, knowledge-based or unsupervised \cite{survey}. Unsupervised mainly focus on word sense discrimination, the majority of unsupervised word sense discrimination method uses some sort of clustering of for example context vectors or individual words that have a similar meaning. An example of an unsupervised method that uses clustering on both first order context vectors and second order context vectors can be found in \cite{clustering}. Another example of unsupervised word sense discrimination is given in \cite{latent} where the authors use the intuition that the meaning of a word can be represented as a distribution over a set of latent senses.
 Recently \cite{word2vec} have released tools for efficiently computing word vectors that capture syntactic and semantic information. The distance between these vectors can be used for identifying linguistic regularities \cite{regularities} and a number of other applications such as word sense discrimination. However, word vector representations suffer from the problem that words may have a number of different meanings that cannot be captured in a single representation. \cite{multi} propose a solution to this problem, they represent a word's meaning by a set of sense specific vectors which are discovered by clustering the contexts in which a word appears. For every context cluster, the authors compute an average vector that can be used to determine the similarity between two words (either in context or isolated). The size of the set of sense specific vectors is set in advance and is the same for every word. \cite{global} build upon this work by introducing a new neural network architecture that learns word vectors that also incorporate the global context of a word and can lean multiple vectors for a single word. In addition to this, they present a new dataset of pairs of words in contexts annotated with similarity judgements by human annotators. 
 
-\section{Datasets}
-We used the blabla task.\\
+\section{Training data}
 For model training data we used the enwiki8 dataset \cite{enwiki} corpus. For our purposes we filtered the corpus for 
 
 \section{COCONUT}
@@ -82,7 +81,7 @@ The reordered labelled data can then be used to train an SVM. The SVM can then d
 %\section{REMI}
 
 \section{Experiments}
-
+In this section we describe 
 \section{Qualitative evaluation}
 
 \section{Quantitative evaluation}
