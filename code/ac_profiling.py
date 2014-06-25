@@ -1,3 +1,5 @@
+import cProfile
+
 import sys, os
 import shelve
 from palm import expandAndCleanContext, getHistogram
@@ -73,7 +75,7 @@ def getContext(inpt, wordsOfInterest, skipsize, vectors, pathToExpansionCache, e
 				e.close()
 
 				expansionQueue.append(expansionName)
-				if len(expansionQueue) > 200:
+				if len(expansionQueue) > 25:
 					del expansionCache[expansionQueue.pop(0)]
 					
 			expansion = expansionCache[expansionName]
@@ -108,18 +110,17 @@ def getContext(inpt, wordsOfInterest, skipsize, vectors, pathToExpansionCache, e
 if __name__ == "__main__":
 	print "Welcome to PALM annotation tool!"
 	
-	if len(sys.argv) < 8:
-		print "USAGE: python annotate_corpus.py <TEXT FILE> <PATH TO REL> <PATH TO CLUSTERS> <PATH TO VECTORS> <PATH TO SVM FILE> <PATH TO EXPANSIONCACHES> <PATH TO OUTPUT>"
-		sys.exit()
+	"USAGE: python annotate_corpus.py <TEXT FILE> <PATH TO REL> <PATH TO CLUSTERS> <PATH TO VECTORS> <PATH TO SVM FILE> <PATH TO EXPANSIONCACHES> <PATH TO OUTPUT>"
 
 	# read all files
-	textfile = sys.argv[1]
-	relFile = sys.argv[2]
-	clusterFile = sys.argv[3]
-	vecFile = sys.argv[4]
-	pathToSVMFile = sys.argv[5]
-	pathToExpansionCache = sys.argv[6]
-	pathToOutput = sys.argv[7]
+	textfile = "../../corpora/corpus.enwiki8.relevant"
+	relFile =  "../../cocs/enwiki8_rel"
+	clusterFile = "../data/agg_wordclusters/enwiki8.relevant.dim80.min10.win10_10000x500x10.clusters"
+	vecFile = "../data/wordvectors/enwiki8.relevant.dim80.min10.win10"
+	pathToSVMFile = "../data/svms/"
+	pathToExpansionCache = "../data/expansionCaches/"
+	pathToOutput = "poep"
+	maxIndex = 5000
 	
 	# open the rel
 	rel = shelve.open(relFile)
@@ -141,13 +142,9 @@ if __name__ == "__main__":
 
 	wordsOfInterest = [x.split("_")[0] for x in os.listdir(pathToSVMFile)]
 	#print wordsOfInterest
-	f = open(pathToOutput, 'r')
-	StartIndex = len(f.readline().split(" ")) - 10
-	print "Start index: ", StartIndex
-	f.close()
 	f = open(pathToOutput, 'a')
-	inpt = read_file(textfile)[StartIndex:]
+	inpt = read_file(textfile)[:maxIndex]
 
-	getContext(inpt, wordsOfInterest, window, vecs, pathToExpansionCache, expansion, rel, clusterCenters, expansionCacheInfo, svmFileInfo, pathToSVMFile, f)
+	cProfile.run("getContext(inpt, wordsOfInterest, window, vecs, pathToExpansionCache, expansion, rel, clusterCenters, expansionCacheInfo, svmFileInfo, pathToSVMFile, f)")
 	f.close()
 
