@@ -36,7 +36,7 @@ def vector_similarity(cs, w1, w2, vectors):
 
 if __name__ == '__main__':
 	if not len(sys.argv) == 4:
-		print "USAGE: python agg_answering.py <PATH TO TASK> <PATH TO cluster_descriptors>"
+		print "USAGE: python agg_answering.py <PATH TO TASK> <PATH TO cluster_descriptors> <PATH TO wordvectors"
 		sys.exit()
 
 	print "Loading stuf..."

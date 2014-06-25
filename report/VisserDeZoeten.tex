@@ -69,6 +69,8 @@ One way to cluster data is agglomerative clustering which has been shown to prod
 \caption{Distribution over cluster sizes for agglomerative clustering.}
 \label{cluster_size}
 \end{figure}
+
+\subsection{Comparing word context with clusters}
 For each of the tasks we compare the context of the word that needs to be disambiguated with all the clusters. We determine the likelihood of a context $cont$ being represented by a cluster by counting how many words are in common with the cluster:
 
 \begin{equation} \label{pcc}P( cluster | cont ) = \frac{ | \{cluster \cap cont\} |  }{| cluster |} \end{equation}
@@ -107,11 +109,23 @@ The reordered labelled data can then be used to train an SVM.
 %\section{REMI}
 
 \section{Experiments}
-
-\section{Quantitative evaluation}
 We evaluate the performance of our WSD methods on the dataset constructed by \cite{global}. The dataset consist of 2003 word pairs and their context. The goal of the task is to assign a similarity measure to all word pairs. 241 word pairs consist of the same word, there are a total of 1712 unique words. Ten human judges assigned similarity scores to all word pairs. We compute the Spearman correlation between the method's similarity ratings and the average of the human annotators. We compare our methods to a baseline that uses only a single word vector for every word and computes the similarity as the cosine similarity between the two words without taking the context into account. 
 
 To compute the score for PALM we applied the word sense discrimination on the X corpus. PALM was able to identify different senses for 1222 of the 1712 unique words of the word pairs, resulting in 1222 SVMs. We then relabeled the 1222 words in the X corpus by appending the label predicted by the SVM for the word after extracting its probability distribution over meanings. Finally, we used \textit{word2vec} by \cite{word2vec} to obtain 80-dimensional word vectors for all words in the relabeled corpus. To compute the similarity of the word pair, we expand the contexts of both words use this to compute the probability distribution over the meaning. The trained SVM then provides the label of the word vector that represents the words best in their given contexts. 
+
+\begin{table}[H]
+    \begin{tabular}{|l|l|l|}
+    \hline
+    WSD Method & $\rho \times 100$ \\ \hline
+    Single Word Vector & 60.1 \\ \hline
+    Coconut & 38.2 \\ \hline
+    Agglomerative & 19.5 \\ \hline
+    Agglomerative + SWV & 60.4 \\ \hline
+    Agglomerative Extended & 54.5 \\ \hline
+    \end{tabular}
+\end{table}
+
+
 
 \section{Discussion and future work}
 \section{Conclusion}

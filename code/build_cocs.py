@@ -28,7 +28,7 @@ def relatedness(word, coc, vocabulary):
 
 def getCocMatrix(inpt, skipsize):
 	queueSize = skipsize * 2 + 1
-	queueMid = skipsize + 1
+	queueMid = skipsize
 
 	queueIsReady = lambda x : len(x) == queueSize
 	def push(element, queue):

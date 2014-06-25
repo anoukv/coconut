@@ -67,7 +67,7 @@ if __name__ == "__main__":
 		context2 = normalize_coc(dict( [ (e, 1) for e in context2] ))
 
 		c_s = context_similarity(context1, context2, clusters)
-		sim = vector_similarity(c_s, word1, word2, vectors)
+		sim = 1 #vector_similarity(c_s, word1, word2, vectors)
 		score = sim**3 * c_s
 
 		methodsRating.append( score )
