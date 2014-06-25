@@ -4,6 +4,7 @@
 \usepackage{url}
 \usepackage{latexsym}
 \usepackage{graphicx}
+\usepackage{float}
 \title{Coconut palms and hand palms: improving similarity ranking by word sense disambiguation}
 
 \author{Anouk Visser \\
@@ -29,7 +30,7 @@ In the past years a lot of different methods for word sense disambiguation have 
 Recently \cite{word2vec} have released tools for efficiently computing word vectors that capture syntactic and semantic information. The distance between these vectors can be used for identifying linguistic regularities \cite{regularities} and a number of other applications such as word sense discrimination. However, word vector representations suffer from the problem that words may have a number of different meanings that cannot be captured in a single representation. \cite{multi} propose a solution to this problem, they represent a word's meaning by a set of sense specific vectors which are discovered by clustering the contexts in which a word appears. For every context cluster, the authors compute an average vector that can be used to determine the similarity between two words (either in context or isolated). The size of the set of sense specific vectors is set in advance and is the same for every word. \cite{global} build upon this work by introducing a new neural network architecture that learns word vectors that also incorporate the global context of a word and can lean multiple vectors for a single word. In addition to this, they present a new dataset of pairs of words in contexts annotated with similarity judgements by human annotators. 
 
 \section{Training data}
-For model training data we used the enwiki8 dataset \cite{enwiki} corpus. For our purposes we filtered the corpus for 
+For model training data we used the enwiki8 dataset \cite{enwiki} corpus. For our purposes we filtered the corpus to only keep the words in the following Part-Of-Speech categories: Nouns, Verbs, Adjectives and Adverbs. We think that these words are more relevant for the task of word sense disambiguation and that words from other categories (such as the determiners) would only add noise to our models. Furthermore, we lemmatized all words so that e.g. \textit{computer}, \textit{computers} and \textit{computing} are all projected onto the token \textit{comput}. The lemmatization is used as a form of dimensionality reduction.
 
 \section{COCONUT}
 %COPIED FROM REPORT ULL (SHOULD BE ADJUSTED)
@@ -60,7 +61,18 @@ COCONUT will split every word in the corpus in order to find two different meani
 \end{figure*}
 
 \section{Agglomerative Clustering}
-One way to cluster data is agglomerative clustering. Agglomerative clustering is an iterative bottom up approach to clustering. At the start each data point forms its own cluster and in each iteration the two data points that are closest to each other are merged until there is only a given number of clusters or the smallest inter-cluster distance is larger than a predefined value. Agglomerative clustering can be used to cluster words based on their word vector representation. 
+One way to cluster data is agglomerative clustering which has been shown to produce good results in comparison with other clustering techniques \cite{clustering}. Agglomerative clustering is an iterative bottom up approach to clustering. At the start each data point forms its own cluster and in each iteration the two data points that are closest to each other are merged until there is only a given number of clusters or the inter-cluster distances are larger than a predefined value. We performed agglomerative clustering on the $80$ dimensional word vector representations that we extracted from our training data. We clustered the words into 500 clusters. The result was that 351 clusters were single word clusters. The distribution over the number of words in each cluster is skewed and clusters with one or just a few words in them are not informative. Therefore we removed the clusters that had less than $10$ words in them, which resulted in 41 clusters with a distribution over the cluster size shown in figure \ref{cluster_size}.
+\begin{figure}[H]
+\center
+\includegraphics[scale=0.40]{images/cluster_size.png}
+\caption{Distribution over cluster sizes for agglomerative clustering.}
+\label{cluster_size}
+\end{figure}
+For each of the tasks we compare the context of the word that needs to be disambiguated with all the clusters. We determine the likelihood of a context $cont$ being represented by a cluster by counting how many words are in common with the cluster:
+
+\begin{equation} \label{pcc}P( cluster | cont ) = \frac{ | \{cluster \cap cont\} |  }{| cluster |} \end{equation}
+
+By applying \ref{pcc} to all clusters for a given context and normalizing over the different probabilities we get a probability vector $V_{c}$ that defines a mixture of the context over the different clusters. It is then possible to define a similarity between the two contexts $V_{c_1}$ and $V_{c_2}$ by their cosine similarity $cos(V_{c_1}, V_{c_2})$.
 
 \section{PALM}
 In order to disambiguate between multiple meanings of a word, it can be useful to look at the context. PALM is a method for word sense discrimination that trains an SVM for every word that given a context predicts a label that describes the meaning of the word. These labels can be used to relabel a corpus before training a recurrent neural network to obtain multiple vector representations for one word. In this section we describe the PALM method in detail, figure \ref{palmimg} provides an overview of the algorithm. 
