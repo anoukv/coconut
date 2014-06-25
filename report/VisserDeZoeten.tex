@@ -37,10 +37,9 @@ Recently \cite{word2vec} have released tools for efficiently computing word vect
 \end{figure*}
 
 \section{Training data}
-For model training data we used the enwiki8 dataset \cite{enwiki} corpus. For our purposes we filtered the corpus to only keep the words in the following Part-Of-Speech categories: Nouns, Verbs, Adjectives and Adverbs. We think that these words are more relevant for the task of word sense disambiguation and that words from other categories (such as the determiners) would only add noise to our models. Furthermore, we lemmatized all words so that e.g. \textit{computer}, \textit{computers} and \textit{computing} are all projected onto the token \textit{comput}. The lemmatization is used as a form of dimensionality reduction.
+For model training data we used the \textit{enwiki8} dataset\footnote{http://mattmahoney.net/dc/textdata.html} corpus. For our purposes we filtered the corpus to only keep the words in the following Part-Of-Speech categories: Nouns, Verbs, Adjectives and Adverbs as is common in word sense disambiguation and discrimination systems \cite{survey}. Furthermore, we lemmatized all words so that e.g. \textit{computer}, \textit{computers} and \textit{computing} are all projected onto the token \textit{comput}. The lemmatization is used as a form of dimensionality reduction.
 
 \section{COCONUT}
-%COPIED FROM REPORT ULL (SHOULD BE ADJUSTED)
 The COCONUT method is a method for word sense discrimination and is based on two assumptions:
 \begin{enumerate}
 \item the meaning of a word is highly dependent on the words it co-occurs with
@@ -50,17 +49,6 @@ Let $C$ be the set of words that co-occur with $W$, the word we want to disambig
 
 A disadvantage of COCONUT is that the number of senses for a word has to be known in advance. In addition to this, COCONUT was designed to perform word sense discrimination and it is not straightforward to disambiguate a word given the $k$ senses of a word. 
 
-%\subsection{Co-Occurrence Vectors}
-%A global co-occurrence vector contains the frequencies indicating how many times two words co-occur, we convert the absolute frequencies in the global co-occurrence vector to a relatedness score. We use the same function for relatedness as \cite{relatedness}.
-
-%Words that are not closely related to $A$ do not contribute to either one of the meanings. Therefore, we will discard the words that have a relatedness score with $A$ that falls in the bottom $50\%$ of all relatedness-scores from $C$. The terms that are discarded are considered relevant to all meanings of $A$, we will call this set $R$.
-
-%\subsection{Clustering and splitting}
-%Let the set of co-occurrence vectors from the words in $C$, be called $V$. After applying k-means clustering on the vectors in $V$ we expect to find two cluster centers that represent the two meanings for $A$. Note that we are only interested in describing the two meanings of $A$ using the words in $C$. Therefore, for every vector in $V$ we will discard all words that are not in $C$. The adjusted vectors can now be used to perform k-means clustering. 
-
-%The two new co-occurrence vectors for $A$ are initialized with the words in $R$. As the cluster centers define the different meanings of $A$, we can look at the words in each cluster to fill the new co-occurrence vectors for $A$.  
-
-%COCONUT will split every word in the corpus in order to find two different meanings (we excluded the 75 most frequent words), but not all words are ambiguous. We expect that words that have two distinct meanings will have a greater cluster distance (i.e. a greater distance between the two meanings) than words that do not. We discard all disambiguations for the words that have a cluster distance that falls in the bottom $50\%$ of all cluster distances.
 \section{Agglomerative Clustering}
 One way to cluster data is agglomerative clustering which has been shown to produce good results in comparison with other clustering techniques \cite{clustering}. Agglomerative clustering is an iterative bottom up approach to clustering. At the start each data point forms its own cluster and in each iteration the two data points that are closest to each other are merged until there is only a given number of clusters or the inter-cluster distances are larger than a predefined value. We performed agglomerative clustering on the $80$ dimensional word vector representations that we extracted from our training data. We clustered the words into 500 clusters. The result was that 351 clusters were single word clusters. The distribution over the number of words in each cluster is skewed and clusters with one or just a few words in them are not informative. Therefore we removed the clusters that had less than $10$ words in them, which resulted in 41 clusters with a distribution over the cluster size shown in figure \ref{cluster_size}.
 \begin{figure}[H]
@@ -84,7 +72,7 @@ In this section we describe the PALM method in detail, figure \ref{palmimg} prov
 \begin{figure*}
 \center
 \includegraphics[scale=0.5]{images/palm.pdf}
-\caption{The five steps of the PALM algorithm. P: preprocessing, PALM requires agglomeratively-clusterd latent meanings and relatedness vectors for all words in the corpus. 1. Extract every context word $W$ appears in. 2. Expand the context. 3. Choose a label from the expanded context and create a `histogram' over the agglomeratively-clusterd latent meanings for every expanded corpus. 4. Train an SVM on these histograms using the labels.}
+\caption{The five steps of the PALM algorithm. P: preprocessing, PALM requires agglomeratively-clusterd latent meanings and relatedness vectors for all words in the corpus. 1. Extract every context word $W$ appears in. 2. Expand the context. 3. Choose a label from the expanded context and construct the vector representing the probability distribution from the word's expanded context over the agglomeratively-clustered latent meanings for every context. 4. Train an SVM on these probability distribution vectors using the selected labels.}
 \label{palmimg}
 \end{figure*}
 
@@ -94,11 +82,9 @@ Let $W$ be the word for which we want to train the SVM. PALM starts by extractin
 where $r(W, w)$ is the relatedness score from equation \ref{r} and $\textit{sim}(W, w)$ denotes the cosine similarity between $W$ and $w$. 
 
 \subsection{Probability distribution over agglomeratively-clustered latent meanings}
-We Let $P$ be an $N$-dimensional vector describing the probability distribution of a word's context over the clustered meanings. We compute an element $p_i$ in $P$ as follows:
+Let $P$ be an $N$-dimensional vector describing the probability distribution of a word's context over the clustered meanings. We compute an element $p_i$ in $P$ as follows:
 \begin{equation}\label{pa}p_i = \frac{1}{N_c}\sum\limits_{w\in C}sim(w, m_i)\end{equation}
-where $N_c$ is the number of contexts and $m_i$ is the vector representation for the $i^{\textit{th}}$ meaning and $C$ is the collection of all words in the expanded context. 
-%For every word in the expanded context we find the similarity to every agglomeratively-clustered latent meaning, creating an $N$ dimensional vector (where $N$ is the number of agglomeratively-clustered latent meanings that were found). These vectors are accumulated and normalized, so that we have one vector for every context. 
-%\begin{equation}\label{pa}m_i = \frac{1}{N_c}\sum\limits_{w\in C}sim(w, m_i)\end{equation}
+where $N_c$ is the number of contexts, $m_i$ is the vector representation of the $i^{\textit{th}}$ cluster (i.e. latent meaning) and $C$ is the collection of all words in the expanded context. 
 Although the values denote the accumulated similarity of the words from the expanded context to the meanings, we can interpret the vector as a probability distribution of a word's context over clustered meanings (when the context and a meaning are very similar, it is very likely that the context imposes this meaning). 
 
 \subsection{Label reduction}
@@ -106,12 +92,11 @@ The last step before training the SVM consists of reducing the number of labels.
 $$\arg\max_{w_l, w_u} \textit{sim}(w_l, w_u)$$
 This process continues until $\textit{sim}(w_l, w_u)$ is below a certain threshold (in our experiments the threshold was $0.5$).
 The reordered labelled data can then be used to train an SVM.
-%\section{REMI}
 
 \section{Experiments}
-We evaluate the performance of our WSD methods on the dataset constructed by \cite{global}. The dataset consist of 2003 word pairs and their context. The goal of the task is to assign a similarity measure to all word pairs. 241 word pairs consist of the same word, there are a total of 1712 unique words. Ten human judges assigned similarity scores to all word pairs. We compute the Spearman correlation between the method's similarity ratings and the average of the human annotators. We compare our methods to a baseline that uses only a single word vector for every word and computes the similarity as the cosine similarity between the two words without taking the context into account. 
+We evaluate the performance of our WSD methods on the dataset constructed by \cite{global}. The dataset consist of 2003 word pairs and their context. The goal of the task is to assign a similarity measure to all word pairs. 241 word pairs consist of the same word leaving a total of 1712 unique words. Ten human judges assigned similarity scores to all word pairs. We compute the Spearman correlation between the method's similarity ratings and the average rating of the human annotators. We compare our methods to a baseline that uses only a single word vector for every word and computes the similarity as the cosine similarity between the two words without taking the context into account. 
 
-To compute the score for PALM we applied the word sense discrimination on the X corpus. PALM was able to identify different senses for 1222 of the 1712 unique words of the word pairs, resulting in 1222 SVMs. We then relabeled the 1222 words in the X corpus by appending the label predicted by the SVM for the word after extracting its probability distribution over meanings. Finally, we used \textit{word2vec} by \cite{word2vec} to obtain 80-dimensional word vectors for all words in the relabeled corpus. To compute the similarity of the word pair, we expand the contexts of both words use this to compute the probability distribution over the meaning. The trained SVM then provides the label of the word vector that represents the words best in their given contexts. 
+To compute the score for PALM we applied the word sense discrimination phase on the \textit{enwiki8} corpus. PALM was able to identify different senses for 1222 of the 1712 unique words of the word pairs, resulting in 1222 SVMs. We then relabeled the 1222 words in the corpus by appending the label predicted by the SVM for the word. To obtain the label, we expand the contexts of both words and use this to compute the probability distribution over the meaning. The trained SVM then provides the label of the word vector that represents the words best in their given contexts. Finally, we used \textit{word2vec} by \cite{word2vec} to obtain 80-dimensional word vectors for all words in the relabeled corpus. For a word pair in the task, we can again obtain the label and use this to find the correct word vector. These word vectors can then be used to compute the cosine similarity between the two words.
 
 \begin{table}[H]
     \begin{tabular}{|l|l|l|}
@@ -124,8 +109,6 @@ To compute the score for PALM we applied the word sense discrimination on the X 
     Agglomerative Extended & 54.5 \\ \hline
     \end{tabular}
 \end{table}
-
-
 
 \section{Discussion and future work}
 \section{Conclusion}
