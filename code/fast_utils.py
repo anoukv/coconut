@@ -59,8 +59,11 @@ def load_vectors(filename, limit=False):
 	return words
 
 def getAverageWordRep(words, vectors):
-	average = 0
 	vecs = [vectors[word] for word in words if word in vectors]
+	average = [sum(x) / float(len(x)) for x in zip(*vecs)]
+	return normalizeVec(average)
+
+def getAverageWordRep2(vecs):
 	average = [sum(x) / float(len(x)) for x in zip(*vecs)]
 	return normalizeVec(average)
 

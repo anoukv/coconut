@@ -30,6 +30,8 @@ if __name__ == "__main__":
 			vec2 = vectors[word2]
 			methodsRating.append(cosine_similarity(vec1, vec2))
 			humanRating.append(question['rating'])
+			if len(methodsRating) % 100 == 0 and len(methodsRating) > 0:
+				print i, spearman(methodsRating, humanRating)
 			coverage += 1
 
  	print spearman(methodsRating, humanRating)

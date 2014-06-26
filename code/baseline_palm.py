@@ -26,7 +26,7 @@ def decideOnLabel(word, context, vectors, clusterCenters, expansionParam, rel, p
 	# get the indexCache (the right one)
 	indexCache = dict()
 
-	expandedContext = filter(lambda x: x  not in disambiguatedWords, expandedContext)
+	expandedContext = filter(lambda x: x  not in disambiguatedWords and x in jointVocabulary, expandedContext)
 	
 	# get the histogram
 	histogram = getHistogram(expandedContext, clusterCenters, vectors, indexCache)
@@ -42,8 +42,8 @@ def decideOnLabel(word, context, vectors, clusterCenters, expansionParam, rel, p
 
 if __name__ == "__main__":
 	print "Baseline with wordvectors"
-	if len(sys.argv) < 7:
-		print "USAGE: python baselline_word2vec.py <PATH TO TASK> <PATH TO WORDVECTORS> <PATH TO SVMS> <PATH TO CLUSTERS> <PATH TO REL> <PATH TO EXPANSIONSCACHE>"
+	if len(sys.argv) < 8:
+		print "USAGE: python baselline_word2vec.py <PATH TO TASK> <PATH TO WORDVECTORS> <PATH TO SVMS> <PATH TO CLUSTERS> <PATH TO REL> <PATH TO EXPANSIONSCACHE> <Normal vectors>"
 		sys.exit()
 	taskFilename = sys.argv[1]
 	vectorsFilename = sys.argv[2]
@@ -51,6 +51,7 @@ if __name__ == "__main__":
 	clusterFile = sys.argv[4]
 	relFile = sys.argv[5]
 	pathToExpansionCache = sys.argv[6]
+	normalVecPath = sys.argv[7]
 
 	expansion = 5
 	window = 5
@@ -61,6 +62,7 @@ if __name__ == "__main__":
 	rel = shelve.open(relFile)
 	task, tralala = load_task(taskFilename)
 	vectors = load_vectors(vectorsFilename)
+	normalVectors = load_vectors(normalVecPath)
 	disambiguatedWords = [x.split("_")[0] for x in os.listdir(pathToSVMFile)]
 
 	print "Reading agglomerative cluster centers"
@@ -70,19 +72,15 @@ if __name__ == "__main__":
 	# initiate empty ratings
 	methodsRating = []
 	humanRating = []
-	# print tralala
 	questions = task.values()
 
 	jointVocCache = dict()
 	partVoc = set(vectors.keys())
 
-	print disambiguatedWords
+	print len(disambiguatedWords), "disambiguated words"
 	
 	done = 0
 	for i in xrange(len(questions)):
-		# if i % 100 == 0:
-		# 	print i
-
 		question = questions[i]
 
 		word1 = Word(question['word1']).lemma()
@@ -90,46 +88,62 @@ if __name__ == "__main__":
 		context1 = [Word(x).lemma() for x in question['context1'].lower().split(' ')]
 		context2 = [Word(x).lemma() for x in question['context2'].lower().split(' ')]
 
+		# so we are not using disambiguated words in the context..?
+		context1 = filter(lambda x: x in partVoc, context1)
+		context2 = filter(lambda x: x in partVoc, context2)
+
 		# set finders to false
 		w1 = False
 		w2 = False
 		
 		# if word1 has been disambiguated or is in vectors set finder to true
-		
 		if word1 in disambiguatedWords:
-			# print i, "DISAMBIGUATE word 1!", word1
-			# print question['context1']
-			label = decideOnLabel(word1, context1, vectors, clusterCenters, expansion, rel, partVoc, jointVocCache, pathToExpansionCache, expansionCacheInfo, pathToSVMFile, svmFileInfo, disambiguatedWords)
-			w1 = True
-			vec1 = vectors[word1 + "_" + label]
-		
+			label1 = decideOnLabel(word1, context1, vectors, clusterCenters, expansion, rel, partVoc, jointVocCache, pathToExpansionCache, expansionCacheInfo, pathToSVMFile, svmFileInfo, disambiguatedWords)
+			new = word1 + "_" + label1
+			if new in vectors:
+				vec1 = vectors[word1 + "_" + label1]
+				w1 = True
 		elif word1 in partVoc:
-			w1 = True
+			label1 = "not ambiguous"
 			vec1 = vectors[word1]
+			w1 = True
+
 			# normal course of action
 		
 		# if word2 has been disambiguated or is in vectors set finder to true
 
 		if word2 in disambiguatedWords:
-			# print i, "DISAMBIGUATE word 2!", word2
-			# print question['context2']
-			label = decideOnLabel(word2, context2, vectors, clusterCenters, expansion, rel, partVoc, jointVocCache, pathToExpansionCache, expansionCacheInfo, pathToSVMFile, svmFileInfo, disambiguatedWords)
-			w1 = True
-			vec2 = vectors[word2 + "_" + label]
-		
+			label2 = decideOnLabel(word2, context2, vectors, clusterCenters, expansion, rel, partVoc, jointVocCache, pathToExpansionCache, expansionCacheInfo, pathToSVMFile, svmFileInfo, disambiguatedWords)
+			new = word2 + "_" + label2
+			if new in vectors:
+				vec2 = vectors[word2 + "_" + label2]
+				w2 = True
 		elif word2 in partVoc:
-			w2 = True
+			label2 = "not ambiguous"
 			vec2 = vectors[word2]
+			w2 = True
+
 
 		# only if both words have been found (somewhere), we continue
 		if w1 and w2:
-			methodsRating.append(cosine_similarity(vec1, vec2)) 
+			
+			print question['word1'], label1
+			print question['context1']
+			print question['word2'], label2
+			print question['context2']
+			score = cosine_similarity(vec1, vec2)
+			base = cosine_similarity(normalVectors[word1], normalVectors[word2])
+			print "\tPALM score", score 
+			print "\tHuman average: ", question['rating']
+			print "\tBaseline: ", base
+			print "\tDifferent between base and palm: ", abs(base - score)
+			print
+			print
+			methodsRating.append(score) 
 			humanRating.append(question['rating'])
+			if len(methodsRating) % 100 == 0 and len(methodsRating) > 0:
+				print i, spearman(methodsRating, humanRating)
 			done += 1
-		# else:
-		# 	if not w1:
-		# 		print "NOT FOUND", word1
-		# 	if not w2: "NOT FOUND ", word2
 
 	# print the spearman correlation
  	print spearman(methodsRating, humanRating)
