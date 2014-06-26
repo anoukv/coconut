@@ -17,7 +17,7 @@ while True:
 	word = raw_input('Which word would you like to inspect? (type q to quit): ').lower()
 	if word == 'q':
 		break
-	if word in coc:
+	if word in rel:
 		wordRep = coc[word]
 		sense0 = sorted(wordRep[0].items(), key = lambda x: x[1], reverse=True)
 		sense1 = sorted(wordRep[1].items(), key = lambda x: x[1], reverse=True)
