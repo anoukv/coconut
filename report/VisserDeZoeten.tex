@@ -144,7 +144,6 @@ The reordered labelled data can then be used to train an SVM.
 \end{table*}
 
 \section{Experiments}
-<<<<<<< HEAD
 We evaluate the performance of our WSD methods on the dataset constructed by \cite{global}. The dataset consist of 2003 word pairs and their context. The goal of the task is to assign a similarity measure to all word pairs. 241 word pairs consist of the same word leaving a total of 1712 unique words. Ten human judges assigned similarity scores to all word pairs. Table \ref{task} contains four example word pairs with their context and the scores assigned by two methods and the human annotators. We compute the Spearman correlation between the method's similarity ratings and the average rating of the human annotators. We compare our methods to the Single Word Vector (SWV) baseline that uses only a single word vector for every word and computes the similarity as the cosine similarity between the two words without taking the context into account. \\\\
 As mentioned in section \ref{coconut} COCONUT is a method for word sense discrimination. To adapt it for the task of similarity rating, we need a representations of both words in order to compare them. We disambiguated all 1712 words into two different senses ($k = 2$), a sense is represented as a collection of words that indicate this sense. As a representation for the words we choose to use the average word vector of all words that belong to the most appropriate sense of the word given the context, which we define as:
 \begin{equation}\label{sense} \arg\max_{\textit{sense}}  | \{\textit{sense} \cap \textit{context}\} |\end{equation}
@@ -153,8 +152,6 @@ where \textit{sense} is the set of words in one of the two senses of the disambi
 
 To compute the score for PALM we applied the word sense discrimination phase on the \textit{enwiki8} corpus. PALM was able to identify different senses for 1222 of the 1712 unique words of the word pairs, resulting in 1222 SVMs. We then relabeled the 1222 words in the corpus by appending the label predicted by the SVM for the word. To obtain the label, we expand the contexts of both words and use this to compute the probability distribution over the meaning. The trained SVM then provides the label of the word vector that represents the words best in their given contexts. Finally, we used \textit{word2vec} by \cite{word2vec} to obtain 80-dimensional word vectors for all words in the relabeled corpus. For a word pair in the task, we can again obtain the label and use this to find the correct word vector. These word vectors are used to compute the cosine similarity between the two words. Joint PALM is a variation on PALM that computes the similarity between the average word vectors of the single word vector and the word vector selected by PALM.
 
-=======
->>>>>>> 7991c88f27c587cc0ca5f4bc028de6814a23f3c6
 \begin{table}
 \center
     \begin{tabular}{|l|l|l|}
