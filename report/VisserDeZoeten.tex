@@ -8,16 +8,17 @@
 \title{Coconut palms and hand palms: improving similarity ranking by word sense disambiguation}
 
 \author{Anouk Visser \\
-  {\tt email} \\\And
+  {\tt anouk.visser@me.com} \\\And
   R\'emi de Zoeten \\
-  {\tt email} \\}
+  {\tt remi.de.z@gmail.com} \\}
 
 \date{}
 
 \begin{document}
 \maketitle
 \begin{abstract}
-The abstract will be here.
+
+
 \end{abstract}
 
 \section{Introduction}
@@ -44,7 +45,7 @@ Recently \cite{word2vec} have released tools for efficiently computing word vect
 \end{table*}
 
 \section{Training data}
-For model training data we used the \textit{enwiki8} dataset\footnote{http://mattmahoney.net/dc/textdata.html} corpus. For our purposes we filtered the corpus to only keep the words in the following Part-Of-Speech categories: Nouns, Verbs, Adjectives and Adverbs as is common in word sense disambiguation and discrimination systems \cite{survey}. Furthermore, we lemmatized all words so that e.g. \textit{computer}, \textit{computers} and \textit{computing} are all projected onto the token \textit{comput}. The lemmatization is used as a form of dimensionality reduction.
+For model training data we used the \textit{enwiki8} dataset\footnote{http://mattmahoney.net/dc/textdata.html} corpus. For our purposes we filtered the corpus to only keep the words in the following Part-Of-Speech categories: Nouns, Verbs, Adjectives and Adverbs as is common in word sense disambiguation and discrimination systems \cite{survey}. Furthermore, we lemmatized all words so that e.g. \textit{computer}, \textit{computers} and \textit{computing} are all projected onto the token \textit{comput}. The result of this lemmatization is that the vocabulary shrinks and this means there are fewer variables.
 
 \section{COCONUT}
 \label{coconut}
@@ -59,24 +60,25 @@ A major disadvantage of COCONUT is that the number of senses for a word has to b
 
 \section{Agglomerative Clustering}
 \label{remi}
-One way to cluster data is agglomerative clustering which has been shown to produce good results in comparison with other clustering techniques \cite{clustering}. Agglomerative clustering is an iterative bottom up approach to clustering. At the start each data point forms its own cluster and in each iteration the two data points that are closest to each other are merged until there is only a given number of clusters or the inter-cluster distances are larger than a predefined value. We performed agglomerative clustering on the $80$ dimensional word vector representations that we extracted from our training data. We clustered the words into 500 clusters. The result was that 351 clusters were single word clusters. The distribution over the number of words in each cluster is skewed and clusters with one or just a few words in them are not informative. Therefore we removed the clusters that had less than $10$ words in them, which resulted in 41 clusters with a distribution over the cluster size shown in figure \ref{cluster_size}.
+One way to cluster data is agglomerative clustering which has been shown to produce good results in comparison with other clustering techniques \cite{clustering}. Agglomerative clustering is an iterative bottom-up approach to clustering. Initially each data point forms its own cluster and in each iteration the two data points that are closest to each other are merged until there is only a given number of clusters or the inter-cluster distances are larger than a predefined threshold. We performed agglomerative clustering on the $80$ dimensional word vector representations that we extracted from our training data. We clustered the words into 500 clusters. Of these 500 clusters 351 were single word clusters. The distribution over the number of words in each cluster is skewed and clusters with one or just a few words in them are not informative. Therefore we removed the clusters that had less than $10$ words in them, which resulted in 41 clusters with a distribution over the cluster size shown in figure \ref{cluster_size}.
+
 \begin{figure}
 \center
 \includegraphics[scale=0.40]{images/cluster_size.png}
-\caption{Distribution over cluster sizes for agglomerative clustering.}
+\caption{Distribution over cluster sizes for agglomerative clustering. As can be seen there are mainly small clusters with up to 200 words, but there exist also larger clusters.}
 \label{cluster_size}
 \end{figure}
 
 \subsection{Comparing word context with clusters}
-We will define two methods for using the word clusters to define a word relatedness score. In both methods we compare the context of each word with each of the clusters. We define a probability $P( cluster | context )$ for each cluster, and produce a normalized vector $V_p$ of probabilities for each context. The distance between two words is then defined by the \textit{cosine} similarity between these two vectors.
+We will define two methods for using the word clusters to define a word relatedness score. In both methods we compare the context of each word with each of the clusters. We define a probability $P( cluster | context )$ for each cluster, and produce a normalized vector $V_p$ of probabilities for each context. The distance between two words is then defined by the cosine similarity between these two vectors.
 
 \subsubsection{Cluster - context intersection}
 In the first instance we determine the likelihood of a context being represented by a cluster by counting how many words are in common with the cluster:
 \begin{equation} \label{pcc}P( \textit{cluster} | \textit{context}) = \frac{ | \{\textit{cluster} \cap \textit{context}\} |  }{| \textit{cluster} |} \end{equation}
-By applying \ref{pcc} to all clusters for a given context and normalizing over the different probabilities we get a probability vector $V_{p}$ that defines a mixture of the context over the different clusters. The similarity score for two words is defined by the \textit{cosine} similarity between the two probability vectors of the two contexts.
+By applying equation \ref{pcc} to all clusters for a given context and normalizing over the different probabilities we get a probability vector $V_{p}$ that defines a mixture of the context over the different clusters. The similarity score for two words is defined by the cosine similarity between the two probability vectors of the two contexts.
 
 \subsubsection{Expanded Cluster - context similarity}
-In this method we do not directly compare the words in a cluster with the context, but replace the clusters with the average of the co-occurrence vectors of the words in the cluster. Co-occurrence vectors are extracted from the corpus by finding every instance of a given word and observing the 5 words that occur before and after that word. The co-occurrence vector normalized sparse vector that 
+In this method we do not directly compare the words in a cluster with the context, but replace the clusters with the average of the co-occurrence vectors of the words in the cluster. Co-occurrence vectors are extracted from the corpus by finding every instance of a given word and observing the 5 words that occur before and after that word. The co-occurrence vector is a normalized sparse vector that defines the probability for a word co-occurring with a given other word. This extended cluster representation can be compared with a context of a word by cosine similarity of the two vectors. This is how two contexts are compared with every cluster and again cosine similarity can be used to define how related two contexts are.
 
 \section{PALM}
 PALM (Probabilistic Agglomeratively-clustered Latent Meanings) is a method for word sense discrimination that simultaneously trains an SVM for every word that can be used for word sense disambiguation. The SVM is able to disambiguate a word by predicting a label best describing the sense of a word when given the probability distribution from the word's expanded context over the agglomeratively-clustered latent meanings (that were obtained using the clustering method described in section \ref{remi}). The predicted labels can for example be used to relabel a corpus before training a recurrent neural network in order to obtain multiple vector representations for one word. 
