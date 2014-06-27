@@ -1,0 +1,183 @@
+mexico canada
+chalky background . Some tall cylinders are considered ceremonial vessels while narrow-necked jars may have been used for liquids . Ware in the southern portion of the region , particularly after A.D. 1150 , is characterized by heavier black-line decoration and the use of carbon-based colorants . In northern New <b> Mexico </b> , the local " black on white " tradition , the Rio Grande white wares , continued well after 1300 AD . Changes in pottery composition , structure and decoration are signals of social change in the archaeological record . This is particularly true as the peoples of the
+brazil cup
+Championship for men was held in Argentina . Three years later , the first FIBA World Championship for Women was held in Chile . Women 's basketball was added to the Olympics in 1976 , which were held in Montreal , Canada with teams such as the Soviet Union , <b> Brazil </b> and Australia rivaling the American squads . Pros in the Olympics . FIBA dropped the distinction between amateur and professional players in 1989 , and in 1992 , professional players played for the first time in the Olympic Games . The United States ' dominance continued with the introduction
+10 	Human average:  4.4
+10 	PALM score 0.169669030592
+10 	Baseline:  0.678491208051
+10 	Different between base and palm:  0.508822177459
+10 	57.5757575758
+10 	83.0303030303
+
+
+Mexico: 
+Merging  venezuela  into  panama  with sim:  0.854636268472
+Merging  australia  into  canada  with sim:  0.810928497372
+Merging  colombia  into  peru  with sim:  0.805999127058
+Merging  uruguay  into  peru  with sim:  0.793696868259
+Merging  cuba  into  nicaragua  with sim:  0.783817360436
+Merging  coast  into  south  with sim:  0.781196729651
+Merging  guatemala  into  nicaragua  with sim:  0.762884791906
+Merging  korea  into  japan  with sim:  0.733156089482
+Merging  philippin  into  peru  with sim:  0.717583579581
+Merging  argentina  into  peru  with sim:  0.710827590437
+Merging  rico  into  peru  with sim:  0.700893390816
+Merging  caribbean  into  panama  with sim:  0.670352529728
+Merging  brazil  into  peru  with sim:  0.665014834926
+Merging  america  into  south  with sim:  0.657156823591
+Merging  pacif  into  gulf  with sim:  0.649527060677
+Merging  portug  into  peru  with sim:  0.619143495342
+Merging  veracruz  into  panama  with sim:  0.561447748842
+Merging  universidad  into  panama  with sim:  0.540187672291
+Merging  japan  into  canada  with sim:  0.544940160631
+Merging  republ  into  nicaragua  with sim:  0.530436643284
+Merging  nicaragua  into  panama  with sim:  0.818540592327
+Merging  netherland  into  peru  with sim:  0.51805262037
+Merging  zealand  into  canada  with sim:  0.616345308036
+Keeping labels: (label, context count)
+peru 132
+south 121
+canada 119
+panama 103
+gulf 47
+texa 20
+mexican 18
+nine 10
+counti 6
+airlin 6
+Extracting training data...
+Training svm...
+
+Predicted distribution by SVM: 
+	canada 216
+	panama 18
+	gulf 13
+	peru 174
+	south 161
+
+
+bank west
+during this period . Further standing timbers were placed at the northeast entrance , and a parallel alignment of posts ran inwards from the southern entrance . The postholes are smaller than the Aubrey Holes , being only around in diameter , and are much less regularly spaced . The <b> bank </b> was purposely reduced in height and the ditch continued to silt up . At least twenty-five of the Aubrey Holes are known to have contained later , intrusive , cremation burials dating to the two centuries after the monument 's inception . It seems that whatever the holes '
+bank fund
+of consecutive correct answers to earn an increasing amount for a single communal pot within a certain time limit . Just one incorrect answer breaks the chain and wipes out any money earned in that chain . However , before their question is asked , a contestant can choose to <b> bank </b> the current amount of money earned in a chain to the safe pot , after which then the chain starts fresh . Not banking , in anticipation that one will be able to correctly answer the upcoming question , allows the money to grow as each successive correct answer
+113 	Human average:  4.8
+113 	PALM score 0.0824278123175
+113 	Baseline:  1.0
+113 	Different between base and palm:  0.917572187683
+113 	55.3126643333
+113 	56.5758746063
+
+
+bank west
+sides of downtown via two pedestrian bridges . A landscaped promenade along the street level is planned . The Riverwalk includes the Brenton Skating Plaza . From November through March , the outdoor skating rink is open as a skating mecca for central Iowans . Located downtown along the east <b> bank </b> of the Des Moines River , the plaza is available for parties , social events , movies , concerts , and summer sand volleyball during the warmer months of the year . Gray 's Lake , as part of popular Gray 's Lake Park , features a boat rental
+money pay
+e.g. a convenience store ) needs to deposit that money in a bank . If its deposits vary greatly for no obvious reason this can draw suspicion ; but if the transactions are regular and roughly the same the suspicion is easily discounted . This is the basis of all <b> money </b> laundering , a track record of depositing clean money before slipping through dirty money . In the United States , for example , cash transactions and deposits of more than $ 10,000 must be reported by the cashier ( the bank etc ) as " significant cash transactions "
+114 	Human average:  2.5
+114 	PALM score 0.142136359133
+114 	Baseline:  0.515137091579
+114 	Different between base and palm:  0.373000732446
+114 	55.3057593463
+114 	55.8241444449
+
+bats bird
+own called Dry Dry Ruins ( named after a dungeon in " Paper Mario " ) . On this course , pillars inscribed with hieroglyphics fall onto the track to then be used as ramps , and there is yet another Yoshi Sphinx . Inside the ruins , there are <b> bats </b> and a bowl with Pokeys that fills with sand over the course of the race , and the music changes somewhat while inside . Farms/Rural Environment . There has been at least one farm or rural course in each " Mario Kart " game . " Mario Kart 64
+bats slugger
+the need for defining the legality of a bowling action using biomechanical concepts . This research has directly contributed towards the official acceptance of Muralitharan 's bowling action and has convinced the ICC to redefine the bowling laws in cricket . Batting . An aggressive lower order batsman who usually <b> bats </b> at No. 11 , Muralitharan is known for his tendency to back away to leg and slog . Sometimes , he can be troublesome for bowlers because of his unorthodox and adventurous batting ways . Once , in a test match against England , while playing Alex Tudor ,
+125 	Human average:  3.0
+125 	PALM score 0.401500836046
+125 	Baseline:  1.0
+125 	Different between base and palm:  0.598499163954
+125 	50.8969146137
+125 	52.4233778659
+
+
+bent knee
+derived from the fishing technique of slowly dragging a lure or baited hook from a moving boat , waiting for fish to strike , a technique known as trolling . The word also evokes the trolls portrayed in Scandinavian folklore and children 's tales , as they are often creatures <b> bent </b> on mischief and wickedness . The verb " troll " originates from Old French " troller " , a hunting term . The noun " troll " , however , comes from the Old Norse word for a mythological monster . Early history . The most likely derivation of
+double string
+respected by the Abwehr that they stopped landing agents in Britain after 1942 . They thus became wholly dependent on the spurious information which was fed to them by Garbo 's network and the other Double Cross agents . Results . Masterman expressed the opinion that as a consequence of <b> Double </b> Cross 's efficacy , by early 1941 , " we [ MI5 ] actively ran and controlled the German espionage system in this country [ United Kingdom ] . " This was confirmed after the end of the war . Operation Fortitude and D-Day Landings . The British put
+138 	Human average:  1.6
+138 	PALM score 0.654554435727
+138 	Baseline:  0.202330041768
+138 	Different between base and palm:  0.452224393959
+138 	44.9720430108
+138 	50.9241167435
+
+
+bitter tast
+casseroles . In Turkish Cuisine , oregano is mostly used for flavoring meat , especially for mutton and lamb . In barbecue and kebab restaurants , it can be usually found on table , together with paprika , salt and pepper . It has an aromatic , warm and slightly <b> bitter </b> taste . It varies in intensity ; good quality oregano is so strong that it almost numbs the tongue , but the cultivars adapted to colder climates have often unsatisfactory flavor . The influence of climate , season and soil on the composition of the essential oil is greater
+bitter war
+" mild " has tended to change with fashion . A good example is McMullen 's AK , which was re-badged as a bitter after decades as a light mild . AK - a very common beer name in the 1800s - was often referred to as a " mild <b> bitter </b> beer " interpreting " mild " as " unaged " . Once sold in every pub , mild experienced a catastrophic fall in popularity after the 1960s and was in danger of completely disappearing . However , in recent years the explosion of microbreweries has led to a modest
+148 	Human average:  7.45
+148 	PALM score -0.0106733794025
+148 	Baseline:  1.0
+148 	Different between base and palm:  1.0106733794
+148 	44.8170910155
+148 	53.4650278022
+
+card debit
+be picked up at the point of entry , as outgoing buses and streetcars will not accept transfers from the closest subway station . There are more than 1,200 vendors licensed to sell TTC fares in Toronto . The provincial Minister of Transportation has announced plans to introduce the Presto <b> card </b> , a unified smartcard-based payment system for the entire Greater Toronto Area . Union railway station will be first Toronto location to use the card in 2007 and four other stations ( Don Mills , Downsview , Finch , and Islington ) by 2010 . There are no plans
+card player
+failed to gain a very large market presence . It bears mention because its eventual failure brought the company to hard times that affected its ability to produce material for " Call of Cthulhu " . " Call of Cthulhu , the Living Card Game " is a second collectible <b> card </b> game ; currently it is produced by Fantasy Flight Games .
+222 	Human average:  4.9
+222 	PALM score 0.391452067541
+222 	Baseline:  1.0
+222 	Different between base and palm:  0.608547932459
+222 	45.0287075264
+222 	53.947293462
+
+capital economi
+shifted control of enterprises from state agencies to groups of individuals with inside connections in the Government and the mafia . Corruption became an everyday rule of life . Many of the newly rich mobsters and businesspeople took billions in cash and assets outside of the country in an enormous <b> capital </b> flight . The depression of state and economy led to the collapse of social services ; the birth rate plummeted while the death rate skyrocketed . The early and mid-1990s saw extreme lawlessness , rise of criminal gangs and violent crime . The 1990s were plagued by armed conflicts
+assets not ambiguous
+introduce a new Kadett of its own . " ( Opel ) had been seized by the German government soon after the war began . In 1942 our entire investment in Opel amounted to about $ 35 million , and under a ruling which the Treasury Department had made concerning <b> assets </b> in enemy hands , we were allowed to write off the investment against current taxable income . But this ruling did not end our interest in , or responsibility for , the Opel property . As the end of the war drew near , we were given to understand
+218 	Human average:  5.5
+218 	PALM score 0.693626097651
+218 	Baseline:  0.336160159612
+218 	Different between base and palm:  0.357465938039
+218 	44.0876872041
+218 	52.9044530069
+
+channels broadcast
+Lancashire ) . Cable TV faces intense competition from British Sky Broadcasting 's Sky Digital satellite television service . Most channels are carried on both platforms . However , cable often lacks " interactive " features ( e.g. text services , and extra video-screens ) , especially on BSkyB owned <b> channels </b> , and the satellite platform lacks services requiring high degrees of two-way communication , such as true video on demand . However , subscription-funded digital terrestrial television proved less of a competitive threat . The first system , ITV Digital , went into liquidation in 2002 . Top Up
+transmission signal
+, and is a favored method in digital implementations . Mathematical highlights . Let formula_7 be the baseband waveform to be transmitted . Its Fourier transform , formula_8 , is Hermitian symmetrical about the formula_9 axis , because formula_7 is real-valued . Double sideband modulation of formula_7 to a radio <b> transmission </b> frequency , formula_12 , moves the axis of symmetry to formula_13 , and the two sides of each axis are called sidebands . is a useful mathematical concept , called an analytic signal . The Fourier transform of formula_17 equals formula_18 , for formula_19 , but it has no
+267 	Human average:  4.55
+267 	PALM score 0.311552517073
+267 	Baseline:  0.630856104167
+267 	Different between base and palm:  0.319303587094
+267 	49.2399533618
+267 	57.8805285659
+
+credit invent
+, and it and its offspring became overwhelmingly dominant in the marketplace for many years . Shockley continued as a group head to lead much of the effort at Bell Labs to improve it and its fabrication for two more years . Shockley took the lion 's share of the <b> credit </b> in public for the invention of transistor , which led to a deterioration of Bardeen 's relationship with Shockley . Bell Labs management , however , consistently presented all three inventors as a team . Shockley eventually infuriated and alienated Bardeen and Brattain , and he essentially blocked the
+credit pay
+numbers are designations of European routes . A full list of current and future motorways and expressways can be found at Highways in Croatia . Toll . A toll is charged on most motorways , the only notable exception being the Zagreb bypass . Payment in kuna , all major <b> credit </b> cards and euros are accepted at all toll gates . There are two toll collection systems in Croatia : the open and the closed system . Open system is used on some bridges and tunnels and short stretches of tolled highway . In this system , there is only
+387 	Human average:  3.1
+387 	PALM score -0.0328736918382
+387 	Baseline:  1.0
+387 	Different between base and palm:  1.03287369184
+387 	49.3218055244
+387 	61.1085007514
+
+discipline scientif
+basis of cognitive behavioral therapy , a form of psychotherapy modified from techniques developed by American psychologist Albert Ellis and American psychiatrist Aaron T. Beck . Cognitive psychology was subsumed along with other disciplines , such as philosophy of mind , computer science , and neuroscience , under the umbrella <b> discipline </b> of cognitive science . Schools of thought . Various schools of thought have argued for a particular model to be used as a guiding theory by which all , or the majority , of human behavior can be explained . The popularity of these has waxed and waned over
+discipline sociolog
+The Israeli army had a total strength , including reservists , of 264,000 , though this number could not be sustained , as the reservists were vital to civilian life . James Reston , writing in the " New York Times " on 23 May 1967 noted , " In <b> discipline </b> , training , morale , equipment and general competence his [ Nasser 's ] army and the other Arab forces , without the direct assistance of the Soviet Union , are no match for the Israelis ... Even with 50,000 troops and the best of his generals and air
+477 	Human average:  3.2
+477 	PALM score 0.53764910512
+477 	Baseline:  1.0
+477 	Different between base and palm:  0.46235089488
+477 	50.1683629707
+477 	62.2807559687
+
+
+fast food
+diet , such as prisoners or soldiers ) . In addition to these fasting seasons , Orthodox Christians fast on every Wednesday ( in commemoration of Christ 's betrayal by Judas Iscariot ) , and Friday ( in commemoration of Christ 's Crucifixion ) throughout the year . Monastics often <b> fast </b> on Mondays ( in imitation of the Angels , who are commemorated on that day in the weekly cycle , since monastics are striving to lead an angelic life on earth , and angels neither eat nor drink ) . Orthodox Christians who are preparing to receive the Eucharist
+fast slow
+1965 . The PDP-7 is most famous as the original machine for the Unix operating system . A more dramatic upgrade to the PDP-1 series was introduced in August 1966 , the PDP-9 . The PDP-9 was instruction compatible with the PDP-4 and -7 , but ran about twice as <b> fast </b> as the -7 and was intended to be used in larger deployments . At only $ 19,900 in 1968 , the PDP-9 was a big seller , eventually selling 445 machines , more than all of the earlier models combined . Even while the PDP-9 was being introduced ,
+614 	Human average:  2.3
+614 	PALM score 0.208391087899
+614 	Baseline:  1.0
+614 	Different between base and palm:  0.791608912101
+614 	48.2231392832
+614 	59.2715112973
+

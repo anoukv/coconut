@@ -33,6 +33,10 @@ if __name__ == "__main__":
 	new = [(x - mean)**2 for x in allsplits]
 	stdv = sqrt(sum(new) / float(len(new)))
 	print max(allsplits), mean, stdv
+	print splits['mexico']
+	print splits['brazil']
+	print splits['israel']
+	print splits['americ']
 
 
 
