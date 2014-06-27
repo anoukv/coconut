@@ -1,5 +1,5 @@
 
-# THE BAD
+SELECTED # THE BAD
 mexico canada
 chalky background . Some tall cylinders are considered ceremonial vessels while narrow-necked jars may have been used for liquids . Ware in the southern portion of the region , particularly after A.D. 1150 , is characterized by heavier black-line decoration and the use of carbon-based colorants . In northern New <b> Mexico </b> , the local " black on white " tradition , the Rio Grande white wares , continued well after 1300 AD . Changes in pottery composition , structure and decoration are signals of social change in the archaeological record . This is particularly true as the peoples of the
 brazil cup
@@ -69,7 +69,7 @@ of consecutive correct answers to earn an increasing amount for a single communa
 113 	55.3126643333
 113 	56.5758746063
 
-# THE VERY GOOD
+SELECTED # THE VERY GOOD
 bank west
 sides of downtown via two pedestrian bridges . A landscaped promenade along the street level is planned . The Riverwalk includes the Brenton Skating Plaza . From November through March , the outdoor skating rink is open as a skating mecca for central Iowans . Located downtown along the east <b> bank </b> of the Des Moines River , the plaza is available for parties , social events , movies , concerts , and summer sand volleyball during the warmer months of the year . Gray 's Lake , as part of popular Gray 's Lake Park , features a boat rental
 money pay
@@ -105,7 +105,7 @@ respected by the Abwehr that they stopped landing agents in Britain after 1942 .
 138 	44.9720430108
 138 	50.9241167435
 
-# THE VERY BAD
+SELECTED # THE VERY BAD
 bitter tast
 casseroles . In Turkish Cuisine , oregano is mostly used for flavoring meat , especially for mutton and lamb . In barbecue and kebab restaurants , it can be usually found on table , together with paprika , salt and pepper . It has an aromatic , warm and slightly <b> bitter </b> taste . It varies in intensity ; good quality oregano is so strong that it almost numbs the tongue , but the cultivars adapted to colder climates have often unsatisfactory flavor . The influence of climate , season and soil on the composition of the essential oil is greater
 bitter war
@@ -153,7 +153,7 @@ transmission signal
 267 	49.2399533618
 267 	57.8805285659
 
-# THE GOOD
+SELECT # THE GOOD
 credit invent
 , and it and its offspring became overwhelmingly dominant in the marketplace for many years . Shockley continued as a group head to lead much of the effort at Bell Labs to improve it and its fabrication for two more years . Shockley took the lion 's share of the <b> credit </b> in public for the invention of transistor , which led to a deterioration of Bardeen 's relationship with Shockley . Bell Labs management , however , consistently presented all three inventors as a team . Shockley eventually infuriated and alienated Bardeen and Brattain , and he essentially blocked the
 credit pay
@@ -165,7 +165,7 @@ numbers are designations of European routes . A full list of current and future 
 387 	49.3218055244
 387 	61.1085007514
 
-THE GOOD
+# THE GOOD
 discipline scientif
 basis of cognitive behavioral therapy , a form of psychotherapy modified from techniques developed by American psychologist Albert Ellis and American psychiatrist Aaron T. Beck . Cognitive psychology was subsumed along with other disciplines , such as philosophy of mind , computer science , and neuroscience , under the umbrella <b> discipline </b> of cognitive science . Schools of thought . Various schools of thought have argued for a particular model to be used as a guiding theory by which all , or the majority , of human behavior can be explained . The popularity of these has waxed and waned over
 discipline sociolog

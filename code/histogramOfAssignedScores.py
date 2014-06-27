@@ -15,7 +15,7 @@ human = [h / float(10) for h in human]
 
 # plt.hist(palm, 20, alpha=0.5, label=" hoi ")
 # plt.hist(human, 20, alpha=0.5, label=" anouk ")
-plt.hist([palm, human, baseline], 10, label=['PALM', 'Human', 'SWV'])
+plt.hist([palm], 10, label=['PALM', 'Human', 'SWV'])
 
 plt.legend(loc="upper right")
 

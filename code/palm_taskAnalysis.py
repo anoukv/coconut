@@ -153,8 +153,8 @@ if __name__ == "__main__":
 			print
 
 	# print the spearman correlation
- 	print spearman(methodsRating, humanRating)
+ 	print "Method: ", spearman(methodsRating, humanRating)
  	print "Coverage: ", done / float(len(questions)) * 100, "%"
- 	print methodsRating, humanRating, otherRating
+ 	print "Baseline: ", methodsRating, humanRating, otherRating
  	rel.close()
 

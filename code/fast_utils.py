@@ -94,6 +94,8 @@ def spearman(x, y):
 	xx = [idX.index(i) + 1 for i in xrange(len(idX))]
 	yy = [idY.index(i) + 1 for i in xrange(len(idY))]
 
+	print xx
+	print yy
 	# compute the mean for the rankings (meanX == meanY)
 	meanX = sum(xx) / float(len(xx))
 	meanY = sum(yy) / float(len(yy))
