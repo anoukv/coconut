@@ -29,12 +29,17 @@ where $f_{xy}$ denotes the frequency of $x$ and $y$ occurring together and $f_x$
 In the past years a lot of different methods for word sense disambiguation have been proposed that were either supervised, knowledge-based or unsupervised \cite{survey}. Unsupervised mainly focus on word sense discrimination, the majority of unsupervised word sense discrimination method uses some sort of clustering of for example context vectors or individual words that have a similar meaning. An example of an unsupervised method that uses clustering on both first order context vectors and second order context vectors can be found in \cite{clustering}. Another example of unsupervised word sense discrimination is given in \cite{latent} where the authors use the intuition that the meaning of a word can be represented as a distribution over a set of latent senses.
 Recently \cite{word2vec} have released tools for efficiently computing word vectors that capture syntactic and semantic information. The distance between these vectors can be used for identifying linguistic regularities \cite{regularities} and a number of other applications such as word sense discrimination. However, word vector representations suffer from the problem that words may have a number of different meanings that cannot be captured in a single representation. \cite{multi} propose a solution to this problem, they represent a word's meaning by a set of sense specific vectors which are discovered by clustering the contexts in which a word appears. For every context cluster, the authors compute an average vector that can be used to determine the similarity between two words (either in context or isolated). The size of the set of sense specific vectors is set in advance and is the same for every word. \cite{global} build upon this work by introducing a new neural network architecture that learns word vectors that also incorporate the global context of a word and can lean multiple vectors for a single word. In addition to this, they present a new dataset of pairs of words in contexts annotated with similarity judgements by human annotators. 
 
-\begin{figure*}
-\center
-\includegraphics[scale=0.35]{images/cocores.png}
-\caption{Table showing the 15 most related words in the two sense clusters of the words \textit{bat}, \textit{bank} and \textit{course}. }
+\begin{table*}
+    \begin{tabular}{|p{5cm}|p{5cm}|p{5cm}|}
+    \hline
+    \textbf{bat} & \textbf{course} & \textbf{bank}                                                                                                                                \\ \hline
+    batter, superfamilies, inning, ye, ball, batman, cave, ruth, pitch, slug, hitter, base, plate, flies, mammal    & hole, student, action, educate, online, learn, studies, disc, teach, meal, hungarian, university, employee, lecture, play & reserve, imf, central, account, money, finance, european, deposit, sweden, invest, intern, cccc, palestinian, note, economic, tower \\ \hline
+    average, hit, cricket, baseball, out, funnel, casey, score, rabies, runner, myotis, ab, statist, league, pollin & golf, caddie, require, taught, offer, historic, distance, college, typic, qualify, event, year, decide, entire, business  & gaza, strip, monetary, financial, river, fund, feder, currency, settlement, england, loan, sector, israel, jordan, isra             \\\hline
+    \end{tabular}
+    \caption{Table showing the 15 most related words in the two sense clusters of the words \textit{bat}, \textit{bank} and \textit{course}. }
 \label{coconutres}
-\end{figure*}
+
+\end{table*}
 
 \section{Training data}
 For model training data we used the \textit{enwiki8} dataset\footnote{http://mattmahoney.net/dc/textdata.html} corpus. For our purposes we filtered the corpus to only keep the words in the following Part-Of-Speech categories: Nouns, Verbs, Adjectives and Adverbs as is common in word sense disambiguation and discrimination systems \cite{survey}. Furthermore, we lemmatized all words so that e.g. \textit{computer}, \textit{computers} and \textit{computing} are all projected onto the token \textit{comput}. The lemmatization is used as a form of dimensionality reduction.
@@ -85,6 +90,23 @@ In this section we describe the PALM method in detail, figure \ref{palmimg} prov
 Let $W$ be the word for which we want to train the SVM. PALM starts by extracting all contexts from a corpus that $W$ appears in. We define `context' as all words within a window around $W$ (in our experiments we looked five words back and five words ahead). Our aim is to assign a label to each of these contexts that describes the sense of the words best, the collection of labels then represent the different sense a word can have. As we have seen in \cite{analysis} underspecified contexts are often observed. In line with our assumption for the COCONUT baseline (i.e. the co-occurring words that define one meaning of a word are more likely to co-occur with each other than two words that define two different meanings of the word) we expand the context by adding the $n$ (in our experiments we set $n=5$) most related words to every word in the context (except for $W$ itself). Finally, a word from the expanded context is selected as a label so that:
 \begin{equation}\label{label}label = \arg\max_w \frac{r(W, w) + \textit{sim}(W, w)}{2}\end{equation}
 where $r(W, w)$ is the relatedness score from equation \ref{r} and $\textit{sim}(W, w)$ denotes the cosine similarity between $W$ and $w$. 
+
+
+\begin{table}
+\center
+    \begin{tabular}{lll}
+    bat     & course    & bank    \\ \hline
+    bird    & need      & invest  \\
+    slugger & education & west    \\
+    inning  & even      & gaza    \\
+    shark   & golf      & foreign \\
+    ye      & teach     & central \\
+    ~       & learn     & trade   \\
+    ~       & have      & fund    \\
+    ~       & ~         & finland \\
+    \end{tabular}
+    \caption{Discriminations}
+\end{table}
 
 \subsection{Probability distribution over agglomeratively-clustered latent meanings}
 Let $P$ be an $N$-dimensional vector describing the probability distribution of a word's context over the clustered meanings. We compute an element $p_i$ in $P$ as follows:
