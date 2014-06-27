@@ -36,7 +36,7 @@ Recently \cite{word2vec} have released tools for efficiently computing word vect
     batter, superfamilies, inning, ye, ball, batman, cave, ruth, pitch, slug, hitter, base, plate, flies, mammal    & hole, student, action, educate, online, learn, studies, disc, teach, meal, hungarian, university, employee, lecture, play & reserve, imf, central, account, money, finance, european, deposit, sweden, invest, intern, cccc, palestinian, note, economic, tower \\ \hline
     average, hit, cricket, baseball, out, funnel, casey, score, rabies, runner, myotis, ab, statist, league, pollin & golf, caddie, require, taught, offer, historic, distance, college, typic, qualify, event, year, decide, entire, business  & gaza, strip, monetary, financial, river, fund, feder, currency, settlement, england, loan, sector, israel, jordan, isra             \\\hline
     \end{tabular}
-    \caption{Table showing the 15 most related words in the two sense clusters of the words \textit{bat}, \textit{bank} and \textit{course}. }
+    \caption{Table showing the 15 most related words in the two sense clusters of the words \textit{bat}, \textit{bank} and \textit{course}. For bat we observe a lot of noise, however the majority of words that describe bat-as-in animal are in the first cluster (superfamilies, batman, cave, flies, mammal). The first sense of course is focussed towards learning (student, educate, online) as well as meals, the second sense also contains the words golf, caddie and distance which refer to course-as-in golf. Finally, for bank we find that the second cluster contains word referring to river (river, settlement, strip) as well as words referring to the middle east (gaza, israel, jordan). The first cluster is more focussed towards bank as a financial institution. }
 \label{coconutres}
 
 \end{table*}
@@ -51,9 +51,9 @@ The COCONUT method is a method for word sense discrimination and is based on two
 \item the meaning of a word is highly dependent on the words it co-occurs with
 \item the co-occurring words that define one meaning of a word are more likely to co-occur with each other than two words that define two different meanings of the word
 \end{enumerate}
-Let $C$ be the set of words that co-occur with $W$, the word we want to disambiguate. COCONUT first constructs a global relatedness matrix containing relatedness vectors for every word in the corpus and the words that co-occur with it according to equation \ref{r}. $k$-means clustering to the relatedness vectors of the words in $C$ to provide $k$ bags of words that describe the $k$ different senses of $W$. In our experiments we have fixed $k=2$. Some examples of results of the clusters can be found in figure \ref{coconutres}. For bat we observe a lot of noise, however the majority of words that describe bat-as-in animal are in the first cluster (superfamilies, batman, cave, flies, mammal). For bank we find that the second cluster contains word referring to river (river, settlement, strip) as well as words referring to the middle east (gaza, israel, jordan). The first cluster is more focussed towards bank as a financial institution. Finally, the first sense of course is focussed towards learning (student, educate, online) as well as meals, the second sense also contains the words golf, caddie and distance which refer to course-as-in golf. 
+Let $C$ be the set of words that co-occur with $W$, the word we want to disambiguate. COCONUT first constructs a global relatedness matrix containing relatedness vectors for every word in the corpus and the words that co-occur with it according to equation \ref{r}. $k$-means clustering is applied to the relatedness vectors of the words in $C$ to provide $k$ bags of words that describe the $k$ different senses of $W$. In our experiments we have fixed $k=2$. Some examples of results of the clusters can be found in figure \ref{coconutres}. 
 
-A disadvantage of COCONUT is that the number of senses for a word has to be known in advance. In addition to this, COCONUT was designed to perform word sense discrimination and it is not straightforward to disambiguate a word given the $k$ senses of a word. 
+A major disadvantage of COCONUT is that the number of senses for a word has to be known in advance. In addition to this, COCONUT was designed to perform word sense discrimination and it is not straightforward to disambiguate a word given the $k$ senses of a word. 
 
 \section{Agglomerative Clustering}
 One way to cluster data is agglomerative clustering which has been shown to produce good results in comparison with other clustering techniques \cite{clustering}. Agglomerative clustering is an iterative bottom up approach to clustering. At the start each data point forms its own cluster and in each iteration the two data points that are closest to each other are merged until there is only a given number of clusters or the inter-cluster distances are larger than a predefined value. We performed agglomerative clustering on the $80$ dimensional word vector representations that we extracted from our training data. We clustered the words into 500 clusters. The result was that 351 clusters were single word clusters. The distribution over the number of words in each cluster is skewed and clusters with one or just a few words in them are not informative. Therefore we removed the clusters that had less than $10$ words in them, which resulted in 41 clusters with a distribution over the cluster size shown in figure \ref{cluster_size}.
@@ -105,7 +105,8 @@ where $r(W, w)$ is the relatedness score from equation \ref{r} and $\textit{sim}
     ~       & have      & fund    \\
     ~       & ~         & finland \\
     \end{tabular}
-    \caption{Discriminations}
+    \caption{Labels for \textit{bat}, \textit{course} and \textit{bank} after label reduction. The labels are sorted in order of appearance where the top labels are the most frequent and the bottom labels least frequent. }
+    \label{labelreduction}
 \end{table}
 
 \subsection{Probability distribution over agglomeratively-clustered latent meanings}
@@ -117,7 +118,7 @@ Although the values denote the accumulated similarity of the words from the expa
 \subsection{Label reduction}
 The last step before training the SVM consists of reducing the number of labels. Although including the second-order context by expanding the context radically decreases the number of new labels, there will still be many labels including a number of labels that describe the same sense of $W$. We have implemented a method for label reduction that favors labels that were observed most frequently. We iteratively split the labels into two halves: the upper half (containing labels that were seen most frequently) and the lower half (containing labels that were seen least frequently) and merge a label (and all of its vectors) from the lower half ($w_l$) into a label form the upper half ($w_u$). $w_l$ and $w_u$ are chosen by: 
 $$\arg\max_{w_l, w_u} \textit{sim}(w_l, w_u)$$
-This process continues until $\textit{sim}(w_l, w_u)$ is below a certain threshold (in our experiments the threshold was $0.5$).
+This process continues until $\textit{sim}(w_l, w_u)$ is below a certain threshold (in our experiments the threshold was $0.5$). Table \ref{labelreduction} shows the remaining labels for the words \textit{bat}, \textit{course} and \textit{bank}.
 The reordered labelled data can then be used to train an SVM.
 
 \begin{table*}[t]
@@ -129,11 +130,12 @@ The reordered labelled data can then be used to train an SVM.
     Shockley took the lion's share of the \textbf{credit} in public for the invention of transistor, which led to a deterioration of Bardeen's relationship with Shockley .                                         & Payment in kuna, all major \textbf{credit} cards and euros are accepted at all toll gates.                                                                                                                       & invent / pay / 0.48          & 3.1   & 1.0  \\ \hline
     Located downtown along the east \textbf{bank} of the Des Moines River, the plaza is available for parties, social events, movies, concerts, and summer sand volleyball during the warmer months of the year. & This is the basis of all \textbf{money} laundering, a track record of depositing clean money before slipping through dirty money.                                                                                & west / pay / 0.57            & 2.5   & 0.52 \\\hline
     \end{tabular}
-    \caption{Some good and bad results}
+    \caption{Four example word pairs from the dataset. For these examples we provide the labels for the two words given by the PALM disambiguation method, including the similarity scores assigned by PALM, SWV and the human annotators. }
+    \label{task}
 \end{table*}
 
 \section{Experiments}
-We evaluate the performance of our WSD methods on the dataset constructed by \cite{global}. The dataset consist of 2003 word pairs and their context. The goal of the task is to assign a similarity measure to all word pairs. 241 word pairs consist of the same word leaving a total of 1712 unique words. Ten human judges assigned similarity scores to all word pairs. We compute the Spearman correlation between the method's similarity ratings and the average rating of the human annotators. We compare our methods to the Single Word Vector (SWV) baseline that uses only a single word vector for every word and computes the similarity as the cosine similarity between the two words without taking the context into account. \\\\
+We evaluate the performance of our WSD methods on the dataset constructed by \cite{global}. The dataset consist of 2003 word pairs and their context. The goal of the task is to assign a similarity measure to all word pairs. 241 word pairs consist of the same word leaving a total of 1712 unique words. Ten human judges assigned similarity scores to all word pairs. Table \ref{task} contains four example word pairs with their context and the scores assigned by two methods and the human annotators. We compute the Spearman correlation between the method's similarity ratings and the average rating of the human annotators. We compare our methods to the Single Word Vector (SWV) baseline that uses only a single word vector for every word and computes the similarity as the cosine similarity between the two words without taking the context into account. \\\\
 As mentioned in section \ref{coconut} COCONUT is a method for word sense discrimination. To adapt it for the task of similarity rating, we need a representations of both words in order to compare them. We disambiguated all 1712 words into two different senses ($k = 2$), a sense is represented as a collection of words that indicate this sense. As a representation for the words we choose to use the average word vector of all words that belong to the most appropriate sense of the word given the context, which we define as:
 \begin{equation}\label{sense} \arg\max_{\textit{sense}}  | \{\textit{sense} \cap \textit{context}\} |\end{equation}
 where \textit{sense} is the set of words in one of the two senses of the disambiguated word and \textit{context} is the set of words in the context.\\\\
@@ -143,7 +145,7 @@ To compute the score for PALM we applied the word sense discrimination phase on 
 \center
     \begin{tabular}{|l|l|l|}
     \hline
-    WSD Method & $\rho \times 100$ \\ \hline
+    \textbf{WSD Method} & $\rho \times 100$ \\ \hline
     Single Word Vector (SWV) & 60.1 \\ \hline
     COCONUT & 38.2 \\ \hline
     Agglomerative & 19.5 \\ \hline
