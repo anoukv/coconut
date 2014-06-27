@@ -1,4 +1,4 @@
-	\documentclass[11pt]{article}
+\documentclass[11pt]{article}
 \usepackage{acl2014}
 \usepackage{times}
 \usepackage{url}
@@ -72,11 +72,13 @@ One way to cluster data is agglomerative clustering which has been shown to prod
 We will define two methods for using the word clusters to define a word relatedness score. In both methods we compare the context of each word with each of the clusters. We define a probability $P( cluster | context )$ for each cluster, and produce a normalized vector $V_p$ of probabilities for each context. The distance between two words is then defined by the cosine similarity between these two vectors.
 
 \subsubsection{Cluster - context intersection}
+\label{remi1}
 In the first instance we determine the likelihood of a context being represented by a cluster by counting how many words are in common with the cluster:
 \begin{equation} \label{pcc}P( \textit{cluster} | \textit{context}) = \frac{ | \{\textit{cluster} \cap \textit{context}\} |  }{| \textit{cluster} |} \end{equation}
 By applying equation \ref{pcc} to all clusters for a given context and normalizing over the different probabilities we get a probability vector $V_{p}$ that defines a mixture of the context over the different clusters. The similarity score for two words is defined by the cosine similarity between the two probability vectors of the two contexts. The similarity that we find using this method can be smoothed with the similarity of the single word vectors of the words that we are discriminating.
 
 \subsubsection{Expanded Cluster - context similarity}
+\label{remi2}
 In this method we do not directly compare the words in a cluster with the context, but replace the clusters with the average of the co-occurrence vectors of the words in the cluster. Co-occurrence vectors are extracted from the corpus by finding every instance of a given word and observing the 5 words that occur before and after that word. The co-occurrence vector is a normalized sparse vector that defines the probability for a word co-occurring with a given other word. This extended cluster representation can be compared with a context of a word by cosine similarity of the two vectors. This is how two contexts are compared with every cluster and again cosine similarity can be used to define how related two contexts are.
 
 \section{PALM}
@@ -157,14 +159,16 @@ The reordered labelled data can then be used to train an SVM.
     PALM & 49.9 \\ \hline
     Joint PALM & 57.3 \\ \hline
     \end{tabular}
-    \caption{The results}
+    \caption{Results of various methods measured in spearman correlation with human annotation.}
     \label{results}
 \end{table}
 We evaluate the performance of our WSD methods on the dataset constructed by \cite{global}. The dataset consist of 2003 word pairs and their context. The goal of the task is to assign a similarity measure to all word pairs. 241 word pairs consist of the same word leaving a total of 1712 unique words. Ten human judges assigned similarity scores to all word pairs. Table \ref{task} contains four example word pairs with their context and the scores assigned by two methods and the human annotators. We compute the Spearman correlation between the method's similarity ratings and the average rating of the human annotators. We compare our methods to the Single Word Vector (SWV) baseline that uses only a single word vector for every word and computes the similarity as the cosine similarity between the two words without taking the context into account. \\\\
 As mentioned in section \ref{coconut} COCONUT is a method for word sense discrimination. We disambiguated all 1712 words into two different senses ($k = 2$), a sense is represented as a collection of words that indicate this sense. As a representation for the words we choose to use the average word vector of all words that belong to the most appropriate sense of the word given the context, which we define as:
 \begin{equation}\label{sense} \arg\max_{\textit{sense}}  | \{\textit{sense} \cap \textit{context}\} |\end{equation}
-where \textit{sense} is the set of words in one of the two senses of the disambiguated word and \textit{context} is the set of words in the context.\\\\
-To compute the score for PALM we applied the word sense discrimination phase on the \textit{enwiki8} corpus. PALM was able to identify different senses for 1222 of the 1712 unique words of the word pairs, resulting in 1222 SVMs  (we found that an average of $4.45$ senses are assigned to a word with a standard deviation of $3.15$). We then relabeled all occurrences of the 1222 disambiguated words in the corpus by appending the label predicted by the SVM for the words. Finally, we used \textit{word2vec} by \cite{word2vec} to obtain 80-dimensional word vectors for all words in the relabeled corpus. For a word pair in the task, we can again obtain the label and use this to find the correct word vector. These word vectors are used to compute the cosine similarity between the two words. Joint PALM is a variation on PALM that computes the similarity between the average word vectors of the single word vector and the word vector selected by PALM.
+where \textit{sense} is the set of words in one of the two senses of the disambiguated word and \textit{context} is the set of words in the context.\\
+The agglomerative method is described in \ref{remi1} and directly compares the agglomeratively clustered word groups and contexts. The agglomerative + SWV combines this method, and the Single Word Vector comparisons by multiplying the similarity scores of bot respective methods.\\
+The agglomerative extended method is described in \ref{remi2} and compares the word contexts not directly with the words in each word cluster, but with the words that the words in a cluster co-occur with.\\
+To compute the score for PALM we applied the word sense discrimination phase on the \textit{enwiki8} corpus. PALM was able to identify different senses for 1222 of the 1712 unique words of the word pairs, resulting in 1222 SVMs  (we found that an average of $4.45$ senses are assigned to a word with a standard deviation of $3.15$). We then relabeled all occurrences of the 1222 disambiguated words in the corpus by appensding the label predicted by the SVM for the words. Finally, we used \textit{word2vec} by \cite{word2vec} to obtain 80-dimensional word vectors for all words in the relabeled corpus. For a word pair in the task, we can again obtain the label and use this to find the correct word vector. These word vectors are used to compute the cosine similarity between the two words. Joint PALM is a variation on PALM that computes the similarity between the average word vectors of the single word vector and the word vector selected by PALM.
 
 The results of the WSD methods can be found in table \ref{results}.
 
@@ -172,6 +176,9 @@ The results of the WSD methods can be found in table \ref{results}.
 When comparing our methods to the baseline, only Agglomerative + SWV improves it slightly. COCONUT was not designed for word sense disambiguation and a lot of different variants can be implemented that differ in the way they represent a word. As we observed in table \ref{coconutres} the clusters contain a lot of noise that decrease the quality of the word representation when it is computed as the average of the words in the most appropriate sense. Also, COCONUT splits every word in a fixed number of senses, which may not lead to an improvement when the word is not ambiguous at all. 
 
 Table \ref{task} contains four examples of word pairs and the ratings provided by the human annotators, PALM and SWV. For the first word pair (Mexico - Brazil) SWV assigns a much higher similarity score than PALM. When looking at the labels found for countries we often find that they are related to the different contexts that a country's name can occur in (e.g. sport events, other countries, export, foreign, military, $\dots$). We find that PALM is very sensitive to the different meanings of countries and cities, which does not correlate strongly with the way human annotators assign similarity scores when presented word pairs containing a country or city. The second example shows that when PALM does not properly disambiguates the word it affects the similarity scores negatively. However, when PALM does assign the correct label to the words as can be seen in word pairs credit - credit and bank - money, it can be more successful in assigning a similarity score than SWV.
+
+As can be seen in table \ref{results}, the results indicate that methods focussed on word context can produce similar results to the Single Word Vector method that ignores word context. The best of our context based WSD methods were not able to improve upon the word based methods.
+
 
 \section{Conclusion}
 We designed, implemented and evaluated various methods for context based word sense disambiguation and compared their performance to the COCONUT and Single Word Vector baselines. Our methods are based on word clusters and show different ways to use these for word sense disambiguation. We showed that WSD based on context can perform comparable to Single Word Vector discrimination. We were unable to show that WSD significantly improves the spearman correlation on the task of similarity ratings. 
