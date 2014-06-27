@@ -76,7 +76,7 @@ def avgSimC(probs1, vecs1, probs2, vecs2):
 	summationResult = 0
 	for i in xrange(len(probs1)):
 		for j in xrange(len(probs2)):
-			summationResult += probs1[i] * probs2[j] * cosine_similarity(vecs1[i], vecs2[j])
+			summationResult += (probs1[i] * probs2[j] * cosine_similarity(vecs1[i], vecs2[j]))
 	summationResult = summationResult / float(len(probs1) * len(probs2))
 	return summationResult
 
@@ -170,6 +170,7 @@ if __name__ == "__main__":
 			# print probs1
 			# print probs2
 			sim = avgSimC(probs1, vec1, probs2, vec2)
+			print sim
 			methodsRating.append(sim) 
 			humanRating.append(question['rating'])
 			if len(methodsRating) % 100 == 0 and len(methodsRating) > 0:
