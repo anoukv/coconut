@@ -1,4 +1,4 @@
-\documentclass[11pt]{article}
+	\documentclass[11pt]{article}
 \usepackage{acl2014}
 \usepackage{times}
 \usepackage{url}
@@ -126,9 +126,9 @@ The last step before training the SVM consists of reducing the number of labels.
 \item favors labels that were observed most frequently
 \item does not require setting the number of remaining clusters in advance
 \end{itemize}
-We have implemented a method for label reduction that favors labels that were observed most frequently. We iteratively split the labels into two halves: the upper half (containing labels that were seen most frequently) and the lower half (containing labels that were seen least frequently) and merge a label (and all of its vectors) from the lower half ($w_l$) into a label form the upper half ($w_u$). $w_l$ and $w_u$ are chosen by: 
+To favor labels that were observed most frequently we split the labels into two halves: the upper half (containing labels that were seen most frequently) and the lower half (containing labels that were seen least frequently). We restrict the clustering method to merging two labels of which one of them is  in the lower half ($w_l$) and one in the upper half ($w_u$), so that labels that occurred frequently are less likely to be merged into another label. $w_l$ and $w_u$ are selected so that: 
 $$\arg\max_{w_l, w_u} \textit{sim}(w_l, w_u)$$
-This process continues until $\textit{sim}(w_l, w_u)$ is below a certain threshold (in our experiments the threshold was $0.5$). Table \ref{labelreduction} shows the remaining labels for the words \textit{bat}, \textit{course} and \textit{bank}.
+This process continues until $\textit{sim}(w_l, w_u)$ is below a certain threshold (in our experiments the threshold was $0.5$). By using the similarity as a threshold the final number of clusters depends only on the observed data. Table \ref{labelreduction} shows the remaining labels for the words \textit{bat}, \textit{course} and \textit{bank}.
 The reordered labelled data can then be used to train an SVM.
 
 \begin{table*}[t]
@@ -146,7 +146,7 @@ The reordered labelled data can then be used to train an SVM.
 
 \section{Experiments}
 We evaluate the performance of our WSD methods on the dataset constructed by \cite{global}. The dataset consist of 2003 word pairs and their context. The goal of the task is to assign a similarity measure to all word pairs. 241 word pairs consist of the same word leaving a total of 1712 unique words. Ten human judges assigned similarity scores to all word pairs. Table \ref{task} contains four example word pairs with their context and the scores assigned by two methods and the human annotators. We compute the Spearman correlation between the method's similarity ratings and the average rating of the human annotators. We compare our methods to the Single Word Vector (SWV) baseline that uses only a single word vector for every word and computes the similarity as the cosine similarity between the two words without taking the context into account. \\\\
-As mentioned in section \ref{coconut} COCONUT is a method for word sense discrimination. To adapt it for the task of similarity rating, we need a representations of both words in order to compare them. We disambiguated all 1712 words into two different senses ($k = 2$), a sense is represented as a collection of words that indicate this sense. As a representation for the words we choose to use the average word vector of all words that belong to the most appropriate sense of the word given the context, which we define as:
+As mentioned in section \ref{coconut} COCONUT is a method for word sense discrimination. We disambiguated all 1712 words into two different senses ($k = 2$), a sense is represented as a collection of words that indicate this sense. As a representation for the words we choose to use the average word vector of all words that belong to the most appropriate sense of the word given the context, which we define as:
 \begin{equation}\label{sense} \arg\max_{\textit{sense}}  | \{\textit{sense} \cap \textit{context}\} |\end{equation}
 where \textit{sense} is the set of words in one of the two senses of the disambiguated word and \textit{context} is the set of words in the context.\\\\
 To compute the score for PALM we applied the word sense discrimination phase on the \textit{enwiki8} corpus. PALM was able to identify different senses for 1222 of the 1712 unique words of the word pairs, resulting in 1222 SVMs. We then relabeled the 1222 words in the corpus by appending the label predicted by the SVM for the word. To obtain the label, we expand the contexts of both words and use this to compute the probability distribution over the meaning. The trained SVM then provides the label of the word vector that represents the words best in their given contexts. Finally, we used \textit{word2vec} by \cite{word2vec} to obtain 80-dimensional word vectors for all words in the relabeled corpus. For a word pair in the task, we can again obtain the label and use this to find the correct word vector. These word vectors are used to compute the cosine similarity between the two words. Joint PALM is a variation on PALM that computes the similarity between the average word vectors of the single word vector and the word vector selected by PALM.
