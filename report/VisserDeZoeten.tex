@@ -59,11 +59,15 @@ One way to cluster data is agglomerative clustering which has been shown to prod
 \end{figure}
 
 \subsection{Comparing word context with clusters}
-For each of the tasks we compare the context of the word that needs to be disambiguated with all the clusters. We determine the likelihood of a context $cont$ being represented by a cluster by counting how many words are in common with the cluster:
+We will define two methods for using the word clusters to define a word relatedness score. In both methods we compare the context of each word with each of the clusters. We define a probability $P( cluster | context )$ for each cluster, and produce a normalized vector $V_p$ of probabilities for each context. The distance between two words is then defined by the \textit{cosine} similarity between these two vectors.
 
-\begin{equation} \label{pcc}P( cluster | cont ) = \frac{ | \{cluster \cap cont\} |  }{| cluster |} \end{equation}
+\subsubsection{Cluster - context intersection}
+In the first instance we determine the likelihood of a context being represented by a cluster by counting how many words are in common with the cluster:
+\begin{equation} \label{pcc}P( \textit{cluster} | \textit{context}) = \frac{ | \{\textit{cluster} \cap \textit{context}\} |  }{| \textit{cluster} |} \end{equation}
+By applying \ref{pcc} to all clusters for a given context and normalizing over the different probabilities we get a probability vector $V_{p}$ that defines a mixture of the context over the different clusters. The similarity score for two words is defined by the \textit{cosine} similarity between the two probability vectors of the two contexts.
 
-By applying \ref{pcc} to all clusters for a given context and normalizing over the different probabilities we get a probability vector $V_{c}$ that defines a mixture of the context over the different clusters. It is then possible to define a similarity between the two contexts $V_{c_1}$ and $V_{c_2}$ by their cosine similarity $cos(V_{c_1}, V_{c_2})$.
+\subsubsection{Expanded Cluster - context similarity}
+In this method we do not directly compare the words in a cluster with the context, but replace the clusters with the average of the co-occurrence vectors of the words in the cluster.
 
 \section{PALM}
 In order to disambiguate between multiple meanings of a word, it can be useful to look at the context. PALM is a method for word sense discrimination that trains an SVM for every word which can be used for word sense disambiguation. The SVM is able to disambiguate a word by predicting the most appropriate label when given the probability distribution from the word's expanded context over the agglomeratively-clustered latent meanings. The predicted labels can for example be used to relabel a corpus before training a recurrent neural network in order to obtain multiple vector representations for one word. 
