@@ -61,23 +61,25 @@ def load_task(filename, allWords=False):
 	lines = f.readlines()
 	for question in lines:
 		q = dict()
-		question = question.split('\t')
+		question = question.replace("\n","").split('\t')
 		q['word1'] = question[1].lower()
 		q['pos1'] = question[2]
 		q['word2'] = question[3].lower()
 		q['pos2'] = question[4]
 		q['context1'] = question[5]
 		q['context2'] = question[6]
-		q['rating'] = float(question[7])
+		r = sum( [ float(question[i]) for i in xrange(8,18)]) / 10.0
+		q['rating'] = r
 		task[int(question[0])] = q
 		words.add(question[1].lower())
 		words.add(question[3].lower())
 		if allWords:
 			for w in (q['context1']+" "+q['context2']).lower().split(' '):
 				words.add(w)
+	f.close()
 	words = [Word(x).lemma() for x in words]
-
 	return task, words
 
-
+if __name__ == '__main__':
+	print load_task("../data/tasks/SCWS/ratings.txt")[:1]
 
