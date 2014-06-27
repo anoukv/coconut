@@ -1,11 +1,11 @@
-	\documentclass[11pt]{article}
+\documentclass[11pt]{article}
 \usepackage{acl2014}
 \usepackage{times}
 \usepackage{url}
 \usepackage{latexsym}
 \usepackage{graphicx}
 \usepackage{float}
-\title{Coconut palms and hand palms: improving similarity ranking by word sense disambiguation}
+\title{COCONUT PALMs and Hand Palms: Improving Similarity Ratings by Word Sense Disambiguation}
 
 \author{Anouk Visser \\
   {\tt anouk.visser@me.com} \\\And
@@ -22,12 +22,16 @@
 \end{abstract}
 
 \section{Introduction}
+When presented with two words without context it can be hard to assign a similarity to the two words. For example the word pair `hit - single' could be interpreted as very similar because they are both related to music. However, hit can also be used in the context of hitting a ball, while single might be used to indicate someone's relationship status. To assigning similarity scores to word pairs the context in which words occur can be used to disambiguate the word properly. Word vector representations \cite{word2vec} can be used to calculate the cosine similarity between two words, but these word vectors do not take context into account. In addition to this, these word vectors do not capture all meanings of a word specifically, as a word is represented only by a single vector. 
 
+In this report we research whether or not word sense disambiguation can help to improve similarity ratings on word pairs. We present three methods for word sense discrimination and disambiguation. COCONUT is a method for word sense discrimination that clusters the relatedness-vectors of the words co-occurring with the word we want to disambiguate. Agglomerative clustering is another clustering method that clusters word vectors based their cosine similarity in order to find clusters that represent different meanings that a word or a context might have. Finally, we present PALM which is a word sense discrimination method that produces SVMs which can be used for word sense disambiguation. 
+
+We evaluate our methods on a dataset constructed by \cite{global} which consists out of 2003 word pairs in context that have been assigned a similarity score by human annotators.
 \section{Related Work}
 The task of word sense disambiguation is to assign the correct sense to an ambiguous word, whereas word sense discrimination is the task of finding the different senses a word might have \cite{old}. The importance of using co-occurrences for determining the correct sense of a word is already emphasized in \cite{relatedness} in which the authors propose a method for word sense disambiguation using co-occurrences. More specifically, the authors propose a simple score expressing the relatedness between two words:
 \begin{equation}\label{r}r(x, y) = \frac{f_{xy}}{f_x+f_y - f_{xy}}\end{equation}
 where $f_{xy}$ denotes the frequency of $x$ and $y$ occurring together and $f_x$ and $f_y$ denote the frequency of $x$, respectively $y$. 
-In the past years a lot of different methods for word sense disambiguation have been proposed that can be classified as supervised, knowledge-based or unsupervised methods\cite{survey}. Unsupervised WSD mainly focuses on word sense discrimination. The majority of unsupervised word sense discrimination methods use clustering on, for example, context vectors or relatedness vectors. An example of an unsupervised method that uses clustering on both first order context vectors and second order context vectors can be found in \cite{clustering}. Another example of unsupervised word sense discrimination is given in \cite{latent} where the authors use the intuition that the meaning of a word can be represented as a distribution over a set of latent senses.
+In the past years a lot of different methods for word sense disambiguation have been proposed that can be classified as supervised, knowledge-based or unsupervised methods \cite{survey}. Unsupervised WSD mainly focuses on word sense discrimination. The majority of unsupervised word sense discrimination methods use clustering on, for example, context vectors or relatedness vectors. An example of an unsupervised method that uses clustering on both first order context vectors and second order context vectors can be found in \cite{clustering}. Another example of unsupervised word sense discrimination is given in \cite{latent} where the authors use the intuition that the meaning of a word can be represented as a distribution over a set of latent senses.
 
 
 Recently \cite{word2vec} have released tools for efficiently computing word vectors that capture syntactic and semantic information. The distance between these vectors can be used for identifying linguistic regularities \cite{regularities} and a number of other applications such as word sense discrimination through clustering these word vectors. However, word vector representations suffer from the problem that words may have a number of different meanings that cannot be captured in a single representation. \cite{multi} propose a solution to this problem by representing a word's meaning by a set of sense specific word vectors which are discovered by clustering the contexts in which the word appears. For every context cluster, the authors compute an average vector that can be used to determine the similarity between two words (either in context or isolated). A drawback of this method is that it is required to know the number of senses in advance. \cite{global} build upon this work by introducing a new neural network architecture that learns word vectors by also incorporating the global context of a word and can lean multiple vectors for a single word. In addition to this, they present a new dataset of pairs of words in contexts annotated with similarity judgements by human annotators. 
