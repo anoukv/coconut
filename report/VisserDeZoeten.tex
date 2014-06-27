@@ -73,7 +73,7 @@ In the first instance we determine the likelihood of a context being represented
 By applying \ref{pcc} to all clusters for a given context and normalizing over the different probabilities we get a probability vector $V_{p}$ that defines a mixture of the context over the different clusters. The similarity score for two words is defined by the \textit{cosine} similarity between the two probability vectors of the two contexts.
 
 \subsubsection{Expanded Cluster - context similarity}
-In this method we do not directly compare the words in a cluster with the context, but replace the clusters with the average of the co-occurrence vectors of the words in the cluster.
+In this method we do not directly compare the words in a cluster with the context, but replace the clusters with the average of the co-occurrence vectors of the words in the cluster. Co-occurrence vectors are extracted from the corpus by finding every instance of a given word and observing the 5 words that occur before and after that word. The co-occurrence vector normalized sparse vector that 
 
 \section{PALM}
 In order to disambiguate between multiple meanings of a word, it can be useful to look at the context. PALM is a method for word sense discrimination that trains an SVM for every word which can be used for word sense disambiguation. The SVM is able to disambiguate a word by predicting the most appropriate label when given the probability distribution from the word's expanded context over the agglomeratively-clustered latent meanings. The predicted labels can for example be used to relabel a corpus before training a recurrent neural network in order to obtain multiple vector representations for one word. 
