@@ -132,29 +132,29 @@ if __name__ == "__main__":
 			score = cosine_similarity(vec1, vec2)
 			base = cosine_similarity(normalVectors[word1], normalVectors[word2])
 
-			if abs(base - score) > 0.3:
-				print question['word1'], label1
-				print question['context1']
-				print question['word2'], label2
-				print question['context2']
-				print i, "\tHuman average: ", question['rating']
-				print i, "\tPALM score", score 
-				print i, "\tBaseline: ", base
-				print i, "\tDifferent between base and palm: ", abs(base - score)
+			# if abs(base - score) > 0.3:
+				# print question['word1'], label1
+				# print question['context1']
+				# print question['word2'], label2
+				# print question['context2']
+				# print i, "\tHuman average: ", question['rating']
+				# print i, "\tPALM score", score 
+				# print i, "\tBaseline: ", base
+				# print i, "\tDifferent between base and palm: ", abs(base - score)
 
 			methodsRating.append(score) 
 			humanRating.append(question['rating'])
 			otherRating.append(base)
-			if i > 5 and abs(base - score) > 0.3:
-				print i, "\t", spearman(methodsRating, humanRating)
-				print i, "\t", spearman(otherRating, humanRating)
+			# if i > 5 and abs(base - score) > 0.3:
+			# 	print i, "\t", spearman(methodsRating, humanRating)
+			# 	print i, "\t", spearman(otherRating, humanRating)
 			done += 1
-			print
-			print
+			# print
+			# print
 
 	# print the spearman correlation
  	print "Method: ", spearman(methodsRating, humanRating)
- 	print "Coverage: ", done / float(len(questions)) * 100, "%"
- 	print "Baseline: ", methodsRating, humanRating, otherRating
+ 	# print "Coverage: ", done / float(len(questions)) * 100, "%"
+ 	print "Baseline: ", spearman(otherRating, humanRating)
  	rel.close()
 
