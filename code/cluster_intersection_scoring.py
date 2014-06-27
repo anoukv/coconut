@@ -1,6 +1,7 @@
 import sys
 from utils import Word, load_task
 from fast_utils import cosine_similarity, normalizeVec, normalize_coc, spearman, load_vectors
+from math import sqrt
 
 def read_sets(filename="clusters.tmp"):
 	clusters = []
@@ -67,7 +68,7 @@ if __name__ == "__main__":
 		context2 = normalize_coc(dict( [ (e, 1) for e in context2] ))
 
 		c_s = context_similarity(context1, context2, clusters)
-		sim = 1 #vector_similarity(c_s, word1, word2, vectors)
+		sim = vector_similarity(0.33, word1, word2, vectors)
 		score = sim**3 * c_s
 
 		methodsRating.append( score )
