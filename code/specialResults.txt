@@ -1,3 +1,5 @@
+
+# THE BAD
 mexico canada
 chalky background . Some tall cylinders are considered ceremonial vessels while narrow-necked jars may have been used for liquids . Ware in the southern portion of the region , particularly after A.D. 1150 , is characterized by heavier black-line decoration and the use of carbon-based colorants . In northern New <b> Mexico </b> , the local " black on white " tradition , the Rio Grande white wares , continued well after 1300 AD . Changes in pottery composition , structure and decoration are signals of social change in the archaeological record . This is particularly true as the peoples of the
 brazil cup
@@ -55,7 +57,7 @@ Predicted distribution by SVM:
 	peru 174
 	south 161
 
-
+# THE GOOD
 bank west
 during this period . Further standing timbers were placed at the northeast entrance , and a parallel alignment of posts ran inwards from the southern entrance . The postholes are smaller than the Aubrey Holes , being only around in diameter , and are much less regularly spaced . The <b> bank </b> was purposely reduced in height and the ditch continued to silt up . At least twenty-five of the Aubrey Holes are known to have contained later , intrusive , cremation burials dating to the two centuries after the monument 's inception . It seems that whatever the holes '
 bank fund
@@ -67,7 +69,7 @@ of consecutive correct answers to earn an increasing amount for a single communa
 113 	55.3126643333
 113 	56.5758746063
 
-
+# THE VERY GOOD
 bank west
 sides of downtown via two pedestrian bridges . A landscaped promenade along the street level is planned . The Riverwalk includes the Brenton Skating Plaza . From November through March , the outdoor skating rink is open as a skating mecca for central Iowans . Located downtown along the east <b> bank </b> of the Des Moines River , the plaza is available for parties , social events , movies , concerts , and summer sand volleyball during the warmer months of the year . Gray 's Lake , as part of popular Gray 's Lake Park , features a boat rental
 money pay
@@ -79,6 +81,7 @@ e.g. a convenience store ) needs to deposit that money in a bank . If its deposi
 114 	55.3057593463
 114 	55.8241444449
 
+# THE GOOD
 bats bird
 own called Dry Dry Ruins ( named after a dungeon in " Paper Mario " ) . On this course , pillars inscribed with hieroglyphics fall onto the track to then be used as ramps , and there is yet another Yoshi Sphinx . Inside the ruins , there are <b> bats </b> and a bowl with Pokeys that fills with sand over the course of the race , and the music changes somewhat while inside . Farms/Rural Environment . There has been at least one farm or rural course in each " Mario Kart " game . " Mario Kart 64
 bats slugger
@@ -90,7 +93,7 @@ the need for defining the legality of a bowling action using biomechanical conce
 125 	50.8969146137
 125 	52.4233778659
 
-
+# THE DIFFICULT
 bent knee
 derived from the fishing technique of slowly dragging a lure or baited hook from a moving boat , waiting for fish to strike , a technique known as trolling . The word also evokes the trolls portrayed in Scandinavian folklore and children 's tales , as they are often creatures <b> bent </b> on mischief and wickedness . The verb " troll " originates from Old French " troller " , a hunting term . The noun " troll " , however , comes from the Old Norse word for a mythological monster . Early history . The most likely derivation of
 double string
@@ -102,7 +105,7 @@ respected by the Abwehr that they stopped landing agents in Britain after 1942 .
 138 	44.9720430108
 138 	50.9241167435
 
-
+# THE VERY BAD
 bitter tast
 casseroles . In Turkish Cuisine , oregano is mostly used for flavoring meat , especially for mutton and lamb . In barbecue and kebab restaurants , it can be usually found on table , together with paprika , salt and pepper . It has an aromatic , warm and slightly <b> bitter </b> taste . It varies in intensity ; good quality oregano is so strong that it almost numbs the tongue , but the cultivars adapted to colder climates have often unsatisfactory flavor . The influence of climate , season and soil on the composition of the essential oil is greater
 bitter war
@@ -114,6 +117,7 @@ bitter war
 148 	44.8170910155
 148 	53.4650278022
 
+# THE GOOD
 card debit
 be picked up at the point of entry , as outgoing buses and streetcars will not accept transfers from the closest subway station . There are more than 1,200 vendors licensed to sell TTC fares in Toronto . The provincial Minister of Transportation has announced plans to introduce the Presto <b> card </b> , a unified smartcard-based payment system for the entire Greater Toronto Area . Union railway station will be first Toronto location to use the card in 2007 and four other stations ( Don Mills , Downsview , Finch , and Islington ) by 2010 . There are no plans
 card player
@@ -125,6 +129,7 @@ failed to gain a very large market presence . It bears mention because its event
 222 	45.0287075264
 222 	53.947293462
 
+# THE GOOD
 capital economi
 shifted control of enterprises from state agencies to groups of individuals with inside connections in the Government and the mafia . Corruption became an everyday rule of life . Many of the newly rich mobsters and businesspeople took billions in cash and assets outside of the country in an enormous <b> capital </b> flight . The depression of state and economy led to the collapse of social services ; the birth rate plummeted while the death rate skyrocketed . The early and mid-1990s saw extreme lawlessness , rise of criminal gangs and violent crime . The 1990s were plagued by armed conflicts
 assets not ambiguous
@@ -136,6 +141,7 @@ introduce a new Kadett of its own . " ( Opel ) had been seized by the German gov
 218 	44.0876872041
 218 	52.9044530069
 
+# THE GOOD
 channels broadcast
 Lancashire ) . Cable TV faces intense competition from British Sky Broadcasting 's Sky Digital satellite television service . Most channels are carried on both platforms . However , cable often lacks " interactive " features ( e.g. text services , and extra video-screens ) , especially on BSkyB owned <b> channels </b> , and the satellite platform lacks services requiring high degrees of two-way communication , such as true video on demand . However , subscription-funded digital terrestrial television proved less of a competitive threat . The first system , ITV Digital , went into liquidation in 2002 . Top Up
 transmission signal
@@ -147,6 +153,7 @@ transmission signal
 267 	49.2399533618
 267 	57.8805285659
 
+# THE GOOD
 credit invent
 , and it and its offspring became overwhelmingly dominant in the marketplace for many years . Shockley continued as a group head to lead much of the effort at Bell Labs to improve it and its fabrication for two more years . Shockley took the lion 's share of the <b> credit </b> in public for the invention of transistor , which led to a deterioration of Bardeen 's relationship with Shockley . Bell Labs management , however , consistently presented all three inventors as a team . Shockley eventually infuriated and alienated Bardeen and Brattain , and he essentially blocked the
 credit pay
@@ -158,6 +165,7 @@ numbers are designations of European routes . A full list of current and future 
 387 	49.3218055244
 387 	61.1085007514
 
+THE GOOD
 discipline scientif
 basis of cognitive behavioral therapy , a form of psychotherapy modified from techniques developed by American psychologist Albert Ellis and American psychiatrist Aaron T. Beck . Cognitive psychology was subsumed along with other disciplines , such as philosophy of mind , computer science , and neuroscience , under the umbrella <b> discipline </b> of cognitive science . Schools of thought . Various schools of thought have argued for a particular model to be used as a guiding theory by which all , or the majority , of human behavior can be explained . The popularity of these has waxed and waned over
 discipline sociolog
@@ -170,6 +178,7 @@ The Israeli army had a total strength , including reservists , of 264,000 , thou
 477 	62.2807559687
 
 
+# THE GOOD
 fast food
 diet , such as prisoners or soldiers ) . In addition to these fasting seasons , Orthodox Christians fast on every Wednesday ( in commemoration of Christ 's betrayal by Judas Iscariot ) , and Friday ( in commemoration of Christ 's Crucifixion ) throughout the year . Monastics often <b> fast </b> on Mondays ( in imitation of the Angels , who are commemorated on that day in the weekly cycle , since monastics are striving to lead an angelic life on earth , and angels neither eat nor drink ) . Orthodox Christians who are preparing to receive the Eucharist
 fast slow

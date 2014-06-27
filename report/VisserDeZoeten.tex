@@ -51,7 +51,7 @@ A disadvantage of COCONUT is that the number of senses for a word has to be know
 
 \section{Agglomerative Clustering}
 One way to cluster data is agglomerative clustering which has been shown to produce good results in comparison with other clustering techniques \cite{clustering}. Agglomerative clustering is an iterative bottom up approach to clustering. At the start each data point forms its own cluster and in each iteration the two data points that are closest to each other are merged until there is only a given number of clusters or the inter-cluster distances are larger than a predefined value. We performed agglomerative clustering on the $80$ dimensional word vector representations that we extracted from our training data. We clustered the words into 500 clusters. The result was that 351 clusters were single word clusters. The distribution over the number of words in each cluster is skewed and clusters with one or just a few words in them are not informative. Therefore we removed the clusters that had less than $10$ words in them, which resulted in 41 clusters with a distribution over the cluster size shown in figure \ref{cluster_size}.
-\begin{figure}[H]
+\begin{figure}
 \center
 \includegraphics[scale=0.40]{images/cluster_size.png}
 \caption{Distribution over cluster sizes for agglomerative clustering.}
@@ -93,24 +93,45 @@ $$\arg\max_{w_l, w_u} \textit{sim}(w_l, w_u)$$
 This process continues until $\textit{sim}(w_l, w_u)$ is below a certain threshold (in our experiments the threshold was $0.5$).
 The reordered labelled data can then be used to train an SVM.
 
+\begin{table*}[t]
+    \begin{tabular}{|p{5cm}|p{5cm}|p{2.5cm}|p{1cm}|p{1cm}|}
+    \hline
+    Word 1                                                                                                                                                                                                      & Word 2                                                                                                                                                                                                      & PALM label1 / label2 / score & Human & SWV  \\ \hline
+    In northern New \textbf{Mexico} , the local " black on white " tradition , the Rio Grande white wares , continued well after 1300 AD .                                                           & Women 's basketball was added to the Olympics in 1976 , which were held in Montreal , Canada with teams such as the Soviet Union , \textbf{Brazil} and Australia rivaling the American squads .  & canada / cup / 0.58          & 0.44  & 0.67 \\ \hline
+    It has an aromatic , warm and slightly \textbf{bitter}  taste .                                                                                                                                  & AK - a very common beer name in the 1800s - was often referred to as a " mild \textbf{bitter} beer " interpreting " mild " as " unaged " .                                                       & taste / war / 0.49           & 7.45  & 1.0  \\ \hline
+    Shockley took the lion 's share of the \textbf{credit} in public for the invention of transistor , which led to a deterioration of Bardeen 's relationship with Shockley .                                         & Payment in kuna , all major \textbf{credit} cards and euros are accepted at all toll gates .                                                                                                                       & invent / pay / 0.48          & 3.1   & 1.0  \\ \hline
+    Located downtown along the east \textbf{bank} of the Des Moines River , the plaza is available for parties , social events , movies , concerts , and summer sand volleyball during the warmer months of the year . & This is the basis of all \textbf{money} laundering , a track record of depositing clean money before slipping through dirty money .                                                                                & west / pay / 0.57            & 2.5   & 0.52 \\\hline
+    \end{tabular}
+    \caption{Some good and bad results}
+\end{table*}
+
 \section{Experiments}
 We evaluate the performance of our WSD methods on the dataset constructed by \cite{global}. The dataset consist of 2003 word pairs and their context. The goal of the task is to assign a similarity measure to all word pairs. 241 word pairs consist of the same word leaving a total of 1712 unique words. Ten human judges assigned similarity scores to all word pairs. We compute the Spearman correlation between the method's similarity ratings and the average rating of the human annotators. We compare our methods to a baseline that uses only a single word vector for every word and computes the similarity as the cosine similarity between the two words without taking the context into account. 
 
-To compute the score for PALM we applied the word sense discrimination phase on the \textit{enwiki8} corpus. PALM was able to identify different senses for 1222 of the 1712 unique words of the word pairs, resulting in 1222 SVMs. We then relabeled the 1222 words in the corpus by appending the label predicted by the SVM for the word. To obtain the label, we expand the contexts of both words and use this to compute the probability distribution over the meaning. The trained SVM then provides the label of the word vector that represents the words best in their given contexts. Finally, we used \textit{word2vec} by \cite{word2vec} to obtain 80-dimensional word vectors for all words in the relabeled corpus. For a word pair in the task, we can again obtain the label and use this to find the correct word vector. These word vectors can then be used to compute the cosine similarity between the two words.
+To compute the score for PALM we applied the word sense discrimination phase on the \textit{enwiki8} corpus. PALM was able to identify different senses for 1222 of the 1712 unique words of the word pairs, resulting in 1222 SVMs. We then relabeled the 1222 words in the corpus by appending the label predicted by the SVM for the word. To obtain the label, we expand the contexts of both words and use this to compute the probability distribution over the meaning. The trained SVM then provides the label of the word vector that represents the words best in their given contexts. Finally, we used \textit{word2vec} by \cite{word2vec} to obtain 80-dimensional word vectors for all words in the relabeled corpus. For a word pair in the task, we can again obtain the label and use this to find the correct word vector. These word vectors can then be used to compute the cosine similarity between the two words. Joint PALM is a variation that computes the similarity of average of the single word vector and the word vector selected by PALM.
 
-\begin{table}[H]
+\begin{figure}
+\center
+\includegraphics[scale=0.40]{images/score_assignment.png}
+\caption{Distribution over cluster sizes for agglomerative clustering.}
+\label{cluster_size}
+\end{figure}
+
+
+\begin{table}
+\center
     \begin{tabular}{|l|l|l|}
     \hline
     WSD Method & $\rho \times 100$ \\ \hline
-    Single Word Vector & 60.1 \\ \hline
-    Coconut & 38.2 \\ \hline
+    Single Word Vector (SWV) & 60.1 \\ \hline
+    COCONUT & 38.2 \\ \hline
     Agglomerative & 19.5 \\ \hline
     Agglomerative + SWV & 60.4 \\ \hline
     Agglomerative Extended & 54.5 \\ \hline
     PALM & 49.9 \\ \hline
     Joint PALM & 57.3 \\ \hline
-    PALM disc AvgSimC & 34.9 \\\hline
     \end{tabular}
+    \caption{The results}
 \end{table}
 
 \section{Discussion and future work}
